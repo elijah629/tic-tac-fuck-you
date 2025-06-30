@@ -1,22 +1,15 @@
-"use client";
-
+import { AIPlayer } from "@/components/ai-player";
 import { Board } from "@/components/board";
+import { HumanPlayer } from "@/components/human-player";
 import { XpSidebar } from "@/components/xp-sidebar";
-import { Game } from "@/lib/game";
-import { GameContext } from "@/lib/game-context";
-
-
-function GameRunner() {
-//  const game = useContext<Game | null>(GameContext)!;
-
-  return <>
-    <XpSidebar/>
-    <Board/>
-  </>;
-}
 
 export default function Play() {
-return <GameContext value={new Game(0)}>
-    <GameRunner/>
-  </GameContext>
+  return <main className="flex">
+    <XpSidebar/>
+    <div className="flex w-full flex-col">
+      <AIPlayer/>
+      <Board/>
+      <HumanPlayer/>
+    </div>
+  </main>
 }

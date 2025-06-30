@@ -1,15 +1,15 @@
+"use client";
+
+import { EVENTS } from "@/lib/game";
 import Cell from "./cell";
-import { useContext } from "react";
-import { GameContext } from "@/lib/game-context";
+import { useGame } from "@/lib/game-store";
 
 export function Board() {
-  const game = useContext(GameContext).game;
-
-  const { size: { rows, cols }, cells } = game.board;
+  const { board: { size: { rows, cols }, cells }, set, xpEvent } = useGame();
 
   return (
     <div
-      className="grid w-full max-w-2xl"
+      className="grid w-full mx-auto max-w-2xl"
       style={{
         aspectRatio: `${cols}/${rows}`,
         gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
@@ -33,6 +33,10 @@ export function Board() {
             borderLeft:   isLeft   ? 'none' : undefined,
             borderRight:  isRight  ? 'none' : undefined,
             borderBottom: isBottom ? 'none' : undefined,
+          }}
+          onClick={() => {
+            set(index, index % 3);
+            xpEvent(EVENTS.PLACE);
           }}
         >
           <Cell cell={cell}/>

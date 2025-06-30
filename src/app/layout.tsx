@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import localFont from 'next/font/local'
 import "./globals.css";
+import styles from "./crt.module.css";
 import { Navbar } from "@/components/navbar";
 import TTFUCursor from "@/components/cursor";
 
@@ -28,7 +29,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full">
       <body
-        className={`${m6x11.variable} ${serenityOSEmoji.variable} crt text-2xl h-full dark antialiased`}
+        className={`${m6x11.variable} ${serenityOSEmoji.variable} ${styles.crt} text-2xl h-full dark antialiased`}
         style={{
           fontFamily: `var(--font-m6x11), system-ui, var(--font-emoji)`
         }}

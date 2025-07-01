@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
 export default function TTFUCursor() {
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -9,8 +9,8 @@ export default function TTFUCursor() {
     const update = (e: MouseEvent) =>
       setPosition({ x: e.clientX, y: e.clientY });
 
-    window.addEventListener('mousemove', update);
-    return () => window.removeEventListener('mousemove', update);
+    window.addEventListener("mousemove", update);
+    return () => window.removeEventListener("mousemove", update);
   }, []);
 
   return (
@@ -19,7 +19,7 @@ export default function TTFUCursor() {
       style={{
         left: position.x + 2,
         top: position.y + 18,
-        transform: 'translate(-50%, -50%)',
+        transform: "translate(-50%, -50%)",
       }}
     >
       🖕

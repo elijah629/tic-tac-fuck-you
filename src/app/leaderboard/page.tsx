@@ -1,4 +1,4 @@
-import { Redis } from '@upstash/redis';
+import { Redis } from "@upstash/redis";
 
 import {
   Table,
@@ -23,9 +23,12 @@ export default async function Leaderboard() {
   // TODO: See if NextJS Caches this
   // IF NOT: Ratelimit by slack id and make all pages require auth
   async function getRange(from: number, to: number): Promise<Leaderboard> {
-    "use server"
+    "use server";
 
-     const raw = await redis.zrange("leaderboard", from, to, { withScores: true, rev: true });
+    const raw = await redis.zrange("leaderboard", from, to, {
+      withScores: true,
+      rev: true,
+    });
 
     const leaderboard: [string, number][] = [];
 
@@ -35,51 +38,69 @@ export default async function Leaderboard() {
       leaderboard.push([user, wins]);
     }
 
-     return leaderboard;
+    return leaderboard;
   }
 
-  const leaderboard: Leaderboard = process.env.NODE_ENV === "development" ? [["EliOzcan", 10], ["Broski", 10], ["Bob", 9], ["Joe", 7]] : (await getRange(0, TOP));
+  const leaderboard: Leaderboard =
+    process.env.NODE_ENV === "development"
+      ? [
+          ["EliOzcan", 10],
+          ["Broski", 10],
+          ["Bob", 9],
+          ["Joe", 7],
+        ]
+      : await getRange(0, TOP);
 
-const ranked = leaderboard.reduce(
-  (acc: { name: string; wins: number; rank: number }[], [name, wins], idx) => {
-    if (idx === 0) {
-      acc.push({ name, wins, rank: 0 });
-    } else {
-      const prev = acc[idx - 1];
-      if (wins === prev.wins) {
-        acc.push({ name, wins, rank: prev.rank });
+  const ranked = leaderboard.reduce(
+    (
+      acc: { name: string; wins: number; rank: number }[],
+      [name, wins],
+      idx,
+    ) => {
+      if (idx === 0) {
+        acc.push({ name, wins, rank: 0 });
       } else {
-        acc.push({ name, wins, rank: prev.rank + 1});
+        const prev = acc[idx - 1];
+        if (wins === prev.wins) {
+          acc.push({ name, wins, rank: prev.rank });
+        } else {
+          acc.push({ name, wins, rank: prev.rank + 1 });
+        }
       }
-    }
-    return acc;
-  },
-  []
-);
+      return acc;
+    },
+    [],
+  );
 
-  return <main className="flex w-full justify-center">
-    <Table className="max-w-3xl mx-auto  text-2xl">
-      <TableCaption>Top {TOP} performing specimen</TableCaption>
-      <TableHeader>
-        <TableRow>
-          <TableHead>User</TableHead>
-          <TableHead className="text-right">Wins</TableHead>
-        </TableRow>
-      </TableHeader>
+  return (
+    <main className="flex w-full justify-center">
+      <Table className="max-w-3xl mx-auto  text-2xl">
+        <TableCaption>Top {TOP} performing specimen</TableCaption>
+        <TableHeader>
+          <TableRow>
+            <TableHead>User</TableHead>
+            <TableHead className="text-right">Wins</TableHead>
+          </TableRow>
+        </TableHeader>
         <TableBody>
           {ranked.map(({ name, wins, rank }) => (
             <TableRow key={name}>
-              <TableCell className="font-medium">{name} {medalMap[rank] ?? "#" + rank + "."}</TableCell>
+              <TableCell className="font-medium">
+                {name} {medalMap[rank] ?? "#" + rank + "."}
+              </TableCell>
               <TableCell className="text-right">{wins}</TableCell>
             </TableRow>
           ))}
         </TableBody>
-      <TableFooter>
-        <TableRow>
-          <TableCell>Total Wins</TableCell>
-          <TableCell className="text-right">{leaderboard.map(([, wins]) => wins).reduce((a, b) => a + b)}</TableCell>
-        </TableRow>
-      </TableFooter>
-    </Table>
-  </main>
+        <TableFooter>
+          <TableRow>
+            <TableCell>Total Wins</TableCell>
+            <TableCell className="text-right">
+              {leaderboard.map(([, wins]) => wins).reduce((a, b) => a + b)}
+            </TableCell>
+          </TableRow>
+        </TableFooter>
+      </Table>
+    </main>
+  );
 }

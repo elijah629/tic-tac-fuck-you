@@ -4,7 +4,7 @@ import "./globals.css";
 import styles from "./crt.module.css";
 import { Navbar } from "@/components/navbar";
 import TTFUCursor from "@/components/cursor";
-import sphere from "@/images/sphere.png";
+//import sphere from "@/images/sphere.png";
 
 const m6x11 = localFont({
   src: "./m6x11plus.ttf",

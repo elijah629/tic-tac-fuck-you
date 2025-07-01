@@ -30,7 +30,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${m6x11.variable} ${serenityOSEmoji.variable} !${styles.crt} h-screen flex flex-col select-none text-2xl dark antialiased`}
+        className={`${m6x11.variable} ${serenityOSEmoji.variable} ${styles.crt} h-screen flex flex-col select-none text-2xl dark antialiased`}
         style={{
           fontFamily: `var(--font-m6x11), system-ui, var(--font-emoji)`,
         }}

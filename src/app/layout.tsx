@@ -35,7 +35,7 @@ export default function RootLayout({
           fontFamily: `var(--font-m6x11), system-ui, var(--font-emoji)`,
         }}
       >
-        <svg xmlns="http://www.w3.org/2000/svg" height="0" className="absolute">
+        {/*<svg xmlns="http://www.w3.org/2000/svg" height="0" className="absolute">
           <filter
             id="crtWarp"
             x="0"
@@ -62,7 +62,7 @@ export default function RootLayout({
               yChannelSelector="G"
             />
           </filter>
-        </svg>
+        </svg>*/}
         <TTFUCursor />
         <Navbar />
         {children}

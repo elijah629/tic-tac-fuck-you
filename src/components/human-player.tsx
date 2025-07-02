@@ -11,7 +11,7 @@ export function HumanPlayer({ className }: { className?: string }) {
 
   return (
     <div className={cn("flex w-full justify-between p-4", className)}>
-      <CardFan cards={human.cards} />
+      <CardFan for={human.team} cards={human.cards} />
 
       <PlayerIndicator team={human.team} />
     </div>

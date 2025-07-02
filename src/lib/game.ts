@@ -12,21 +12,16 @@ export interface GameState {
   board: Board;
   winLength: number;
   turn: Team;
-  human: HumanPlayer;
-  ai: AIPlayer;
+  human: Player;
+  ai: Player;
   xp: number;
   xpCounter: number;
   xpEvents: XpEvent[];
 }
 
-export interface HumanPlayer {
+export interface Player {
   team: Team;
-  cards: Card[];
-}
-
-export interface AIPlayer {
-  team: Team;
-  cards: number;
+  cards: { id: number, card: Card }[];
 }
 
 export enum Card {
@@ -36,7 +31,8 @@ export enum Card {
 }
 
 export type GameActions = {
-  set(index: number, cell: Cell): void;
+  removeCard(f: Team, id: number): void;
+  applyCardToCell(index: number, card: Card): void;
   xpEvent(event: Omit<XpEvent, "id">): void;
   removeXpEvent(id: number): void;
   winState(): Team | "both" | null;

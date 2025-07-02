@@ -1,6 +1,5 @@
 "use client";
 
-import { mulberry32 } from "@/lib/mulberry32";
 import Image from "next/image";
 import x from "@/images/cards/x.png";
 import o from "@/images/cards/o.png";
@@ -8,6 +7,7 @@ import back from "@/images/cards/deck-back.png";
 import styles from "@/components/card.module.css";
 import { Card as C } from "@/lib/game";
 import { useCallback, useEffect, useRef } from "react";
+
 const MAX_WIND_ANGLE = 30;
 const WIND_RESPONSIVENESS = 0.5;
 const VELOCITY_SAMPLES = 5;
@@ -24,23 +24,25 @@ const HEIGHT = 95;
 export function Card({
   card,
   id,
+  onDrop,
   angle,
   translateY,
 }: {
   card: C;
   id: number;
+  onDrop?: () => void,
   angle: number;
   translateY: number;
 }) {
   const cardRef = useRef<HTMLImageElement>(null);
 
   const stateRef = useRef({
-    isDragging: false,
+    dragging: false,
     returnPhase: ReturnPhase.NONE,
     windAngle: 0,
     x: 0,
-    y: translateY,
-    rotation: angle,
+    y: 0,
+    rotation: 0,
   });
 
   const windRef = useRef({
@@ -55,19 +57,15 @@ export function Card({
     if (card) {
       const { x, y, rotation } = stateRef.current;
       card.style.transform = `translate(${x}px, ${y}px) rotate(${rotation}deg)`;
-    }
+       }
   }, []);
-
-  useEffect(() => {
-    updateTransform();
-  }, [updateTransform]);
 
   const updateWindEffect = useCallback(
     (currentTime: number) => {
       const state = stateRef.current;
       const wind = windRef.current;
 
-      if (!state.isDragging || state.returnPhase !== ReturnPhase.NONE) return;
+      if (!state.dragging || state.returnPhase !== ReturnPhase.NONE) return;
 
       const deltaTime = currentTime - wind.lastTime;
 
@@ -113,7 +111,7 @@ export function Card({
       );
       updateTransform();
 
-      if (state.isDragging && state.returnPhase === ReturnPhase.NONE) {
+      if (state.dragging && state.returnPhase === ReturnPhase.NONE) {
         wind.animationFrame = requestAnimationFrame(updateWindEffect);
       }
     },
@@ -141,7 +139,7 @@ export function Card({
     wind.velocityBuffer = [];
 
     // Only reset wind if not returning to origin
-    if (!state.isDragging && state.returnPhase === ReturnPhase.NONE) {
+    if (!state.dragging && state.returnPhase === ReturnPhase.NONE) {
       const resetWind = () => {
         state.windAngle *= 0.9;
         if (Math.abs(state.windAngle) < 0.15) {
@@ -200,41 +198,45 @@ export function Card({
         requestAnimationFrame(animate);
       } else {
         state.x = 0;
-        state.y = translateY;
-        state.rotation = angle;
+        state.y = 0;
+        state.rotation = 0;
         state.returnPhase = ReturnPhase.NONE;
         updateTransform();
+        cardRef.current?.classList.add(styles.wave);
       }
     };
 
     requestAnimationFrame(animate);
-  }, [updateTransform, angle, translateY]);
+  }, [updateTransform]);
 
   // Optimized pointer handlers
   const handlePointerDown = useCallback(
-    (e: PointerEvent) => {
+    () => {
       const card = cardRef.current;
       if (!card) return;
 
       const state = stateRef.current;
-      state.isDragging = true;
+
+      state.dragging = true;
+      card.style.zIndex = "11";
+      cardRef.current?.classList.remove(styles.wave);
+
       state.returnPhase = ReturnPhase.NONE;
 
       startWindEffect();
-      e.preventDefault();
     },
     [startWindEffect],
   );
 
   const handlePointerMove = useCallback(
     (e: PointerEvent) => {
-      if (!stateRef.current.isDragging) return;
+      const state = stateRef.current;
+
+      if (!state.dragging) return;
 
       const card = cardRef.current;
       const parent = card?.parentElement;
       if (!card || !parent) return;
-
-      const state = stateRef.current;
 
       state.x += e.movementX;
       state.y += e.movementY;
@@ -245,21 +247,22 @@ export function Card({
 
   const handlePointerUp = useCallback(() => {
     const state = stateRef.current;
-    if (!state.isDragging) return;
+    if (!state.dragging) return;
 
-    const card = cardRef.current;
-    if (!card) return;
+    const elCard = cardRef.current;
+    if (!elCard) return;
 
-    state.isDragging = false;
+    state.dragging = false;
+    elCard.style.zIndex = "10";
 
     stopWindEffect();
 
     // Optimized drop zone detection
-    const cardRect = card.getBoundingClientRect();
+    const cardRect = elCard.getBoundingClientRect();
     const centerX = cardRect.left + cardRect.width / 2;
     const centerY = cardRect.top + cardRect.height / 2;
 
-    const dropZones = document.querySelectorAll("[data-drop-zone]");
+    const dropZones = document.querySelectorAll("[data-board-cell]");
 
     for (const zone of dropZones) {
       const zoneRect = zone.getBoundingClientRect();
@@ -269,14 +272,19 @@ export function Card({
         centerY >= zoneRect.top - 25 &&
         centerY <= zoneRect.bottom + 25
       ) {
-        //onCardDrop()
-        console.log("Dropped!");
+        zone.dispatchEvent(new CustomEvent("card-drop", {
+          detail: {
+            card
+          }
+        }));
+
+        onDrop?.();
         return;
       }
     }
 
     returnToOrigin();
-  }, [stopWindEffect, returnToOrigin]);
+  }, [stopWindEffect, onDrop, card, returnToOrigin]);
 
   useEffect(() => {
     const card = cardRef.current;
@@ -284,7 +292,7 @@ export function Card({
 
     if (!card) return;
 
-    card.addEventListener("pointerdown", handlePointerDown, { passive: false });
+    card.addEventListener("pointerdown", handlePointerDown, { passive: true });
     document.addEventListener("pointermove", handlePointerMove, {
       passive: true,
     });
@@ -309,10 +317,11 @@ export function Card({
       draggable={false}
       alt="Card"
       src={cardSrc(card)}
-      className={`transition-transform #transform-(base-transform) duration-300 ease-out hover:-translate-y-4 #${styles.wave}`}
+      className={`transition-transform duration-300 ease-out hover:-translate-y-4 ${styles.wave}`}
       style={{
-        //["--base-transform" as string]: `translate(0px, ${translateY}px) rotate(${angle}deg)`,
-        animationDelay: `${mulberry32(id)}s`,
+        zIndex: 10,
+        ["--base-transform" as string]: `translate(0px, ${translateY}px) rotate(${angle}deg)`,
+       animationDelay: `-${((id * 16807) % 1000) / 1000}s`,
       }}
     />
   );

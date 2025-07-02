@@ -1,25 +1,43 @@
 "use client";
 
 import { create } from "zustand";
-import { Card, Cell, GameActions, GameState, new_board, Team } from "./game";
+import { Card, Cell, EVENTS, GameActions, GameState, new_board, Team } from "./game";
 
 export const useGame = create<GameActions & GameState>((set_, get) => ({
   xp: 0,
   xpEvents: [],
   winLength: 3,
-  turn: Team.X,
-  human: { team: Team.X, cards: [Card.X, Card.X, Card.X] },
-  ai: { team: Team.O, cards: 5 }, // The AI can bullshit its cards. It doesn't actually have any specific ones, it just shows how many it "has" and the AI picks which cards it has
+  turn: Team.O,
+  human: { team: Team.O, cards: [{ id: 0, card: Card.O }, { id: 1, card: Card.O }, { id: 2, card: Card.O }] },
+  ai: { team: Team.X, cards: [{ id: 0, card: Card.Back }, { id: 1, card: Card.Back }, { id: 2, card: Card.Back }] },
   xpCounter: 0,
-  board: new_board(3, 3),
-  set(index, cell) {
+  board: new_board(10, 10),
+
+  applyCardToCell(index, card)
+{
+    const cell = cardToCell(card);
+
+    if (!cell) return;
+
     set_((s) => {
       const board = s.board;
       board.cells[index] = cell;
+      get().xpEvent(EVENTS.PLACE);
 
       return {
         board,
       };
+    });
+
+  },
+
+  removeCard(for_, id) {
+    set_((s) => {
+       if (s.human.team == for_) {
+          return { human: { team: s.human.team, cards: s.human.cards.filter(x => x.id !== id) } };
+       } else {
+          return { ai: { team: s.ai.team, cards: s.ai.cards.filter(x => x.id !== id) } };
+        }
     });
   },
 
@@ -105,3 +123,16 @@ export const useGame = create<GameActions & GameState>((set_, get) => ({
     return "both";
   },
 }));
+
+
+function cardToCell(card: Card): Cell | false {
+  if (card === Card.X) {
+    return Cell.X;
+  }
+
+  if (card === Card.O) {
+    return Cell.O;
+  }
+
+  return false;
+}

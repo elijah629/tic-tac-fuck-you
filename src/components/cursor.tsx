@@ -9,13 +9,16 @@ export default function TTFUCursor() {
     const update = (e: MouseEvent) =>
       setPosition({ x: e.clientX, y: e.clientY });
 
-    window.addEventListener("mousemove", update);
-    return () => window.removeEventListener("mousemove", update);
+    window.addEventListener("mousemove", update, { passive: true });
+
+    return () => {
+      window.removeEventListener("mousemove", update);
+    }
   }, []);
 
   return (
     <div
-      className="fixed z-[98] pointer-events-none text-3xl select-none"
+      className="fixed z-[20] pointer-events-none text-3xl select-none"
       style={{
         left: position.x + 2,
         top: position.y + 18,

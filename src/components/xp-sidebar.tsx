@@ -29,7 +29,7 @@ export function XpSidebar({ className }: { className?: string }) {
       if (nextTime !== undefined) {
         removeXpEvent(nextTime);
       }
-    }, 500);
+    }, 1000);
     return () => clearInterval(timer);
   }, [removeXpEvent]);
 

@@ -30,7 +30,7 @@ export function Card({
 }: {
   card: C;
   id: number;
-  onDrop?: () => void,
+  onDrop?: () => void;
   angle: number;
   translateY: number;
 }) {
@@ -57,7 +57,7 @@ export function Card({
     if (card) {
       const { x, y, rotation } = stateRef.current;
       card.style.transform = `translate(${x}px, ${y}px) rotate(${rotation}deg)`;
-       }
+    }
   }, []);
 
   const updateWindEffect = useCallback(
@@ -210,23 +210,20 @@ export function Card({
   }, [updateTransform]);
 
   // Optimized pointer handlers
-  const handlePointerDown = useCallback(
-    () => {
-      const card = cardRef.current;
-      if (!card) return;
+  const handlePointerDown = useCallback(() => {
+    const card = cardRef.current;
+    if (!card) return;
 
-      const state = stateRef.current;
+    const state = stateRef.current;
 
-      state.dragging = true;
-      card.style.zIndex = "11";
-      cardRef.current?.classList.remove(styles.wave);
+    state.dragging = true;
+    card.style.zIndex = "11";
+    cardRef.current?.classList.remove(styles.wave);
 
-      state.returnPhase = ReturnPhase.NONE;
+    state.returnPhase = ReturnPhase.NONE;
 
-      startWindEffect();
-    },
-    [startWindEffect],
-  );
+    startWindEffect();
+  }, [startWindEffect]);
 
   const handlePointerMove = useCallback(
     (e: PointerEvent) => {
@@ -272,11 +269,13 @@ export function Card({
         centerY >= zoneRect.top - 25 &&
         centerY <= zoneRect.bottom + 25
       ) {
-        zone.dispatchEvent(new CustomEvent("card-drop", {
-          detail: {
-            card
-          }
-        }));
+        zone.dispatchEvent(
+          new CustomEvent("card-drop", {
+            detail: {
+              card,
+            },
+          }),
+        );
 
         onDrop?.();
         return;
@@ -321,7 +320,7 @@ export function Card({
       style={{
         zIndex: 10,
         ["--base-transform" as string]: `translate(0px, ${translateY}px) rotate(${angle}deg)`,
-       animationDelay: `-${((id * 16807) % 1000) / 1000}s`,
+        animationDelay: `-${((id * 16807) % 1000) / 1000}s`,
       }}
     />
   );

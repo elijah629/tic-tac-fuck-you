@@ -158,6 +158,41 @@
     );
   }
 
+  /* TODO: How to auto generate before:* etc */
+  .before\:rounded-xl {
+    clip-path: polygon(
+      /* 28 points for S = 24px, half = 12px, quarter = 6px */ 0px
+        calc(100% - 24px),
+      6px calc(100% - 24px),
+      6px calc(100% - 12px),
+      12px calc(100% - 12px),
+      12px calc(100% - 6px),
+      24px calc(100% - 6px),
+      24px 100%,
+      calc(100% - 24px) 100%,
+      calc(100% - 24px) calc(100% - 6px),
+      calc(100% - 12px) calc(100% - 6px),
+      calc(100% - 12px) calc(100% - 12px),
+      calc(100% - 6px) calc(100% - 12px),
+      calc(100% - 6px) calc(100% - 24px),
+      100% calc(100% - 24px),
+      100% 24px,
+      calc(100% - 6px) 24px,
+      calc(100% - 6px) 12px,
+      calc(100% - 12px) 12px,
+      calc(100% - 12px) 6px,
+      calc(100% - 24px) 6px,
+      calc(100% - 24px) 0px,
+      24px 0px,
+      24px 6px,
+      12px 6px,
+      12px 12px,
+      6px 12px,
+      6px 24px,
+      0px 24px
+    );
+  }
+
   .rounded-xl {
     clip-path: polygon(
       /* 28 points for S = 24px, half = 12px, quarter = 6px */ 0px

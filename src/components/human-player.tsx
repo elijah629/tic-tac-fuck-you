@@ -7,13 +7,15 @@ import { cn } from "@/lib/utils";
 import { CardFan } from "./card-fan";
 
 export function HumanPlayer({ className }: { className?: string }) {
-  const { human } = useGame();
+  const { human, turn } = useGame();
 
   return (
     <div className={cn("flex w-full justify-between p-4", className)}>
-      <CardFan for={human.team} cards={human.cards} />
+      <div className="flex h-min">
+        <CardFan for={human!.team} cards={human!.cards} />
+      </div>
 
-      <PlayerIndicator team={human.team} />
+      <PlayerIndicator active={human!.team === turn!} team={human!.team} />
     </div>
   );
 }

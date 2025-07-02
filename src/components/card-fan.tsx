@@ -1,15 +1,17 @@
-"use client"
+"use client";
 
 import { Card as C, Team } from "@/lib/game";
 import { Card } from "./card";
 import { useGame } from "@/lib/game-store";
 
-export function CardFan(props: { for: Team, cards: { id: number, card: C }[] }) {
+export function CardFan(props: {
+  for: Team;
+  cards: { id: number; card: C }[];
+}) {
   const { removeCard } = useGame();
 
   return (
-    <div className="flex">
-      {props.cards.map(({ card, id }, i) => {
+      props.cards.map(({ card, id }, i) => {
         const mid = (props.cards.length - 1) / 2;
         const offset = i - mid;
         const angle = offset * 2;
@@ -27,7 +29,5 @@ export function CardFan(props: { for: Team, cards: { id: number, card: C }[] }) 
             translateY={translateY}
           />
         );
-      })}
-    </div>
-  );
+      })  );
 }

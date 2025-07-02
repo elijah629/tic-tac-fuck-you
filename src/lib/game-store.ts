@@ -1,74 +1,101 @@
 "use client";
 
 import { create } from "zustand";
-import { Card, Cell, EVENTS, GameActions, GameState, new_board, Team } from "./game";
+import {
+  Card,
+  Cell,
+  EVENTS,
+  GameActions,
+  GameState,
+  new_board,
+  Team,
+} from "./game";
 
-export const useGame = create<GameActions & GameState>((set_, get) => ({
-  xp: 0,
-  xpEvents: [],
-  winLength: 3,
-  turn: Team.O,
-  human: { team: Team.O, cards: [{ id: 0, card: Card.O }, { id: 1, card: Card.O }, { id: 2, card: Card.O }] },
-  ai: { team: Team.X, cards: [{ id: 0, card: Card.Back }, { id: 1, card: Card.Back }, { id: 2, card: Card.Back }] },
-  xpCounter: 0,
-  board: new_board(10, 10),
+type GameStore = GameActions &
+  Partial<GameState> & {
+    has_init: boolean;
+    init(turn: Team, humanTeam: Team, aiTeam: Team): void;
+  };
 
-  applyCardToCell(index, card)
-{
+export const useGame = create<GameStore>((set_, get) => ({
+  has_init: false,
+
+   init(turn, humanTeam, aiTeam) {
+    set_({
+      has_init: true,
+      xp: 0,
+      xpEvents: [],
+      winLength: 3,
+      turn,
+      human: { team: humanTeam, cards: Array<Card>(5).fill(humanTeam === Team.X ? Card.X : Card.O).map((card, id) => ({ id, card })) },
+      ai: { team: aiTeam, cards: Array<Card>(5).fill(Card.Back).map((card, id) => ({ id, card })) },
+      xpCounter: 0,
+      board: new_board(3, 3),
+    });
+  },
+
+  applyCardToCell(index, card) {
     const cell = cardToCell(card);
 
-    if (!cell) return;
+    if (cell === null) return;
 
     set_((s) => {
       const board = s.board;
-      board.cells[index] = cell;
+      board!.cells[index] = cell;
       get().xpEvent(EVENTS.PLACE);
 
       return {
         board,
       };
     });
-
   },
 
   removeCard(for_, id) {
-    set_((s) => {
-       if (s.human.team == for_) {
-          return { human: { team: s.human.team, cards: s.human.cards.filter(x => x.id !== id) } };
-       } else {
-          return { ai: { team: s.ai.team, cards: s.ai.cards.filter(x => x.id !== id) } };
-        }
+    set_(({ human, ai }) => {
+      if (human!.team === for_) {
+        return {
+          human: {
+            team: human!.team,
+            cards: human!.cards.filter((x) => x.id !== id),
+          },
+        };
+      } else {
+        return {
+          ai: { team: ai!.team, cards: ai!.cards.filter((x) => x.id !== id) },
+        };
+      }
     });
   },
 
   xpEvent(event) {
-    set_((s) => {
-      const xpCounter = s.xpCounter + 1;
+    set_(({ xp, xpCounter: xpC, xpEvents }) => {
+      const xpCounter = xpC! + 1;
       const event_ = { ...event, id: xpCounter };
 
       // TODO: Make this only store like 100 as it could crash if it gets too big
       return {
-        xp: s.xp + event.xp,
-        xpEvents: [event_, ...s.xpEvents],
+        xp: xp! + event.xp,
+        xpEvents: [event_, ...xpEvents!],
         xpCounter,
       };
     });
   },
 
   removeXpEvent(id) {
-    set_((s) => {
-      return { xpEvents: s.xpEvents.filter((x) => x.id !== id) };
+    set_(({ xpEvents }) => {
+      return { xpEvents: xpEvents!.filter((x) => x.id !== id) };
     });
   },
 
   winState() {
+    const game = get();
+
     const {
-      board: {
-        size: { rows, cols },
-        cells,
-      },
-      winLength: K,
-    } = get();
+      size: { rows, cols },
+      cells,
+    } = game.board!;
+
+    const K = game.winLength!;
 
     const get_ = (x: number, y: number): Cell | undefined =>
       x < 0 || y < 0 || x >= cols || y >= rows
@@ -124,8 +151,7 @@ export const useGame = create<GameActions & GameState>((set_, get) => ({
   },
 }));
 
-
-function cardToCell(card: Card): Cell | false {
+function cardToCell(card: Card): Cell | null {
   if (card === Card.X) {
     return Cell.X;
   }
@@ -134,5 +160,5 @@ function cardToCell(card: Card): Cell | false {
     return Cell.O;
   }
 
-  return false;
+  return null;
 }

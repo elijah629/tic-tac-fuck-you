@@ -13,7 +13,7 @@ export default function TTFUCursor() {
 
     return () => {
       window.removeEventListener("mousemove", update);
-    }
+    };
   }, []);
 
   return (

@@ -21,13 +21,23 @@ export interface GameState {
 
 export interface Player {
   team: Team;
-  cards: { id: number, card: Card }[];
+  cards: { id: number; card: Card }[];
 }
 
 export enum Card {
-  X,
-  O,
-  Back,
+  X = "X",
+  O = "O",
+
+  ExtendTop = "EXTEND_BOARD_TOP_ROW",
+  ExtendLeft = "EXTEND_BOARD_LEFT_COL",
+  ExtendBottom = "EXTEND_BOARD_BOTTOM_ROW",
+  ExtendRight = "EXTEND_BOARD_RIGHT_ROW",
+
+  DeleteHumanCard = "DELETE_HUMAN_CARD",
+
+  Lowercase = "LOWERCASE_CELL",
+
+  Back = "BACK", // NOTE: only for AI renderer, it just needs "SOMETHING" that represents a card. Even if it's cards are BS
 }
 
 export type GameActions = {
@@ -39,8 +49,9 @@ export type GameActions = {
 };
 
 export enum Cell {
-  X,
-  O,
+  X, x,
+  O, o,
+
   Neutral,
   Empty,
   Blocked,

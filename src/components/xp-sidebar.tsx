@@ -14,7 +14,7 @@ export function XpSidebar({ className }: { className?: string }) {
 
   // whenever xpEvents changes, enqueue any **new** events by their .time
   useEffect(() => {
-    xpEvents.forEach((evt) => {
+    xpEvents!.forEach((evt) => {
       if (!seenTimes.current.has(evt.id)) {
         seenTimes.current.add(evt.id);
         removalQueue.current.push(evt.id);
@@ -38,7 +38,7 @@ export function XpSidebar({ className }: { className?: string }) {
       <div className="p-4 bg-secondary rounded-md">
         <div className="font-bold text-3xl">XP: {xp}</div>
         <ul>
-          {xpEvents.map(({ xp, id, label }) => (
+          {xpEvents!.map(({ xp, id, label }) => (
             <li key={id} className={`${colorXp(xp)}`}>
               +{xp} {label}
             </li>

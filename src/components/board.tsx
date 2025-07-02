@@ -6,11 +6,9 @@ import { cn } from "@/lib/utils";
 
 export function Board({ className }: { className?: string }) {
   const {
-    board: {
       size: { rows, cols },
       cells,
-    },
-  } = useGame();
+  } = useGame().board!;
 
   return (
     <div
@@ -22,7 +20,9 @@ export function Board({ className }: { className?: string }) {
         gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))`,
       }}
     >
-      {cells.map((cell, index) => <Cell key={index} index={index} cell={cell}/>)}
+      {cells.map((cell, index) => (
+        <Cell key={index} index={index} cell={cell} />
+      ))}
     </div>
   );
 }

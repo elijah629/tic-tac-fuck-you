@@ -6,14 +6,13 @@ import { cn } from "@/lib/utils";
 
 export function Board({ className }: { className?: string }) {
   const {
-      size: { rows, cols },
-      cells,
+    size: { rows, cols },
+    cells,
   } = useGame().board!;
 
   return (
     <div
-      // w-h is intentional
-      className={cn("grid max-w-[50vh] w-full mx-auto", className)}
+      className={cn("grid max-w-[50vw] max-h-[50wh] mx-auto w-full", className)}
       style={{
         aspectRatio: `${cols}/${rows}`,
         gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,

@@ -1,31 +1,9 @@
 import { Cell as C } from "@/lib/game";
 import { useGame } from "@/lib/game-store";
-import { useEffect, useRef } from "react";
 
 export function Cell({ index, cell }: { index: number; cell: C }) {
-  const { applyCardToCell } = useGame();
-
-  const cellRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const cell = cellRef.current;
-    if (!cell) return;
-
-    const listener = (e: Event) => {
-      const event = e as CustomEvent;
-
-      applyCardToCell(index, event.detail.card);
-    };
-
-    cell.addEventListener("card-drop", listener);
-
-    return () => {
-      cell.removeEventListener("card-drop", listener);
-    };
-  }, [index, applyCardToCell]);
-
   const {
-      size: { rows, cols },
+    size: { rows, cols },
   } = useGame().board!;
 
   const x = index % cols;
@@ -39,7 +17,8 @@ export function Cell({ index, cell }: { index: number; cell: C }) {
   return (
     <div
       data-board-cell
-      ref={cellRef}
+      data-board-cell-x={x}
+      data-board-cell-y={y}
       className="flex items-center justify-center @container border-primary border-2"
       key={`${x}-${y}`}
       style={{
@@ -63,6 +42,14 @@ function CellContent({ cell }: { cell: C }) {
     return <span className="text-ally text-[100cqw]">O</span>;
   }
 
+  if (cell === C.x) {
+    return <span className="text-enemy leading-none text-[100cqw]">x</span>;
+  }
+
+  if (cell === C.o) {
+    return <span className="text-ally text-[100cqw]">o</span>;
+  }
+
   if (cell === C.Empty) {
     return null;
   }
@@ -73,5 +60,9 @@ function CellContent({ cell }: { cell: C }) {
         ?
       </div>
     );
+  }
+
+  if (cell === C.Blocked) {
+    return <>get blocked irl</>;
   }
 }

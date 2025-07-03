@@ -4,50 +4,192 @@ import { create } from "zustand";
 import {
   Card,
   Cell,
-  EVENTS,
+  ExtendDirection,
   GameActions,
   GameState,
   new_board,
   Team,
 } from "./game";
+import { getWinner } from "./win-check";
+
+const CARD_TO_CELL: Partial<Record<Card, Cell>> = {
+  [Card.X]: Cell.X,
+  [Card.O]: Cell.O,
+};
 
 type GameStore = GameActions &
   Partial<GameState> & {
     has_init: boolean;
-    init(turn: Team, humanTeam: Team, aiTeam: Team): void;
+    onWin?(): Promise<void>;
+    init(
+      turn: Team,
+      humanTeam: Team,
+      aiTeam: Team,
+      onWin: () => Promise<void>,
+    ): void;
   };
 
 export const useGame = create<GameStore>((set_, get) => ({
   has_init: false,
+  winner: false,
 
-   init(turn, humanTeam, aiTeam) {
+  init(turn, humanTeam, aiTeam, onWin) {
     set_({
       has_init: true,
+      winner: false,
       xp: 0,
       xpEvents: [],
       winLength: 3,
-      turn,
-      human: { team: humanTeam, cards: Array<Card>(5).fill(humanTeam === Team.X ? Card.X : Card.O).map((card, id) => ({ id, card })) },
-      ai: { team: aiTeam, cards: Array<Card>(5).fill(Card.Back).map((card, id) => ({ id, card })) },
       xpCounter: 0,
       board: new_board(3, 3),
+      turn,
+      human: {
+        team: humanTeam,
+        cards: Array<Card>(5)
+          .fill(humanTeam === Team.X ? Card.X : Card.O)
+          .map((card, id) => ({ id, card })),
+      },
+      ai: {
+        team: aiTeam,
+        cards: Array<Card>(5)
+          .fill(Card.TBD)
+          .map((card, id) => ({ id, card })),
+      },
+      onWin,
     });
   },
 
-  applyCardToCell(index, card) {
-    const cell = cardToCell(card);
+  makeMove(move) {
+    switch (move.card) {
+      case Card.X:
+      case Card.O:
+        const game = get();
+        game.applyCardToCell(move.position.row, move.position.col, move.card);
 
-    if (cell === null) return;
+        break;
 
+      case Card.Extend:
+        get().extendBoard(move.direction);
+        break;
+    }
+  },
+  endTurn() {
     set_((s) => {
-      const board = s.board;
-      board!.cells[index] = cell;
-      get().xpEvent(EVENTS.PLACE);
+      const winState = s.winState();
+
+      if (winState === s.human?.team) {
+        s.onWin?.();
+
+        // Setting turn could cause the AI to hallucinate a response, as it thinks it didn't win...
+        return { winner: winState };
+      }
 
       return {
-        board,
+        winner: winState,
+        turn: s.turn! === Team.X ? Team.O : Team.X,
       };
     });
+  },
+
+  extendBoard(direction) {
+    set_((state) => {
+      const board = state.board!;
+      const { rows, cols } = board.size;
+      const cells = board.cells;
+
+      let newRows = rows;
+      let newCols = cols;
+      let newCells: Cell[] = [];
+
+      switch (direction) {
+        case ExtendDirection.Up:
+          newRows = rows + 1;
+          // Prepend one full blank row
+          newCells = [...Array(cols).fill(Cell.Empty), ...cells];
+          break;
+
+        case ExtendDirection.Down:
+          newRows = rows + 1;
+          // Append one full blank row
+          newCells = [...cells, ...Array(cols).fill(Cell.Empty)];
+          break;
+
+        case ExtendDirection.Left:
+          newCols = cols + 1;
+          // For each existing row, prepend one blank cell
+          for (let r = 0; r < rows; r++) {
+            const rowStart = r * cols;
+            const rowSlice = cells.slice(rowStart, rowStart + cols);
+            newCells.push(Cell.Empty, ...rowSlice);
+          }
+          break;
+
+        case ExtendDirection.Right:
+          newCols = cols + 1;
+          // For each existing row, append one blank cell
+          for (let r = 0; r < rows; r++) {
+            const rowStart = r * cols;
+            const rowSlice = cells.slice(rowStart, rowStart + cols);
+            newCells.push(...rowSlice, Cell.Empty);
+          }
+          break;
+      }
+
+      return {
+        board: {
+          size: { rows: newRows, cols: newCols },
+          cells: newCells,
+        },
+      };
+    });
+  },
+
+  applyCardToCell(row, col, card) {
+    let valid = true;
+
+    switch (card) {
+      case Card.X:
+      case Card.O:
+        const cell = CARD_TO_CELL[card];
+        if (cell === undefined) return false;
+
+        set_((s) => {
+          const board = s.board!;
+          const index = board.size.cols * row + col;
+
+          if (board.cells[index] !== Cell.Empty) {
+            valid = false;
+            return {};
+          }
+
+          board.cells[index] = cell;
+
+          return {
+            board,
+          };
+        });
+        break;
+      case Card.Extend:
+        const {
+          size: { rows, cols },
+        } = get().board!;
+
+        const dL = col;
+        const dR = cols - col - 1;
+        const dT = row;
+        const dB = rows - row - 1;
+
+        const dir = getSmallestDirection(dL, dR, dT, dB);
+
+        if (dir !== null) {
+          // Bye bye! Your card is gone if you misplaced it. Have a good day!
+          get().extendBoard(dir);
+        }
+
+        break;
+    }
+
+    return valid;
   },
 
   removeCard(for_, id) {
@@ -88,77 +230,34 @@ export const useGame = create<GameStore>((set_, get) => ({
   },
 
   winState() {
-    const game = get();
+    const { winLength, board: b } = get();
 
-    const {
-      size: { rows, cols },
-      cells,
-    } = game.board!;
+    const winner = getWinner(b!.cells, b!.size.rows, b!.size.cols, winLength!);
 
-    const K = game.winLength!;
-
-    const get_ = (x: number, y: number): Cell | undefined =>
-      x < 0 || y < 0 || x >= cols || y >= rows
-        ? undefined
-        : cells[y * cols + x];
-
-    const lineWinsFor = (
-      x: number,
-      y: number,
-      dx: number,
-      dy: number,
-      T: Team,
-    ): boolean => {
-      let sawActualT = false;
-      for (let i = 0; i < K; i++) {
-        const c = get_(x + dx * i, y + dy * i);
-        // treat both Empty and Blocked as stopping the line
-        if (c === undefined || c === Cell.Empty || c === Cell.Blocked)
-          return false;
-        // if it’s the “other” team's mark, fail
-        if (c === Cell.X && T !== Team.X) return false;
-        if (c === Cell.O && T !== Team.O) return false;
-        // Neutral always ok; actual T mark we record
-        if (c === Cell.Neutral) {
-          // counts for both, but doesn’t count as “actual T”
-        } else {
-          sawActualT = true;
-        }
-      }
-      // require at least one real T to avoid all‑neutral lines
-      return sawActualT;
-    };
-
-    const winners = new Set<Team>();
-    for (let y = 0; y < rows; y++) {
-      for (let x = 0; x < cols; x++) {
-        // you could even skip if get(x,y) is Empty/Blocked, but we test both teams anyway
-        for (const [dx, dy] of [
-          [1, 0],
-          [0, 1],
-          [1, 1],
-          [1, -1],
-        ] as const) {
-          if (lineWinsFor(x, y, dx, dy, Team.X)) winners.add(Team.X);
-          if (lineWinsFor(x, y, dx, dy, Team.O)) winners.add(Team.O);
-        }
-      }
-    }
-
-    if (winners.size === 0) return null;
-    if (winners.size === 1) return [...winners][0];
-    return "both";
+    return winner;
   },
 }));
 
-function cardToCell(card: Card): Cell | null {
-  if (card === Card.X) {
-    return Cell.X;
+function getSmallestDirection(
+  dL: number,
+  dR: number,
+  dT: number,
+  dB: number,
+): ExtendDirection | null {
+  const dirs = [
+    { dir: ExtendDirection.Left, val: dL },
+    { dir: ExtendDirection.Right, val: dR },
+    { dir: ExtendDirection.Up, val: dT },
+    { dir: ExtendDirection.Down, val: dB },
+  ];
+
+  const min = Math.min(dL, dR, dT, dB);
+
+  const smallest = dirs.filter((v) => v.val === min);
+
+  if (smallest.length !== 1) {
+    return null;
   }
 
-  if (card === Card.O) {
-    return Cell.O;
-  }
-
-  return null;
+  return smallest[0].dir;
 }

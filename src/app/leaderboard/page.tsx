@@ -1,5 +1,3 @@
-import { Redis } from "@upstash/redis";
-
 import {
   Table,
   TableBody,
@@ -10,8 +8,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { redis } from "@/lib/redis";
 
-const redis = Redis.fromEnv();
 const TOP = 10;
 
 const medalMap = ["🥇", "🥈", "🥉"];
@@ -41,15 +39,7 @@ export default async function Leaderboard() {
     return leaderboard;
   }
 
-  const leaderboard: Leaderboard =
-    process.env.NODE_ENV === "development"
-      ? [
-          ["EliOzcan", 10],
-          ["Broski", 10],
-          ["Bob", 9],
-          ["Joe", 7],
-        ]
-      : await getRange(0, TOP);
+  const leaderboard: Leaderboard = await getRange(0, TOP);
 
   const ranked = leaderboard.reduce(
     (
@@ -75,7 +65,9 @@ export default async function Leaderboard() {
   return (
     <main className="flex w-full justify-center">
       <Table className="max-w-3xl mx-auto  text-2xl">
-        <TableCaption>Top {TOP} performing specimen</TableCaption>
+        <TableCaption>
+          Top {leaderboard.length} performing specimen
+        </TableCaption>
         <TableHeader>
           <TableRow>
             <TableHead>User</TableHead>

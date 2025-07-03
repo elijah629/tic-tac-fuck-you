@@ -30,12 +30,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${m6x11.variable} ${serenityOSEmoji.variable} ${styles.crt} h-screen flex flex-col select-none text-2xl dark antialiased`}
+        className={`${m6x11.variable} ${serenityOSEmoji.variable} ${styles.crt} h-screen flex flex-col select-none text-2xl antialiased dark`}
         style={{
           fontFamily: `var(--font-m6x11), system-ui, var(--font-emoji)`,
         }}
       >
-        {/*<svg xmlns="http://www.w3.org/2000/svg" height="0" className="absolute">
+        {/*  <svg xmlns="http://www.w3.org/2000/svg" height="0" className="absolute">
           <filter
             id="crtWarp"
             x="0"
@@ -57,7 +57,7 @@ export default function RootLayout({
             <feDisplacementMap
               in="SourceGraphic"
               in2="disp"
-              scale="100"
+              scale="0"
               xChannelSelector="R"
               yChannelSelector="G"
             />

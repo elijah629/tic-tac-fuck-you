@@ -3,10 +3,20 @@
 import Image from "next/image";
 import x from "@/images/cards/x.png";
 import o from "@/images/cards/o.png";
+import extend from "@/images/cards/extenda.png"; // APNG ANIMATED!
 import back from "@/images/cards/deck-back.png";
 import styles from "@/components/card.module.css";
 import { Card as C } from "@/lib/game";
 import { useCallback, useEffect, useRef } from "react";
+
+// pick correct image src
+export function cardSrc(card: C) {
+  if (card === C.O) return o.src;
+  if (card === C.X) return x.src;
+  if (card === C.Extend) return extend.src;
+
+  return back.src;
+}
 
 const MAX_WIND_ANGLE = 30;
 const WIND_RESPONSIVENESS = 0.5;
@@ -24,13 +34,15 @@ const HEIGHT = 95;
 export function Card({
   card,
   id,
+  droppable,
   onDrop,
   angle,
   translateY,
 }: {
   card: C;
   id: number;
-  onDrop?: () => void;
+  droppable: boolean;
+  onDrop: (card: C, x: number, y: number) => boolean;
   angle: number;
   translateY: number;
 }) {
@@ -254,6 +266,12 @@ export function Card({
 
     stopWindEffect();
 
+    if (!droppable) {
+      // This card cannot be dropped, always return
+      returnToOrigin();
+      return;
+    }
+
     // Optimized drop zone detection
     const cardRect = elCard.getBoundingClientRect();
     const centerX = cardRect.left + cardRect.width / 2;
@@ -269,21 +287,29 @@ export function Card({
         centerY >= zoneRect.top - 25 &&
         centerY <= zoneRect.bottom + 25
       ) {
+        const x = Number(zone.getAttribute("data-board-cell-x"));
+        const y = Number(zone.getAttribute("data-board-cell-y"));
+
+        /*
         zone.dispatchEvent(
           new CustomEvent("card-drop", {
             detail: {
               card,
             },
           }),
-        );
+        );*/
 
-        onDrop?.();
-        return;
+        if (!onDrop(card, x, y)) {
+          // The move was NOT a valid move, return the card.
+          returnToOrigin();
+        }
+
+        return; // Stop checking all other zones and return early
       }
     }
 
-    returnToOrigin();
-  }, [stopWindEffect, onDrop, card, returnToOrigin]);
+    returnToOrigin(); // If card is not in a drop zone, return it.
+  }, [stopWindEffect, onDrop, droppable, card, returnToOrigin]);
 
   useEffect(() => {
     const card = cardRef.current;
@@ -324,10 +350,4 @@ export function Card({
       }}
     />
   );
-}
-// pick correct image src
-function cardSrc(card: C) {
-  if (card === C.O) return o.src;
-  if (card === C.X) return x.src;
-  return back.src;
 }

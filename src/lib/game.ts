@@ -1,3 +1,6 @@
+import { z } from "zod";
+import { Winner } from "./win-check";
+
 export interface XpEvent {
   id: number;
   label: string;
@@ -11,6 +14,7 @@ export const EVENTS = {
 export interface GameState {
   board: Board;
   winLength: number;
+  winner: Winner;
   turn: Team;
   human: Player;
   ai: Player;
@@ -28,29 +32,62 @@ export enum Card {
   X = "X",
   O = "O",
 
-  ExtendTop = "EXTEND_BOARD_TOP_ROW",
-  ExtendLeft = "EXTEND_BOARD_LEFT_COL",
-  ExtendBottom = "EXTEND_BOARD_BOTTOM_ROW",
-  ExtendRight = "EXTEND_BOARD_RIGHT_ROW",
+  Extend = "extend",
 
-  DeleteHumanCard = "DELETE_HUMAN_CARD",
-
-  Lowercase = "LOWERCASE_CELL",
-
-  Back = "BACK", // NOTE: only for AI renderer, it just needs "SOMETHING" that represents a card. Even if it's cards are BS
+  // Use by the AI renderer only, this is so we can assign an Id to every card, even if the value doesn't exist. This card only renders a "back" side and not a front
+  // To Be Determined
+  TBD = "",
 }
+
+export enum ExtendDirection {
+  Up = "up",
+  Down = "down",
+  Left = "left",
+  Right = "right",
+}
+
+const position = z
+  .object({
+    row: z
+      .number()
+      .int()
+      .nonnegative()
+      .describe("The zero-based index of the target row"),
+    col: z
+      .number()
+      .int()
+      .nonnegative()
+      .describe("The zero-based index of the target column"),
+  })
+  .describe("A position with (0, 0) being the top left.");
+
+export const moveSchema = z.discriminatedUnion("card", [
+  z.object({ card: z.literal(Card.X), position: position }),
+  z.object({ card: z.literal(Card.O), position: position }),
+  z.object({
+    card: z.literal(Card.Extend),
+    direction: z.nativeEnum(ExtendDirection),
+  }),
+]);
+
+export type Move = z.infer<typeof moveSchema>;
 
 export type GameActions = {
   removeCard(f: Team, id: number): void;
-  applyCardToCell(index: number, card: Card): void;
+  makeMove(move: Move): void;
+  extendBoard(direction: ExtendDirection): void;
+  applyCardToCell(row: number, col: number, card: Card): boolean;
   xpEvent(event: Omit<XpEvent, "id">): void;
   removeXpEvent(id: number): void;
-  winState(): Team | "both" | null;
+  winState(): Winner;
+  endTurn(): void;
 };
 
 export enum Cell {
-  X, x,
-  O, o,
+  X,
+  x,
+  O,
+  o,
 
   Neutral,
   Empty,

@@ -3,12 +3,12 @@ import { Button } from "./ui/button";
 import SlackIcon from "@/images/slack.svg";
 import Image from "next/image";
 
-export function SignInButton() {
+export function SignInButton({ redirect }: { redirect?: string }) {
   return (
     <form
       action={async () => {
         "use server";
-        await signIn("slack");
+        await signIn("slack", { redirectTo: redirect });
       }}
     >
       <Button

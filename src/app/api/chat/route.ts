@@ -15,6 +15,7 @@ export async function POST(req: Request) {
     system: SYSTEM_PROMPT,
     messages: convertToModelMessages(messages),
     temperature: 1,
+    maxOutputTokens: 512,
 
     tools: {
       playMove: tool({

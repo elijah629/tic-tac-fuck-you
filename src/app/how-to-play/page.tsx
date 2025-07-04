@@ -1,6 +1,6 @@
 import { Card } from "@/components/card";
 import { Card as C } from "@/lib/game";
-import { MODEL } from "../api/chat/route";
+import { MODEL } from "@/lib/prompts";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 export default function HowToPlay() {

@@ -22,7 +22,7 @@ export function CardFan(props: {
         key={id}
         id={id}
         onDrop={(card, x, y) => {
-          if (applyCardToCell(y, x, card)) {
+          if (applyCardToCell(y, x, card, false)) {
             xpEvent(EVENTS.PLACE);
 
             removeCard(props.for, id);

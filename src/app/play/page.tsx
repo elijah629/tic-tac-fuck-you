@@ -9,10 +9,9 @@ export default async function Play() {
     "use server";
 
     const session = await auth();
+    const user = session?.user?.name;
 
-    // Session is not null, handled by middleware.
-
-    const user = session!.user!.name!; // ! WOW
+    if (!user) return;
 
     await redis.zincrby("leaderboard", 1, user);
   }

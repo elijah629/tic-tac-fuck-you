@@ -7,11 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Sidebar } from "@/components/sidebar";
 import { Team } from "@/lib/game";
 import { useGame } from "@/lib/game-store";
-import { useRouter } from "next/navigation";
 
 export function Game({ onWin }: { onWin: () => Promise<void> }) {
   const { has_init, init, winner, human, ai } = useGame();
-  const router = useRouter();
 
   return has_init ? (
     <main className="h-screen grid grid-rows-[min-content_auto_min-content] grid-cols-[1fr_2fr]">
@@ -22,16 +20,20 @@ export function Game({ onWin }: { onWin: () => Promise<void> }) {
 
       {winner !== false && (
         <div className="flex flex-col h-full w-full absolute top-0 left-0 z-10 bg-background/80 items-center justify-center gap-4 p-4">
-          <h2 className="text-5xl text-center">
-            {winner === ai?.team
-              ? "PATHETIC... YOUR LOSS."
-              : winner === human?.team
-                ? "IMPOSSIBLE... VIA SHEER LUCK."
-                : "GOOD... BUT NOT THAT GOOD."}
-          </h2>
+          {winner === ai?.team ?
+            <>
+              <h1 className="text-7xl text-center text-enemy">GAME OVER</h1>
+              <h2 className="text-5xl text-center">PATHETIC... YOUR LOSS</h2>
+            </> : winner === human?.team ? <>
+              <h1 className="text-7xl text-center text-ally">WIN!</h1>
+              <h2 className="text-5xl text-center">IMPOSSIBLE. VERY LUCKY. <span className="text-enemy font-bold">DON&apos;T DO IT AGAIN</span></h2>
+            </> : <>
+              <h1 className="text-7xl text-center text-neutral">TIE</h1>
+              <h2 className="text-5xl text-center">GOOD... BUT NOT GOOD ENOUGH</h2>
+            </>}
           <Button
             onClick={() => {
-              router.refresh();
+              location.reload();
             }}
             variant="neutral"
             className="text-2xl"
@@ -48,7 +50,7 @@ export function Game({ onWin }: { onWin: () => Promise<void> }) {
       </h2>
       <div className="flex rounded-md w-min">
         <Button
-          onClick={() => init(Team.X, Team.X, Team.O, onWin)}
+          onClick={() => init(Team.O, Team.X, Team.O, onWin)}
           size="icon"
           variant="enemy"
           className="rounded-none text-2xl"

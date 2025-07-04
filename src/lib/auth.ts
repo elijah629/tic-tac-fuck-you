@@ -13,7 +13,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       const isProtected =
         pathname.startsWith("/api/chat") || pathname.startsWith("/play");
 
-      return !isProtected || !!auth;
+      // No auth in dev bc slack sucks
+      return process.env.NODE_ENV === "production" ? !isProtected || !!auth : true;
     },
   },
 });

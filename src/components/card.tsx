@@ -4,6 +4,9 @@ import Image from "next/image";
 import x from "@/images/cards/x.png";
 import o from "@/images/cards/o.png";
 import extend from "@/images/cards/extenda.png"; // APNG ANIMATED!
+import lowercase from "@/images/cards/lowercase.png";
+import blocked from "@/images/cards/blocked.png";
+import neutralize from "@/images/cards/neutral.png";
 import back from "@/images/cards/deck-back.png";
 import styles from "@/components/card.module.css";
 import { Card as C } from "@/lib/game";
@@ -13,6 +16,9 @@ import { useCallback, useEffect, useRef } from "react";
 export function cardSrc(card: C) {
   if (card === C.O) return o.src;
   if (card === C.X) return x.src;
+  if (card === C.Neutralize) return neutralize.src;
+  if (card === C.Lowercase) return lowercase.src;
+  if (card === C.Block) return blocked.src;
   if (card === C.Extend) return extend.src;
 
   return back.src;
@@ -290,15 +296,6 @@ export function Card({
         const x = Number(zone.getAttribute("data-board-cell-x"));
         const y = Number(zone.getAttribute("data-board-cell-y"));
 
-        /*
-        zone.dispatchEvent(
-          new CustomEvent("card-drop", {
-            detail: {
-              card,
-            },
-          }),
-        );*/
-
         if (!onDrop(card, x, y)) {
           // The move was NOT a valid move, return the card.
           returnToOrigin();
@@ -337,6 +334,7 @@ export function Card({
   return (
     <Image
       ref={cardRef}
+      unoptimized={card === C.Extend} // APNG
       width={WIDTH}
       height={HEIGHT}
       draggable={false}

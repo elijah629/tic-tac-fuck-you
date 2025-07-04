@@ -11,8 +11,9 @@ export function Board({ className }: { className?: string }) {
   } = useGame().board!;
 
   return (
+    <div className="flex items-center justify-center">
     <div
-      className={cn("grid max-w-[50vw] max-h-[50wh] mx-auto w-full", className)}
+      className={cn("grid max-w-[50vw] max-h-[50wh] w-full", className)}
       style={{
         aspectRatio: `${cols}/${rows}`,
         gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
@@ -22,6 +23,7 @@ export function Board({ className }: { className?: string }) {
       {cells.map((cell, index) => (
         <Cell key={index} index={index} cell={cell} />
       ))}
+    </div>
     </div>
   );
 }

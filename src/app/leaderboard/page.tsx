@@ -64,7 +64,7 @@ export default async function Leaderboard() {
 
   return (
     <main className="flex w-full justify-center">
-      <Table className="max-w-3xl mx-auto  text-2xl">
+      <Table className="max-w-3xl mx-auto text-2xl">
         <TableCaption>
           Top {leaderboard.length} performing specimen
         </TableCaption>

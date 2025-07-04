@@ -1,144 +1,135 @@
 import { Cell, Team } from "./game";
 
-export type Winner = Team | "tie" | false;
+export function generateLineMatrix(
+  width: number,
+  height: number,
+  winLength: number
+): Uint16Array {
+  const maxLines =
+    height * (width - winLength + 1) + // →
+    width * (height - winLength + 1) + // ↓
+    2 * (height - winLength + 1) * (width - winLength + 1); // ↘↗
 
-// Precomputed direction offsets based on matrix width
-function getOffsets(cols: number) {
-  return [
-    1, // right
-    cols, // down
-    cols + 1, // diag down-right
-    cols - 1, // diag down-left
-  ];
-}
+  const result = new Uint16Array(maxLines * winLength);
+  let i = 0;
 
-/**
- * Check if the specified team has an L-length run on the board.
- * @param board Flat Cell array of length cols * rows
- * @param cols Number of columns
- * @param rows Number of rows
- * @param L    Length of run needed
- * @param team Team to check (Team.X or Team.O)
- */
-function checkRun(
-  board: Cell[],
-  cols: number,
-  rows: number,
-  L: number,
-  team: Team,
-): boolean {
-  const offsets = getOffsets(cols);
-  const total = cols * rows;
+  for (let r = 0; r < height; r++) {
+    for (let c = 0; c < width; c++) {
+      const idx0 = r * width + c;
 
-  // Determine the uppercase and lowercase markers for this team
-  const [upper, lower] = team === Team.X ? [Cell.X, Cell.x] : [Cell.O, Cell.o];
-
-  for (let idx = 0; idx < total; idx++) {
-    // skip if not a starting marker or neutral
-    if (
-      board[idx] !== upper &&
-      board[idx] !== lower &&
-      board[idx] !== Cell.Neutral
-    )
-      continue;
-
-    const r = Math.floor(idx / cols);
-    const c = idx % cols;
-
-    for (let d = 0; d < offsets.length; d++) {
-      const offset = offsets[d];
-      // derive dr, dc for boundary checks
-      let dr = 0,
-        dc = 0;
-      switch (d) {
-        case 0:
-          dc = 1;
-          break;
-        case 1:
-          dr = 1;
-          break;
-        case 2:
-          dr = 1;
-          dc = 1;
-          break;
-        case 3:
-          dr = 1;
-          dc = -1;
-          break;
-      }
-      const endR = r + dr * (L - 1);
-      const endC = c + dc * (L - 1);
-      if (endR < 0 || endR >= rows || endC < 0 || endC >= cols) continue;
-
-      // need to check both uppercase-run and lowercase-run
-      for (const mode of ["upper", "lower"] as const) {
-        let current = idx;
-        let k = 1;
-        for (; k < L; k++) {
-          current += offset;
-          const cell = board[current];
-          if (cell === Cell.Empty || cell === Cell.Blocked) {
-            k = -1;
-            break; // break both loops
-          }
-          if (mode === "upper") {
-            if (cell !== upper && cell !== Cell.Neutral) {
-              k = -1;
-              break;
-            }
-          } else {
-            if (cell !== lower && cell !== Cell.Neutral) {
-              k = -1;
-              break;
-            }
-          }
+      // →
+      if (c + winLength <= width) {
+        for (let k = 0; k < winLength; k++) {
+          result[i++] = idx0 + k;
         }
-        if (k === L) return true;
+      }
+
+      // ↓
+      if (r + winLength <= height) {
+        for (let k = 0; k < winLength; k++) {
+          result[i++] = idx0 + k * width;
+        }
+      }
+
+      // ↘
+      if (c + winLength <= width && r + winLength <= height) {
+        for (let k = 0; k < winLength; k++) {
+          result[i++] = idx0 + k * (width + 1);
+        }
+      }
+
+      // ↗
+      if (c + winLength <= width && r - winLength + 1 >= 0) {
+        for (let k = 0; k < winLength; k++) {
+          result[i++] = idx0 + k * (1 - width);
+        }
       }
     }
   }
-  return false;
+
+  return result;
 }
 
-/**
- * Determine the winner on an N×K board for a two-player game.
- * @returns Team.X or Team.O if one wins,
- *          'tie' if both have runs,
- *          false if neither does.
+function* iterateLines(
+  flat: Uint16Array,
+  winLength: number
+): IterableIterator<Uint16Array> {
+  for (let offset = 0; offset < flat.length; offset += winLength) {
+    yield flat.subarray(offset, offset + winLength);
+  }
+}
+
+function lineValue(board: Cell[], line: Uint16Array): Cell | null {
+  let winner: Cell | null = null;
+
+  for (const idx of line) {
+    const cell = board[idx];
+    if (cell === Cell.Neutral) {
+      continue;
+    }
+
+    if (winner === null) { // last cell was a Cell.Neutral
+      winner = cell;
+    } else if (cell !== winner) {
+      return null;
+    }
+  }
+
+  // If we only saw Cell.Neutral, return neutral, otherwize return the other cell / null on conflict.
+  return winner === null ? Cell.Neutral : winner;
+}
+
+
+export type Winner = Team | "tie" | false;
+const CELL_TO_TEAM = {
+  [Cell.X]: Team.X,
+  [Cell.x]: Team.X,
+  [Cell.O]: Team.O,
+  [Cell.o]: Team.O,
+  [Cell.Empty]: false ,  // No team
+  [Cell.Blocked]: false, // No team
+  [Cell.Neutral]: "tie", // Both teams
+} satisfies Record<Cell, Winner>;
+
+/*
+ * k-in-a-row 2D board algorithim
  */
 export function getWinner(
   board: Cell[],
-  cols: number,
-  rows: number,
-  L: number,
+  lineMatrix: Uint16Array,
+  K: number,
 ): Winner {
-  if (board.length !== cols * rows) {
-    throw new Error(
-      `Board length ${board.length} does not match ${cols}×${rows}`,
-    );
+  const lines = iterateLines(lineMatrix, K);
+  const winners = new Set<Winner>();
+
+  let hasNeutral = false;
+
+  for (const line of lines) {
+    const cell = lineValue(board, line);
+
+    if (cell === null) continue;
+    const team = CELL_TO_TEAM[cell];
+
+    if (team === false) continue;
+
+    if (team === "tie") {
+      hasNeutral = true;
+      continue
+    }
+
+    winners.add(team); // Just x and o.
   }
 
-  const xWin = checkRun(board, cols, rows, L, Team.X);
-  const oWin = checkRun(board, cols, rows, L, Team.O);
+  if (winners.size === 0) {
+    // no X/O winners
+    return hasNeutral ? "tie" : false;
+  }
 
-  if (xWin && oWin) return "tie";
-  if (xWin) return Team.X;
-  if (oWin) return Team.O;
-  return false;
-}
+  if (winners.size === 1) {
+    // just one winning team
+    return winners.values().next().value!;
+  }
 
-// Example usage
-if (require.main === module) {
-  const example: Cell[] = [
-    Cell.x,
-    Cell.Neutral,
-    Cell.x,
-    Cell.Empty,
-    Cell.O,
-    Cell.Blocked,
-    Cell.X,
-    Cell.Neutral,
-    Cell.X,
-  ];
-  console.log(getWinner(example, 3, 3, 3)); // Team.X
+  // more than one team and no empty blocked or neutral
+  return "tie";
 }

@@ -13,11 +13,16 @@ export const EVENTS = {
 
 export interface GameState {
   board: Board;
+
   winLength: number;
   winner: Winner;
+
+  round: number;
   turn: Team;
+
   human: Player;
   ai: Player;
+
   xp: number;
   xpCounter: number;
   xpEvents: XpEvent[];
@@ -32,7 +37,13 @@ export enum Card {
   X = "X",
   O = "O",
 
-  Extend = "extend",
+  Extend = "extend_board",
+
+  Lowercase = "lowercase",
+
+  Neutralize = "neutralize",
+
+  Block = "block",
 
   // Use by the AI renderer only, this is so we can assign an Id to every card, even if the value doesn't exist. This card only renders a "back" side and not a front
   // To Be Determined
@@ -61,22 +72,29 @@ const position = z
   })
   .describe("A position with (0, 0) being the top left.");
 
-export const moveSchema = z.discriminatedUnion("card", [
+export const move = z.discriminatedUnion("card", [
   z.object({ card: z.literal(Card.X), position: position }),
   z.object({ card: z.literal(Card.O), position: position }),
+  z.object({ card: z.literal(Card.Neutralize), position: position }),
+  z.object({ card: z.literal(Card.Block), position: position }),
   z.object({
     card: z.literal(Card.Extend),
     direction: z.nativeEnum(ExtendDirection),
   }),
-]);
+  z.object({ card: z.literal(Card.Lowercase), position: position }),
+]).describe("A move has a card, as well as optional data to tell the card what to do")
 
-export type Move = z.infer<typeof moveSchema>;
+
+export const moveSchema = move;//.describe("A list of moves you would like to play");
+
+export type Move = z.infer<typeof move>;
 
 export type GameActions = {
+  removeAnyCard(f: Team): void;
   removeCard(f: Team, id: number): void;
   makeMove(move: Move): void;
   extendBoard(direction: ExtendDirection): void;
-  applyCardToCell(row: number, col: number, card: Card): boolean;
+  applyCardToCell(row: number, col: number, card: Card, shouldOverwite: boolean): boolean;
   xpEvent(event: Omit<XpEvent, "id">): void;
   removeXpEvent(id: number): void;
   winState(): Winner;

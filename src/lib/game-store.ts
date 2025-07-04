@@ -10,12 +10,7 @@ import {
   new_board,
   Team,
 } from "./game";
-import { getWinner } from "./win-check";
-
-const CARD_TO_CELL: Partial<Record<Card, Cell>> = {
-  [Card.X]: Cell.X,
-  [Card.O]: Cell.O,
-};
+import { generateLineMatrix, getWinner } from "./win-check";
 
 type GameStore = GameActions &
   Partial<GameState> & {
@@ -29,19 +24,28 @@ type GameStore = GameActions &
     ): void;
   };
 
+// BAD! BUT NESSICARY. NEVER USE LET TOP LEVEL! This is here to avoid a state refresh when recomputing this big ass matrix.
+let lineMatrix: Uint16Array | null = null;
+let startingTeam: Team | null = null;
+
 export const useGame = create<GameStore>((set_, get) => ({
   has_init: false,
   winner: false,
 
   init(turn, humanTeam, aiTeam, onWin) {
+    const ROWS = 3;
+    const COLS = 3;
+    const L = 3;
+
     set_({
       has_init: true,
       winner: false,
       xp: 0,
       xpEvents: [],
-      winLength: 3,
+      winLength: L,
       xpCounter: 0,
-      board: new_board(3, 3),
+      round: 0,
+      board: new_board(ROWS, COLS),
       turn,
       human: {
         team: humanTeam,
@@ -57,14 +61,21 @@ export const useGame = create<GameStore>((set_, get) => ({
       },
       onWin,
     });
+
+    lineMatrix = generateLineMatrix(COLS, ROWS, L);
+    startingTeam = turn;
   },
 
+  // Only called by AI, so we can assume it is an AI here
   makeMove(move) {
     switch (move.card) {
       case Card.X:
       case Card.O:
+      case Card.Lowercase:
+      case Card.Neutralize:
+      case Card.Block:
         const game = get();
-        game.applyCardToCell(move.position.row, move.position.col, move.card);
+        game.applyCardToCell(move.position.row, move.position.col, move.card, true); // Due to the previous assumption, we can overwrite since the AI always overwrites
 
         break;
 
@@ -78,15 +89,44 @@ export const useGame = create<GameStore>((set_, get) => ({
       const winState = s.winState();
 
       if (winState === s.human?.team) {
-        s.onWin?.();
+        s.onWin?.(); // This only logs the win for the human on the leaderboard
+      }
 
-        // Setting turn could cause the AI to hallucinate a response, as it thinks it didn't win...
-        return { winner: winState };
+      if (winState !== false) { // All other win states
+        return { winner: winState }; // If we set the rest of the stuff, the AI will retrigger and hallucinate.
+      }
+
+      let round = s.round ?? 0;
+      const turn = s.turn! === Team.X ? Team.O : Team.X;
+
+      if (turn === startingTeam) {
+        // A full round has been completed and we are back! Now we deal cards proportionally to the round if the round is a multiple of two.
+        round += 1;
+
+        if (round % 2 === 0) {
+          const newAiId = Math.max(...s.ai!.cards.map(x => x.id)) + 1;
+          const newHumanId = Math.max(...s.human!.cards.map(x => x.id)) + 1;
+
+          return {
+            winner: winState,
+            round,
+            turn,
+            ai: {
+              team: s.ai!.team,
+              cards: [...s.ai!.cards, { id: newAiId, card: Card.TBD }, { id: newAiId + 1, card: Card.TBD } ]
+            },
+            human: {
+              team: s.human!.team,
+              cards: [...s.human!.cards, { id: newHumanId, card: sampleCard(round, s.human!.team) }, { id: newHumanId + 1, card: sampleCard(round, s.human!.team) } ]
+            }
+          };
+        }
       }
 
       return {
         winner: winState,
-        turn: s.turn! === Team.X ? Team.O : Team.X,
+        round,
+        turn
       };
     });
   },
@@ -135,6 +175,11 @@ export const useGame = create<GameStore>((set_, get) => ({
           break;
       }
 
+      // technicaly all of the old items stay the same when extending, but I might support changing winLength and shrinking in the future. also not THAT much of a perf issue.
+      //
+      // This will only produce an entirely new set if winLength changes.
+      lineMatrix = generateLineMatrix(newCols, newRows, state.winLength!);
+
       return {
         board: {
           size: { rows: newRows, cols: newCols },
@@ -144,12 +189,21 @@ export const useGame = create<GameStore>((set_, get) => ({
     });
   },
 
-  applyCardToCell(row, col, card) {
+  applyCardToCell(row, col, card, shouldOverwrite) {
     let valid = true;
 
     switch (card) {
       case Card.X:
       case Card.O:
+      case Card.Neutralize:
+      case Card.Block:
+        const CARD_TO_CELL: Partial<Record<Card, Cell>> = {
+          [Card.X]: Cell.X,
+          [Card.O]: Cell.O,
+          [Card.Neutralize]: Cell.Neutral,
+          [Card.Block]: Cell.Blocked
+        };
+
         const cell = CARD_TO_CELL[card];
         if (cell === undefined) return false;
 
@@ -157,7 +211,7 @@ export const useGame = create<GameStore>((set_, get) => ({
           const board = s.board!;
           const index = board.size.cols * row + col;
 
-          if (board.cells[index] !== Cell.Empty) {
+          if (!shouldOverwrite && board.cells[index] !== Cell.Empty) {
             valid = false;
             return {};
           }
@@ -168,6 +222,30 @@ export const useGame = create<GameStore>((set_, get) => ({
             board,
           };
         });
+        break;
+      case Card.Lowercase:
+        set_((s) => {
+          const board = s.board!;
+          const index = board.size.cols * row + col;
+          const cell = board.cells[index];
+
+          const LOWERCASE: Partial<Record<Cell, Cell>> = {
+            [Cell.X]: Cell.x,
+            [Cell.O]: Cell.o
+          };
+
+          const newCell = LOWERCASE[cell];
+
+          if (newCell === undefined) {
+            valid = false;
+            return {};
+          }
+
+          board.cells[index] = newCell;
+
+          return { board };
+        });
+
         break;
       case Card.Extend:
         const {
@@ -192,9 +270,32 @@ export const useGame = create<GameStore>((set_, get) => ({
     return valid;
   },
 
-  removeCard(for_, id) {
+  removeAnyCard(team) {
+set_(({ human, ai }) => {
+      if (human!.team === team) {
+        const cards = human!.cards;
+        cards.pop();
+
+        return {
+          human: {
+            team: human!.team,
+            cards
+          },
+        };
+      } else {
+        const cards = ai!.cards;
+        cards.pop();
+
+        return {
+          ai: { team: ai!.team, cards },
+        };
+      }
+    });
+  },
+
+  removeCard(team, id) {
     set_(({ human, ai }) => {
-      if (human!.team === for_) {
+      if (human!.team === team) {
         return {
           human: {
             team: human!.team,
@@ -202,8 +303,11 @@ export const useGame = create<GameStore>((set_, get) => ({
           },
         };
       } else {
+        const cards = ai!.cards;
+        cards.pop();
+
         return {
-          ai: { team: ai!.team, cards: ai!.cards.filter((x) => x.id !== id) },
+          ai: { team: ai!.team, cards },
         };
       }
     });
@@ -232,7 +336,11 @@ export const useGame = create<GameStore>((set_, get) => ({
   winState() {
     const { winLength, board: b } = get();
 
-    const winner = getWinner(b!.cells, b!.size.rows, b!.size.cols, winLength!);
+    if (!lineMatrix) {
+      lineMatrix = generateLineMatrix(b!.size.cols, b!.size.rows, winLength!);
+    }
+
+    const winner = getWinner(b!.cells, lineMatrix, winLength!);
 
     return winner;
   },
@@ -260,4 +368,50 @@ function getSmallestDirection(
   }
 
   return smallest[0].dir;
+}
+
+function weightedRandom<T>(items: { item: T; weight: number }[]): T {
+  const totalWeight = items.reduce((sum, entry) => sum + entry.weight, 0);
+  const r = Math.random() * totalWeight;
+  let acc = 0;
+  for (const { item, weight } of items) {
+    acc += weight;
+    if (r < acc) return item;
+  }
+  // Fallback (should never happen if weights are correct)
+  return items[0].item;
+}
+
+function sampleCard(round: number, team: Team): Card {
+  const cardPool: { item: Card; weight: number }[] = [
+    { item: team === Team.X ? Card.X : Card.O, weight: 5 },
+  ];
+
+  if (round >= 4) {
+    cardPool.push(
+      { item: Card.Block, weight: 1 },
+      { item: Card.Lowercase, weight: 1 },
+      { item: Card.Neutralize, weight: 2 },
+    );
+  }
+
+  if (round >= 6) {
+    cardPool.push(
+      { item: Card.Extend, weight: 2 },
+      { item: Card.Block, weight: 1 },
+      { item: Card.Lowercase, weight: 1 },
+      { item: Card.Neutralize, weight: 1 },
+    );
+  }
+
+  if (round >= 8) {
+    cardPool.push(
+      { item: Card.Extend, weight: 4 },
+      { item: Card.Block, weight: 2 },
+      { item: Card.Lowercase, weight: 2 },
+      { item: Card.Neutralize, weight: 2 },
+    );
+  }
+
+  return weightedRandom(cardPool);
 }

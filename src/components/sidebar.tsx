@@ -1,11 +1,12 @@
 "use client";
 
-import { GameState, Move } from "@/lib/game";
+import { GameState, moveSchema } from "@/lib/game";
 import { useGame } from "@/lib/game-store";
 import { initialPrompt, statePrompt } from "@/lib/prompts";
 import { cn } from "@/lib/utils";
 import { useChat } from "@ai-sdk/react";
 import { useEffect, useRef } from "react";
+import { z } from "zod";
 
 export function Sidebar({ className }: { className?: string }) {
   const game = useGame();
@@ -13,10 +14,13 @@ export function Sidebar({ className }: { className?: string }) {
     xp,
     xpEvents,
     removeXpEvent,
-    removeCard,
+    removeAnyCard,
+    winLength,
     turn,
     ai,
+    board,
     endTurn,
+    round,
     makeMove,
   } = game;
 
@@ -55,15 +59,13 @@ export function Sidebar({ className }: { className?: string }) {
   const { messages, sendMessage } = useChat({
     onToolCall({ toolCall }) {
       if (toolCall.toolName === "playMove") {
-        const move = toolCall.input as Move;
-        console.log(move);
+        const move = toolCall.input as z.infer<typeof moveSchema>;
 
-        // TODO: Bundle these calls so this func only gets called once.
+        console.log(move);
         makeMove(move);
 
+        removeAnyCard(ai!.team);
         endTurn();
-        console.log(ai?.cards);
-        removeCard(ai!.team, ai!.cards[0].id);
       }
 
       return true;
@@ -119,6 +121,11 @@ export function Sidebar({ className }: { className?: string }) {
           })}
         </div>
       )}
+      <div className="p-4 bg-secondary rounded-md">
+        <div className="font-bold text-3xl">Win Length: {winLength}</div>
+        <div className="font-bold text-3xl">Board: {board!.size.rows}x{board!.size.cols}</div>
+        <div className="font-bold text-3xl">Round: {round}</div>
+      </div>
     </aside>
   );
 }

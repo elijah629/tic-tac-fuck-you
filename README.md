@@ -48,14 +48,14 @@ For all of these examples, assume the win length is set to 3, but these hold tru
 # Cards
 
 | Card | Name | Info
-|-----|-----
-| ![X Card](src/images/x.png) | X | Base card for the X team, places an X at the selected position if the cell is empty. If the cell is not empty the card is returned.
-| ![O Card](src/images/o.png) | O | Base card for the O team, places an O at the selected position if the cell is empty. If the cell is not empty the card is returned.
-| ![Extend Card](src/images/extenda.png) | Extend | Extends the board by row/column on the side closest to where the card was placed. If the card is the same distance from many sides (ie. center), it is returned.
-| ![Lowercase Card](src/images/lowercase.png) | Lowercase | Lowercases a cell. If the cell is not a capital X or O, it is returned.
-| ![Block Card](src/images/block.png) | Block | Blocks a cell. Why would you do this? This cell is only controllable by the AI.
-| ![Neutralize Card](src/images/neutralize.png) | Neutralize | Makes a cell neutral, the cell must be empty. If it is not, the card is returned.
-| ![Deck back](src/images/deck-back.png) | Deck back | Not a card, but it is what the AI holds.
+|----- |----- | ----
+| ![X Card](src/images/cards/x.png) | X | Base card for the X team, places an X at the selected position if the cell is empty. If the cell is not empty the card is returned.
+| ![O Card](src/images/cards/o.png) | O | Base card for the O team, places an O at the selected position if the cell is empty. If the cell is not empty the card is returned.
+| ![Extend Card](src/images/cards/extenda.png) | Extend | Extends the board by row/column on the side closest to where the card was placed. If the card is the same distance from many sides (ie. center), it is returned.
+| ![Lowercase Card](src/images/cards/lowercase.png) | Lowercase | Lowercases a cell. If the cell is not a capital X or O, it is returned.
+| ![Block Card](src/images/cards/blocked.png) | Block | Blocks a cell. Why would you do this? This cell is only controllable by the AI.
+| ![Neutralize Card](src/images/cards/neutral.png) | Neutralize | Makes a cell neutral, the cell must be empty. If it is not, the card is returned.
+| ![Deck back](src/images/cards/deck-back.png) | Deck back | Not a card, but it is what the AI holds.
 
 
 *Card list*

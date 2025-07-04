@@ -9,7 +9,7 @@ export const maxDuration = 30;
 
 export async function POST(req: Request) {
   const session = await auth();
-  const id = session?.user?.id;
+  const id = session?.user?.name;
 
   if (!id) return new Response("Unauthorized", { status: 401 });
 

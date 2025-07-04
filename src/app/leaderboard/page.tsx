@@ -20,7 +20,7 @@ type LeaderboardItem = [string, number];
 
 export default async function Leaderboard() {
   const session = await auth();
-  const id = session?.user?.id;
+  const id = session?.user?.name;
 
   // Attach all "free" requests to the same ID in the database.
   const { success } = await ratelimit.blockUntilReady(id ?? "GHOST_USER", 10_000);

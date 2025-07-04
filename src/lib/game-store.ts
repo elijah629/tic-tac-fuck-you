@@ -260,8 +260,9 @@ export const useGame = create<GameStore>((set_, get) => ({
         const dir = getSmallestDirection(dL, dR, dT, dB);
 
         if (dir !== null) {
-          // Bye bye! Your card is gone if you misplaced it. Have a good day!
           get().extendBoard(dir);
+        } else {
+          valid = false;
         }
 
         break;

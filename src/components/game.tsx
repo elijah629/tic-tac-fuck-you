@@ -14,8 +14,8 @@ export function Game({ onWin }: { onWin: () => Promise<void> }) {
   return has_init ? (
     <main className="h-screen grid grid-rows-[min-content_auto_min-content] grid-cols-[1fr_2fr]">
       <Sidebar className="row-span-3" />
-      <AIPlayer />
-      <Board className="row-span-1 col-span-1 col-start-2 row-start-2" />
+      <AIPlayer className="hidden sm:flex" />
+      <Board />
       <HumanPlayer />
 
       {winner !== false && (

@@ -13,7 +13,7 @@ export function Board({ className }: { className?: string }) {
   return (
     <div className="flex items-center justify-center">
     <div
-      className={cn("grid max-w-[50vw] max-h-[50wh] w-full", className)}
+      className={cn("grid max-w-[50vw] w-full sm:max-h-[50vh] md:h-full md:w-auto md:max-w-none", className)}
       style={{
         aspectRatio: `${cols}/${rows}`,
         gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,

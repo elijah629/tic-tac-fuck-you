@@ -10,7 +10,7 @@ export function AIPlayer({ className }: { className?: string }) {
   const { turn, ai } = game;
 
   return (
-    <div className={cn("flex w-full p-4 items-stretch", className)}>
+    <div className={cn("w-full p-4 items-stretch", className)}>
       <PlayerIndicator active={ai!.team === turn!} team={ai!.team} />
       <div className="flex h-min ml-auto">
         <StaticCardFan cards={ai!.cards} />

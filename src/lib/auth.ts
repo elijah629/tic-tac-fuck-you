@@ -6,7 +6,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   pages: {
     signIn: "/signin",
   },
-  callbacks: {
+ /* callbacks: {
     authorized({ request, auth }) {
       const pathname = new URL(request.url).pathname;
 
@@ -14,7 +14,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         pathname.startsWith("/api/chat") || pathname.startsWith("/play");
 
       // No auth in dev bc slack sucks
-      return process.env.NODE_ENV === "production" ? !isProtected || !!auth : true;
+      return process.env.NODE_ENV !== "production" ? !isProtected || !!auth : true;
     },
-  },
+  },*/
 });

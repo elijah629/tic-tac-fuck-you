@@ -8,38 +8,38 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { redis } from "@/lib/redis";
+import { auth, signIn } from "@/lib/auth";
+import { ratelimit, redis } from "@/lib/redis";
 
 const TOP = 10;
-
 const medalMap = ["🥇", "🥈", "🥉"];
 
 type Leaderboard = LeaderboardItem[];
 type LeaderboardItem = [string, number];
 
+
 export default async function Leaderboard() {
-  // TODO: See if NextJS Caches this
-  // IF NOT: Ratelimit by slack id and make all pages require auth
-  async function getRange(from: number, to: number): Promise<Leaderboard> {
-    "use server";
+  const session = await auth();
+  const id = session?.user?.id;
 
-    const raw = await redis.zrange("leaderboard", from, to, {
-      withScores: true,
-      rev: true,
-    });
+  // Attach all "free" requests to the same ID in the database.
+  const { success } = await ratelimit.blockUntilReady(id ?? "GHOST_USER", 10_000);
 
-    const leaderboard: [string, number][] = [];
+  if (!success && !id) await signIn();
+  if (!success && id) return <>429. Too many requests! Try again later</>;
 
-    for (let i = 0; i < raw.length; i += 2) {
-      const user = raw[i] as string;
-      const wins = Number(raw[i + 1]);
-      leaderboard.push([user, wins]);
-    }
+  const raw = await redis.zrange("leaderboard", 0, TOP, {
+    withScores: true,
+    rev: true,
+  });
 
-    return leaderboard;
+  const leaderboard: [string, number][] = [];
+
+  for (let i = 0; i < raw.length; i += 2) {
+    const user = raw[i] as string;
+    const wins = Number(raw[i + 1]);
+    leaderboard.push([user, wins]);
   }
-
-  const leaderboard: Leaderboard = await getRange(0, TOP);
 
   const ranked = leaderboard.reduce(
     (

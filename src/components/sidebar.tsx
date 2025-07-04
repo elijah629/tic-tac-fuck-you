@@ -61,7 +61,6 @@ export function Sidebar({ className }: { className?: string }) {
       if (toolCall.toolName === "playMove") {
         const move = toolCall.input as z.infer<typeof moveSchema>;
 
-        console.log(move);
         makeMove(move);
 
         removeAnyCard(ai!.team);
@@ -101,7 +100,7 @@ export function Sidebar({ className }: { className?: string }) {
   return (
     <aside className={cn("p-3 flex flex-col gap-3", className)}>
       <div className="p-4 bg-secondary rounded-md">
-        <div className="font-bold text-3xl">XP: {xp}</div>
+        <div className="font-bold sm:text-3xl">XP: {xp}</div>
         <ul>
           {xpEvents!.map(({ xp, id, label }) => (
             <li key={id} className={`${colorXp(xp)}`}>
@@ -122,9 +121,9 @@ export function Sidebar({ className }: { className?: string }) {
         </div>
       )}
       <div className="p-4 bg-secondary rounded-md">
-        <div className="font-bold text-3xl">Win Length: {winLength}</div>
-        <div className="font-bold text-3xl">Board: {board!.size.rows}x{board!.size.cols}</div>
-        <div className="font-bold text-3xl">Round: {round}</div>
+        <div className="font-bold sm:text-3xl">Win Length: {winLength}</div>
+        <div className="font-bold sm:text-3xl">Board: {board!.size.rows}x{board!.size.cols}</div>
+        <div className="font-bold sm:text-3xl">Round: {round}</div>
       </div>
     </aside>
   );

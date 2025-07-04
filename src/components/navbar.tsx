@@ -15,6 +15,13 @@ export async function Navbar() {
       </Link>
       <nav className="flex items-center ml-auto p-4 gap-4 xl:gap-6">
         <Link
+          href="/how-to-play"
+          className={"transition-colors hover:text-foreground/80"}
+        >
+          How?
+        </Link>
+
+        <Link
           href="/play"
           className={"transition-colors hover:text-foreground/80"}
         >

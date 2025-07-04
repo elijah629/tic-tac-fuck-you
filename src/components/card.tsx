@@ -48,9 +48,9 @@ export function Card({
   card: C;
   id: number;
   droppable: boolean;
-  onDrop: (card: C, x: number, y: number) => boolean;
-  angle: number;
-  translateY: number;
+  onDrop?: (card: C, x: number, y: number) => boolean;
+  angle?: number;
+  translateY?: number;
 }) {
   const cardRef = useRef<HTMLImageElement>(null);
 
@@ -296,7 +296,7 @@ export function Card({
         const x = Number(zone.getAttribute("data-board-cell-x"));
         const y = Number(zone.getAttribute("data-board-cell-y"));
 
-        if (!onDrop(card, x, y)) {
+        if (!onDrop?.(card, x, y)) {
           // The move was NOT a valid move, return the card.
           returnToOrigin();
         }
@@ -343,7 +343,7 @@ export function Card({
       className={`transition-transform duration-300 ease-out hover:-translate-y-4 ${styles.wave}`}
       style={{
         zIndex: 10,
-        ["--base-transform" as string]: `translate(0px, ${translateY}px) rotate(${angle}deg)`,
+        ["--base-transform" as string]: `translate(0px, ${translateY ?? 0}px) rotate(${angle ?? 0}deg)`,
         animationDelay: `-${((id * 16807) % 1000) / 1000}s`,
       }}
     />

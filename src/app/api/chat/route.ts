@@ -2,7 +2,7 @@ import { convertToModelMessages, streamText, UIMessage } from "ai";
 import { SYSTEM_PROMPT } from "@/lib/prompts";
 import { auth } from "@/lib/auth";
 import { ratelimit } from "@/lib/redis";
-import { hackclub  } from "@/lib/hackclub";
+import { hackclub } from "@/lib/hackclub";
 
 export const maxDuration = 30;
 
@@ -22,7 +22,7 @@ export async function POST(req: Request) {
   const { messages }: { messages: UIMessage[] } = await req.json();
 
   const result = streamText({
-    model: hackclub,//groq(MODEL),
+    model: hackclub, //groq(MODEL),
     system: SYSTEM_PROMPT,
     messages: convertToModelMessages(messages),
     //toolChoice: "required",

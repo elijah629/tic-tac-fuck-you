@@ -3,7 +3,7 @@ import { Cell, Team } from "./game";
 export function generateLineMatrix(
   width: number,
   height: number,
-  winLength: number
+  winLength: number,
 ): Uint16Array {
   const maxLines =
     height * (width - winLength + 1) + // →
@@ -52,7 +52,7 @@ export function generateLineMatrix(
 
 function* iterateLines(
   flat: Uint16Array,
-  winLength: number
+  winLength: number,
 ): IterableIterator<Uint16Array> {
   for (let offset = 0; offset < flat.length; offset += winLength) {
     yield flat.subarray(offset, offset + winLength);
@@ -68,7 +68,8 @@ function lineValue(board: Cell[], line: Uint16Array): Cell | null {
       continue;
     }
 
-    if (winner === null) { // last cell was a Cell.Neutral
+    if (winner === null) {
+      // last cell was a Cell.Neutral
       winner = cell;
     } else if (cell !== winner) {
       return null;
@@ -79,14 +80,13 @@ function lineValue(board: Cell[], line: Uint16Array): Cell | null {
   return winner === null ? Cell.Neutral : winner;
 }
 
-
 export type Winner = Team | "tie" | false;
 const CELL_TO_TEAM = {
   [Cell.X]: Team.X,
   [Cell.x]: Team.X,
   [Cell.O]: Team.O,
   [Cell.o]: Team.O,
-  [Cell.Empty]: false ,  // No team
+  [Cell.Empty]: false, // No team
   [Cell.Blocked]: false, // No team
   [Cell.Neutral]: "tie", // Both teams
 } satisfies Record<Cell, Winner>;
@@ -114,7 +114,7 @@ export function getWinner(
 
     if (team === "tie") {
       hasNeutral = true;
-      continue
+      continue;
     }
 
     winners.add(team); // Just x and o.

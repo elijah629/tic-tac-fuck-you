@@ -56,7 +56,7 @@ export function Sidebar({ className }: { className?: string }) {
   const hasSent = useRef(false);
 
   const { messages, sendMessage } = useChat({
-/*    onToolCall({ toolCall }) {
+    /*    onToolCall({ toolCall }) {
       if (toolCall.toolName === "playMove") {
         const move = toolCall.input as z.infer<typeof moveSchema>;
 
@@ -69,13 +69,10 @@ export function Sidebar({ className }: { className?: string }) {
       return true;
     },*/
 
-    onFinish({ message: { parts }}) {
-      const text = parts.filter(x => x.type === "text")[0].text;
+    onFinish({ message: { parts } }) {
+      const text = parts.filter((x) => x.type === "text")[0].text;
 
-      const regex = new RegExp(
-        `<tool_call>(.*?)(?:</tool_call>|$)`,
-        "gs"
-      );
+      const regex = new RegExp(`<tool_call>(.*?)(?:</tool_call>|$)`, "gs");
 
       const tool = regex.exec(text)![1].split("|");
       const card = tool[0] as Card;
@@ -86,7 +83,10 @@ export function Sidebar({ className }: { className?: string }) {
         case Card.Block:
         case Card.Lowercase:
         case Card.Neutralize:
-          makeMove({ card, position: { row: Number(tool[1]), col: Number(tool[2]) } });
+          makeMove({
+            card,
+            position: { row: Number(tool[1]), col: Number(tool[2]) },
+          });
           break;
 
         case Card.Extend:
@@ -122,7 +122,9 @@ export function Sidebar({ className }: { className?: string }) {
   const raw_msg = messages[messages.length - 1];
   const content: string[] | undefined =
     raw_msg?.role === "assistant"
-      ? raw_msg.parts.filter((x) => x.type === "text").map((x) => x.text.replace(/<tool_call>.*/g, ""))
+      ? raw_msg.parts
+          .filter((x) => x.type === "text")
+          .map((x) => x.text.replace(/<tool_call>.*/g, ""))
       : undefined;
 
   return (
@@ -150,7 +152,9 @@ export function Sidebar({ className }: { className?: string }) {
       )}
       <div className="p-4 bg-secondary rounded-md">
         <div className="font-bold sm:text-3xl">Win Length: {winLength}</div>
-        <div className="font-bold sm:text-3xl">Board: {board!.size.rows}x{board!.size.cols}</div>
+        <div className="font-bold sm:text-3xl">
+          Board: {board!.size.rows}x{board!.size.cols}
+        </div>
         <div className="font-bold sm:text-3xl">Round: {round}</div>
       </div>
     </aside>

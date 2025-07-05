@@ -4,6 +4,7 @@ import { create } from "zustand";
 import {
   Card,
   Cell,
+  EVENTS,
   ExtendDirection,
   GameActions,
   GameState,
@@ -77,7 +78,12 @@ export const useGame = create<GameStore>((set_, get) => ({
       case Card.Neutralize:
       case Card.Block:
         const game = get();
-        game.applyCardToCell(move.position.row, move.position.col, move.card, true); // Due to the previous assumption, we can overwrite since the AI always overwrites
+        game.applyCardToCell(
+          move.position.row,
+          move.position.col,
+          move.card,
+          true,
+        ); // Due to the previous assumption, we can overwrite since the AI always overwrites
 
         break;
 
@@ -87,18 +93,21 @@ export const useGame = create<GameStore>((set_, get) => ({
     }
   },
   endTurn() {
-    set_(({ onWin, ai, human, round, turn, winState, board }) => {
+    set_(({ xpEvent, onWin, ai, human, round, turn, winState, board }) => {
       const winner = winState();
 
       if (winner === human?.team) {
+        xpEvent(EVENTS.WIN);
         onWin?.(); // This only logs the win for the human on the leaderboard
       }
 
-      if (winner !== false) { // All other win states
+      if (winner !== false) {
+        // All other win states
         return { winner }; // If we set the rest of the stuff, the AI will retrigger and hallucinate.
       }
 
-      if (winner === false && board?.cells.every(x => x !== Cell.Empty)) { // Every cell is filled and no one has won.
+      if (winner === false && board?.cells.every((x) => x !== Cell.Empty)) {
+        // Every cell is filled and no one has won.
         // You could extend the board, but it is safe to say the game is a Tie according to standard TTT rules.
         return { winner: "tie" };
       }
@@ -119,19 +128,27 @@ export const useGame = create<GameStore>((set_, get) => ({
             ai: {
               team: ai!.team,
               idCounter: ai!.idCounter + 2,
-              cards: [...ai!.cards,
+              cards: [
+                ...ai!.cards,
                 { id: ai!.idCounter + 1, card: Card.TBD },
-                { id: ai!.idCounter + 2, card: Card.TBD }
-              ]
+                { id: ai!.idCounter + 2, card: Card.TBD },
+              ],
             },
             human: {
               team: human!.team,
               idCounter: human!.idCounter + 2,
-              cards: [...human!.cards,
-                { id: human!.idCounter + 1, card: sampleCard(newRound, human!.team) },
-                { id: human!.idCounter + 2, card: sampleCard(newRound, human!.team) }
-              ]
-            }
+              cards: [
+                ...human!.cards,
+                {
+                  id: human!.idCounter + 1,
+                  card: sampleCard(newRound, human!.team),
+                },
+                {
+                  id: human!.idCounter + 2,
+                  card: sampleCard(newRound, human!.team),
+                },
+              ],
+            },
           };
         }
       }
@@ -139,7 +156,7 @@ export const useGame = create<GameStore>((set_, get) => ({
       return {
         winner,
         round: newRound,
-        turn: nextTurn
+        turn: nextTurn,
       };
     });
   },
@@ -214,7 +231,7 @@ export const useGame = create<GameStore>((set_, get) => ({
           [Card.X]: Cell.X,
           [Card.O]: Cell.O,
           [Card.Neutralize]: Cell.Neutral,
-          [Card.Block]: Cell.Blocked
+          [Card.Block]: Cell.Blocked,
         };
 
         const cell = CARD_TO_CELL[card];
@@ -244,7 +261,7 @@ export const useGame = create<GameStore>((set_, get) => ({
 
           const LOWERCASE: Partial<Record<Cell, Cell>> = {
             [Cell.X]: Cell.x,
-            [Cell.O]: Cell.o
+            [Cell.O]: Cell.o,
           };
 
           const newCell = LOWERCASE[cell];
@@ -285,7 +302,7 @@ export const useGame = create<GameStore>((set_, get) => ({
   },
 
   removeAnyCard(team) {
-set_(({ human, ai }) => {
+    set_(({ human, ai }) => {
       if (human!.team === team) {
         const cards = human!.cards;
         cards.pop();
@@ -294,7 +311,7 @@ set_(({ human, ai }) => {
           human: {
             team: human!.team,
             idCounter: human!.idCounter,
-            cards
+            cards,
           },
         };
       } else {

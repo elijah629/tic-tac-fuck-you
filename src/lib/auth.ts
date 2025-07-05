@@ -6,7 +6,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   pages: {
     signIn: "/signin",
   },
- /* callbacks: {
+  /* callbacks: {
     authorized({ request, auth }) {
       const pathname = new URL(request.url).pathname;
 

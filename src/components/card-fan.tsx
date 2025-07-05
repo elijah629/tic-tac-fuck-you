@@ -8,7 +8,7 @@ export function CardFan(props: {
   for: Team;
   cards: { id: number; card: C }[];
 }) {
-  const { removeCard, turn, applyCardToCell, endTurn, xpEvent } = useGame();
+  const { removeCard, turn, applyCardToCell, xpEvent, endTurn } = useGame();
 
   return props.cards.map(({ card, id }, i) => {
     const mid = (props.cards.length - 1) / 2;
@@ -23,8 +23,22 @@ export function CardFan(props: {
         id={id}
         onDrop={(card, x, y) => {
           if (applyCardToCell(y, x, card, false)) {
-            xpEvent(EVENTS.PLACE);
+            switch (card) {
+              case C.Lowercase:
+                xpEvent(EVENTS.ULTRA_GOOBER_BONUS);
+              case C.Extend:
+                xpEvent(EVENTS.MAGICAL_BONUS);
+              case C.Block:
+              case C.Neutralize:
+                xpEvent(EVENTS.SPECIAL_BONUS);
+              case C.X:
+              case C.O:
+                xpEvent(EVENTS.PLACE);
+                break;
 
+              default:
+                break;
+            }
             removeCard(props.for, id);
             endTurn();
             return true;

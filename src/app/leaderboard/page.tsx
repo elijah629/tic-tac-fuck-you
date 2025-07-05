@@ -17,13 +17,15 @@ const medalMap = ["🥇", "🥈", "🥉"];
 type Leaderboard = LeaderboardItem[];
 type LeaderboardItem = [string, number];
 
-
 export default async function Leaderboard() {
   const session = await auth();
   const id = session?.user?.name;
 
   // Attach all "free" requests to the same ID in the database.
-  const { success } = await ratelimit.blockUntilReady(id ?? "GHOST_USER", 10_000);
+  const { success } = await ratelimit.blockUntilReady(
+    id ?? "GHOST_USER",
+    10_000,
+  );
 
   if (!success && !id) await signIn();
   if (!success && id) return <>429. Too many requests! Try again later</>;

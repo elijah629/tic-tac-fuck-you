@@ -20,17 +20,29 @@ export function Game({ onWin }: { onWin: () => Promise<void> }) {
 
       {winner !== false && (
         <div className="flex flex-col h-full w-full absolute top-0 left-0 z-10 bg-background/80 items-center justify-center gap-4 p-4">
-          {winner === ai?.team ?
+          {winner === ai?.team ? (
             <>
               <h1 className="text-7xl text-center text-enemy">GAME OVER</h1>
               <h2 className="text-5xl text-center">PATHETIC... YOUR LOSS</h2>
-            </> : winner === human?.team ? <>
+            </>
+          ) : winner === human?.team ? (
+            <>
               <h1 className="text-7xl text-center text-ally">WIN!</h1>
-              <h2 className="text-5xl text-center">IMPOSSIBLE. VERY LUCKY. <span className="text-enemy font-bold">DON&apos;T DO IT AGAIN</span></h2>
-            </> : <>
+              <h2 className="text-5xl text-center">
+                IMPOSSIBLE. VERY LUCKY.{" "}
+                <span className="text-enemy font-bold">
+                  DON&apos;T DO IT AGAIN
+                </span>
+              </h2>
+            </>
+          ) : (
+            <>
               <h1 className="text-7xl text-center text-neutral">TIE</h1>
-              <h2 className="text-5xl text-center">GOOD... BUT NOT GOOD ENOUGH</h2>
-            </>}
+              <h2 className="text-5xl text-center">
+                GOOD... BUT NOT GOOD ENOUGH
+              </h2>
+            </>
+          )}
           <Button
             onClick={() => {
               location.reload();

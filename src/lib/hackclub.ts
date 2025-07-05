@@ -7,7 +7,7 @@ const base_hackclub = createOpenAICompatible({
   name: "hackclub",
   async fetch(input, init) {
     return await fetch(input, init).then(ndjsonToSSE);
-  }
+  },
 });
 
 async function ndjsonToSSE(response: Response): Promise<Response> {
@@ -43,15 +43,15 @@ async function ndjsonToSSE(response: Response): Promise<Response> {
 
       controller.enqueue(encoder.encode("data: [DONE]\n\n"));
       controller.close();
-    }
+    },
   });
 
   return new Response(sseStream, {
     headers: {
       "Content-Type": "text/event-stream; charset=utf-8",
       "Cache-Control": "no-cache",
-      "Connection": "keep-alive"
-    }
+      Connection: "keep-alive",
+    },
   });
 }
 
@@ -59,7 +59,7 @@ async function ndjsonToSSE(response: Response): Promise<Response> {
 // NOTE: The AI cannot read responses with this wrapper, you can only read the calls.
 // You are the executor and do not return an output
 
-export const hackclub = base_hackclub("")/*wrapLanguageModel({
+export const hackclub = base_hackclub(""); /*wrapLanguageModel({
   model: base_hackclub(""), // The API automatically ignores this and picks whatever the hackclub devs set it to
   middleware: createToolMiddleware({
   toolCallTag: "<tool_call>",
@@ -79,4 +79,4 @@ For each function call return a json object with function name and arguments wit
 </tool_call>`;
     },
   })
-});*/;
+});*/

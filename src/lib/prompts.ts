@@ -162,19 +162,18 @@ The board uses a zero-based index, where (0, 0) is the top left corner of the bo
 
 export function initialPrompt(game: GameState) {
   return `You are on team ${team(game.ai.team)} with ${game.ai.cards.length} card(s).
-The human is on team ${team(game.human.team)} with cards: ${cards(game.human.cards.map(c => c.card))}.
+The human is on team ${team(game.human.team)} with cards: ${cards(game.human.cards.map((c) => c.card))}.
 Target to win: ${game.winLength} in a row.
 The board is empty.`;
 }
 
 export function statePrompt(game: GameState) {
   return `You have ${game.ai.cards.length} card(s).
-The human has cards: ${cards(game.human.cards.map(c => c.card))}.
+The human has cards: ${cards(game.human.cards.map((c) => c.card))}.
 Target to win: ${game.winLength} in a row.
 Board (${game.board.size.rows}×${game.board.size.cols}):
 ${board(game.board)}`;
 }
-
 
 function board(board: Board) {
   let b = "";

@@ -9,6 +9,10 @@ export interface XpEvent {
 
 export const EVENTS = {
   PLACE: { xp: 10, label: "Place" },
+  WIN: { xp: 69420, label: "WIN!" },
+  ULTRA_GOOBER_BONUS: { xp: 1000, label: "ULTRA GOOBER BONUS" },
+  MAGICAL_BONUS: { xp: 500, label: "Magical bonus" },
+  SPECIAL_BONUS: { xp: 100, label: "Special bonus" },
 };
 
 export interface GameState {
@@ -74,20 +78,23 @@ const position = z
   })
   .describe("A position with (0, 0) being the top left.");
 
-export const move = z.discriminatedUnion("card", [
-  z.object({ card: z.literal(Card.X), position: position }),
-  z.object({ card: z.literal(Card.O), position: position }),
-  z.object({ card: z.literal(Card.Neutralize), position: position }),
-  z.object({ card: z.literal(Card.Block), position: position }),
-  z.object({
-    card: z.literal(Card.Extend),
-    direction: z.nativeEnum(ExtendDirection),
-  }),
-  z.object({ card: z.literal(Card.Lowercase), position: position }),
-]).describe("A move has a card, as well as optional data to tell the card what to do")
+export const move = z
+  .discriminatedUnion("card", [
+    z.object({ card: z.literal(Card.X), position: position }),
+    z.object({ card: z.literal(Card.O), position: position }),
+    z.object({ card: z.literal(Card.Neutralize), position: position }),
+    z.object({ card: z.literal(Card.Block), position: position }),
+    z.object({
+      card: z.literal(Card.Extend),
+      direction: z.nativeEnum(ExtendDirection),
+    }),
+    z.object({ card: z.literal(Card.Lowercase), position: position }),
+  ])
+  .describe(
+    "A move has a card, as well as optional data to tell the card what to do",
+  );
 
-
-export const moveSchema = move;//.describe("A list of moves you would like to play");
+export const moveSchema = move; //.describe("A list of moves you would like to play");
 
 export type Move = z.infer<typeof move>;
 
@@ -96,7 +103,12 @@ export type GameActions = {
   removeCard(f: Team, id: number): void;
   makeMove(move: Move): void;
   extendBoard(direction: ExtendDirection): void;
-  applyCardToCell(row: number, col: number, card: Card, shouldOverwite: boolean): boolean;
+  applyCardToCell(
+    row: number,
+    col: number,
+    card: Card,
+    shouldOverwite: boolean,
+  ): boolean;
   xpEvent(event: Omit<XpEvent, "id">): void;
   removeXpEvent(id: number): void;
   winState(): Winner;

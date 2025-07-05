@@ -30,6 +30,7 @@ export interface GameState {
 
 export interface Player {
   team: Team;
+  idCounter: number;
   cards: { id: number; card: Card }[];
 }
 
@@ -57,6 +58,7 @@ export enum ExtendDirection {
   Right = "right",
 }
 
+// TODO: We don't need zod anymore! No tools = no zod. I am keeping this in case hackclub/ai merges #11 and responds to #16 and #17
 const position = z
   .object({
     row: z

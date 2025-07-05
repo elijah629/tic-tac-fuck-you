@@ -1,12 +1,11 @@
 "use client";
 
-import { GameState, moveSchema } from "@/lib/game";
+import { Card, ExtendDirection, GameState } from "@/lib/game";
 import { useGame } from "@/lib/game-store";
 import { initialPrompt, statePrompt } from "@/lib/prompts";
 import { cn } from "@/lib/utils";
 import { useChat } from "@ai-sdk/react";
 import { useEffect, useRef } from "react";
-import { z } from "zod";
 
 export function Sidebar({ className }: { className?: string }) {
   const game = useGame();
@@ -57,7 +56,7 @@ export function Sidebar({ className }: { className?: string }) {
   const hasSent = useRef(false);
 
   const { messages, sendMessage } = useChat({
-    onToolCall({ toolCall }) {
+/*    onToolCall({ toolCall }) {
       if (toolCall.toolName === "playMove") {
         const move = toolCall.input as z.infer<typeof moveSchema>;
 
@@ -68,6 +67,35 @@ export function Sidebar({ className }: { className?: string }) {
       }
 
       return true;
+    },*/
+
+    onFinish({ message: { parts }}) {
+      const text = parts.filter(x => x.type === "text")[0].text;
+
+      const regex = new RegExp(
+        `<tool_call>(.*?)(?:</tool_call>|$)`,
+        "gs"
+      );
+
+      const tool = regex.exec(text)![1].split("|");
+      const card = tool[0] as Card;
+
+      switch (card) {
+        case Card.X:
+        case Card.O:
+        case Card.Block:
+        case Card.Lowercase:
+        case Card.Neutralize:
+          makeMove({ card, position: { row: Number(tool[1]), col: Number(tool[2]) } });
+          break;
+
+        case Card.Extend:
+          makeMove({ card, direction: tool[1] as ExtendDirection });
+          break;
+      }
+
+      removeAnyCard(ai!.team);
+      endTurn();
     },
   });
 
@@ -94,7 +122,7 @@ export function Sidebar({ className }: { className?: string }) {
   const raw_msg = messages[messages.length - 1];
   const content: string[] | undefined =
     raw_msg?.role === "assistant"
-      ? raw_msg.parts.filter((x) => x.type === "text").map((x) => x.text)
+      ? raw_msg.parts.filter((x) => x.type === "text").map((x) => x.text.replace(/<tool_call>.*/g, ""))
       : undefined;
 
   return (

@@ -49,12 +49,14 @@ export const useGame = create<GameStore>((set_, get) => ({
       turn,
       human: {
         team: humanTeam,
+        idCounter: 4,
         cards: Array<Card>(5)
           .fill(humanTeam === Team.X ? Card.X : Card.O)
           .map((card, id) => ({ id, card })),
       },
       ai: {
         team: aiTeam,
+        idCounter: 4,
         cards: Array<Card>(5)
           .fill(Card.TBD)
           .map((card, id) => ({ id, card })),
@@ -85,48 +87,59 @@ export const useGame = create<GameStore>((set_, get) => ({
     }
   },
   endTurn() {
-    set_((s) => {
-      const winState = s.winState();
+    set_(({ onWin, ai, human, round, turn, winState, board }) => {
+      const winner = winState();
 
-      if (winState === s.human?.team) {
-        s.onWin?.(); // This only logs the win for the human on the leaderboard
+      if (winner === human?.team) {
+        onWin?.(); // This only logs the win for the human on the leaderboard
       }
 
-      if (winState !== false) { // All other win states
-        return { winner: winState }; // If we set the rest of the stuff, the AI will retrigger and hallucinate.
+      if (winner !== false) { // All other win states
+        return { winner }; // If we set the rest of the stuff, the AI will retrigger and hallucinate.
       }
 
-      let round = s.round ?? 0;
-      const turn = s.turn! === Team.X ? Team.O : Team.X;
+      if (winner === false && board?.cells.every(x => x !== Cell.Empty)) { // Every cell is filled and no one has won.
+        // You could extend the board, but it is safe to say the game is a Tie according to standard TTT rules.
+        return { winner: "tie" };
+      }
+
+      let newRound = round ?? 0;
+
+      const nextTurn = turn! === Team.X ? Team.O : Team.X;
 
       if (turn === startingTeam) {
         // A full round has been completed and we are back! Now we deal cards proportionally to the round if the round is a multiple of two.
-        round += 1;
+        newRound += 1;
 
-        if (round % 2 === 0) {
-          const newAiId = Math.max(...s.ai!.cards.map(x => x.id)) + 1;
-          const newHumanId = Math.max(...s.human!.cards.map(x => x.id)) + 1;
-
+        if (newRound % 2 === 0) {
           return {
-            winner: winState,
-            round,
-            turn,
+            winner,
+            round: newRound,
+            turn: nextTurn,
             ai: {
-              team: s.ai!.team,
-              cards: [...s.ai!.cards, { id: newAiId, card: Card.TBD }, { id: newAiId + 1, card: Card.TBD } ]
+              team: ai!.team,
+              idCounter: ai!.idCounter + 2,
+              cards: [...ai!.cards,
+                { id: ai!.idCounter + 1, card: Card.TBD },
+                { id: ai!.idCounter + 2, card: Card.TBD }
+              ]
             },
             human: {
-              team: s.human!.team,
-              cards: [...s.human!.cards, { id: newHumanId, card: sampleCard(round, s.human!.team) }, { id: newHumanId + 1, card: sampleCard(round, s.human!.team) } ]
+              team: human!.team,
+              idCounter: human!.idCounter + 2,
+              cards: [...human!.cards,
+                { id: human!.idCounter + 1, card: sampleCard(newRound, human!.team) },
+                { id: human!.idCounter + 2, card: sampleCard(newRound, human!.team) }
+              ]
             }
           };
         }
       }
 
       return {
-        winner: winState,
-        round,
-        turn
+        winner,
+        round: newRound,
+        turn: nextTurn
       };
     });
   },
@@ -280,6 +293,7 @@ set_(({ human, ai }) => {
         return {
           human: {
             team: human!.team,
+            idCounter: human!.idCounter,
             cards
           },
         };
@@ -288,7 +302,7 @@ set_(({ human, ai }) => {
         cards.pop();
 
         return {
-          ai: { team: ai!.team, cards },
+          ai: { team: ai!.team, idCounter: ai!.idCounter, cards },
         };
       }
     });
@@ -300,6 +314,7 @@ set_(({ human, ai }) => {
         return {
           human: {
             team: human!.team,
+            idCounter: human!.idCounter,
             cards: human!.cards.filter((x) => x.id !== id),
           },
         };
@@ -308,7 +323,7 @@ set_(({ human, ai }) => {
         cards.pop();
 
         return {
-          ai: { team: ai!.team, cards },
+          ai: { team: ai!.team, idCounter: human!.idCounter, cards },
         };
       }
     });

@@ -1,6 +1,5 @@
 import { Card } from "@/components/card";
 import { Card as C } from "@/lib/game";
-import { MODEL } from "@/lib/prompts";
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 export default function HowToPlay() {
@@ -8,7 +7,7 @@ export default function HowToPlay() {
     <h1 className="text-6xl text-center font-bold">HOW 2 PLAY?</h1>
     <hr/>
     <h2 className="text-3xl">Premise</h2>
-    <p className="text-muted-foreground">You are playing a custom version of tic-tac-toe against a LLM, more specifically `{MODEL}`. However everything isn&apos;t as it seems, the AI has more power than you do, and will do anything to bring you to the ground... I mean anything.</p>
+    <p className="text-muted-foreground">You are playing a custom version of tic-tac-toe against a LLM, more specifically `meta-llama/llama-4-maverick-17b-128e-instruct` from groq. However, everything isn&apos;t as it seems, the AI has more power than you do, and will do anything to bring you to the ground... I mean anything.</p>
     <p className="text-muted-foreground">The game is played on a N by K board, which starts as 3x3, however can grow with various expansion cards.</p>
    <ul className="list-['-_'] text-muted-foreground">
      <li>Players: There are two players: you and the AI</li>
@@ -19,7 +18,7 @@ export default function HowToPlay() {
     <p className="text-muted-foreground">Place cards on the board by dragging them from the bottom onto the grid. You can test this out below (the cards are quite fun to play around with).</p>
     <h2 className="text-3xl">Scoring and Winning</h2>
     <p className="text-muted-foreground">Scoring is quite simple, but it can seem complicated for few. The goal is to get K cells of the same kind that belong to your team in a row. The win condition (K) is custom and controlled by the win condition cards, it starts at 3 to mimic regular tic-tac-toe, but can be as small as 2.</p>
-    <h3>But what about the different cells!</h3>
+    <h3>But what about the different cells</h3>
     <ul className="list-['-_'] text-muted-foreground">
       <li>Blocked cells count like empty cells, except they cannot be changed by you, only the AI posseses that power.</li>
       <li>Neutral cells count for both teams, if there is a line of neutrals and no line for another team, it is a tie.</li>
@@ -74,6 +73,10 @@ export default function HowToPlay() {
         </TableRow>
         <TableRow>
           <TableCell>X X X, ? ? O</TableCell>
+          <TableCell>Tie</TableCell>
+        </TableRow>
+        <TableRow>
+          <TableCell>The entire board is filled, but no one has won.</TableCell>
           <TableCell>Tie</TableCell>
         </TableRow>
       </TableBody>

@@ -15,6 +15,13 @@ export const EVENTS = {
   SPECIAL_BONUS: { xp: 100, label: "Special bonus" },
 };
 
+export enum Difficulty {
+  INFANT,
+  TODDLER,
+  NORMAL,
+  HARD
+}
+
 export interface GameState {
   board: Board;
 

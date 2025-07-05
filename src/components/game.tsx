@@ -5,11 +5,17 @@ import { Board } from "@/components/board";
 import { HumanPlayer } from "@/components/human-player";
 import { Button } from "@/components/ui/button";
 import { Sidebar } from "@/components/sidebar";
-import { Team } from "@/lib/game";
+import { Difficulty, Team } from "@/lib/game";
 import { useGame } from "@/lib/game-store";
+import { Slider } from "@/components/ui/slider";
+import { useState } from "react";
 
 export function Game({ onWin }: { onWin: () => Promise<void> }) {
   const { has_init, init, winner, human, ai } = useGame();
+  const [difficulty, setDifficulty] = useState([50]);
+  const d = diff(difficulty[0]);
+
+  const [unset, setUnset] = useState(true);
 
   return has_init ? (
     <main className="h-screen grid grid-rows-[min-content_auto_min-content] grid-cols-[1fr_2fr]">
@@ -56,13 +62,24 @@ export function Game({ onWin }: { onWin: () => Promise<void> }) {
       )}
     </main>
   ) : (
-    <main className="flex flex-col h-screen items-center justify-center gap-4">
+    <main className="flex flex-col h-screen items-center justify-center gap-8">
       <h2 className="text-5xl text-center">
-        PICK YOUR TEAM. <span className="text-enemy">CHOOSE WISELY.</span>
+          {unset ?
+            <>PICK YOUR TEAM &amp; DIFFICULTY. <span className="text-enemy">CHOOSE WISELY.</span></> :
+            d === Difficulty.HARD ? <>GOOD LUCK. I DON&apos;T HAVE A NOSE AND I CAN SMELL YOUR LOSS.</> :
+            d === Difficulty.NORMAL ? <>YOU SELECTED THE DEFAULT. GOOD JOB IDIOT 👍</> :
+            d === Difficulty.TODDLER ? <>YOUR <span className="italic">REALLY</span> THAT SCARED OF ME?</> :
+            <>be fucking stupid. level impossible (pass ✅)</>
+          }
       </h2>
+
+        <Slider className="max-w-[85vw]" max={100} min={0} step={1} value={difficulty} onValueChange={v => {
+          setUnset(false);
+          setDifficulty(v);
+        }}/>
       <div className="flex rounded-md w-min">
         <Button
-          onClick={() => init(Team.O, Team.X, Team.O, onWin)}
+          onClick={() => init(Team.O, Team.X, Team.O, onWin, d)}
           size="icon"
           variant="enemy"
           className="rounded-none text-2xl"
@@ -72,9 +89,9 @@ export function Game({ onWin }: { onWin: () => Promise<void> }) {
         <Button
           onClick={() => {
             if (Math.random() > 0.5) {
-              init(Team.X, Team.O, Team.X, onWin);
+              init(Team.X, Team.O, Team.X, onWin, d);
             } else {
-              init(Team.O, Team.X, Team.O, onWin);
+              init(Team.O, Team.X, Team.O, onWin, d);
             }
           }}
           variant="neutral"
@@ -84,7 +101,7 @@ export function Game({ onWin }: { onWin: () => Promise<void> }) {
         </Button>
         <Button
           onClick={() => {
-            init(Team.X, Team.O, Team.X, onWin);
+            init(Team.X, Team.O, Team.X, onWin, d);
           }}
           variant="ally"
           className="rounded-none text-2xl"
@@ -94,4 +111,20 @@ export function Game({ onWin }: { onWin: () => Promise<void> }) {
       </div>
     </main>
   );
+}
+
+function diff(d: number): Difficulty {
+  if (d >= 100) {
+    return Difficulty.HARD;
+  }
+
+  if (d >= 50) {
+    return Difficulty.NORMAL;
+  }
+
+  if (d >= 1) {
+    return Difficulty.TODDLER;
+  }
+
+  return Difficulty.INFANT;
 }

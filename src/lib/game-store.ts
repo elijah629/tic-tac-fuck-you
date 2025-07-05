@@ -4,6 +4,7 @@ import { create } from "zustand";
 import {
   Card,
   Cell,
+  Difficulty,
   EVENTS,
   ExtendDirection,
   GameActions,
@@ -16,12 +17,14 @@ import { generateLineMatrix, getWinner } from "./win-check";
 type GameStore = GameActions &
   Partial<GameState> & {
     has_init: boolean;
+    difficulty: Difficulty;
     onWin?(): Promise<void>;
     init(
       turn: Team,
       humanTeam: Team,
       aiTeam: Team,
       onWin: () => Promise<void>,
+      difficulty: Difficulty
     ): void;
   };
 
@@ -32,16 +35,20 @@ let startingTeam: Team | null = null;
 export const useGame = create<GameStore>((set_, get) => ({
   has_init: false,
   winner: false,
+  difficulty: Difficulty.NORMAL,
 
-  init(turn, humanTeam, aiTeam, onWin) {
-    const ROWS = 3;
-    const COLS = 3;
-    const L = 3;
+  init(turn, humanTeam, aiTeam, onWin, difficulty) {
+    const ROWS = difficulty === Difficulty.INFANT ? 2 : difficulty === Difficulty.TODDLER ? 2 : difficulty === Difficulty.NORMAL ? 3 : 5;
+
+    const COLS = difficulty === Difficulty.INFANT ? 2 : difficulty === Difficulty.TODDLER ? 2 : difficulty === Difficulty.NORMAL ? 3 : 2;
+
+    const L = difficulty === Difficulty.INFANT ? 2 : difficulty === Difficulty.TODDLER ? 2 : difficulty === Difficulty.NORMAL ? 3 : 4;
 
     set_({
+      difficulty,
       has_init: true,
       winner: false,
-      xp: 0,
+      xp: difficulty === Difficulty.INFANT ? 10000 : 0,
       xpEvents: [],
       winLength: L,
       xpCounter: 0,
@@ -50,19 +57,21 @@ export const useGame = create<GameStore>((set_, get) => ({
       turn,
       human: {
         team: humanTeam,
-        idCounter: 4,
-        cards: Array<Card>(5)
+        idCounter: difficulty === Difficulty.INFANT ? 7 : 4,
+        cards: Array<Card>(difficulty === Difficulty.INFANT ? 8 : 5)
           .fill(humanTeam === Team.X ? Card.X : Card.O)
           .map((card, id) => ({ id, card })),
       },
       ai: {
         team: aiTeam,
-        idCounter: 4,
-        cards: Array<Card>(5)
+        idCounter: difficulty === Difficulty.INFANT ? 2 : 4,
+        cards: Array<Card>(difficulty === Difficulty.INFANT ? 3 : 5)
           .fill(Card.TBD)
           .map((card, id) => ({ id, card })),
       },
-      onWin,
+      onWin: difficulty === Difficulty.HARD ? onWin : async () => {
+        alert("You won! Now, to log your score on the leaderboard, play in Hard mode.")
+      },
     });
 
     lineMatrix = generateLineMatrix(COLS, ROWS, L);
@@ -93,7 +102,7 @@ export const useGame = create<GameStore>((set_, get) => ({
     }
   },
   endTurn() {
-    set_(({ xpEvent, onWin, ai, human, round, turn, winState, board }) => {
+    set_(({ xpEvent, onWin, ai, human, round, turn, difficulty, winState, board }) => {
       const winner = winState();
 
       if (winner === human?.team) {
@@ -141,11 +150,11 @@ export const useGame = create<GameStore>((set_, get) => ({
                 ...human!.cards,
                 {
                   id: human!.idCounter + 1,
-                  card: sampleCard(newRound, human!.team),
+                  card: sampleCard(newRound, human!.team, difficulty),
                 },
                 {
                   id: human!.idCounter + 2,
-                  card: sampleCard(newRound, human!.team),
+                  card: sampleCard(newRound, human!.team, difficulty),
                 },
               ],
             },
@@ -415,12 +424,12 @@ function weightedRandom<T>(items: { item: T; weight: number }[]): T {
   return items[0].item;
 }
 
-function sampleCard(round: number, team: Team): Card {
+function sampleCard(round: number, team: Team, difficulty: Difficulty): Card {
   const cardPool: { item: Card; weight: number }[] = [
     { item: team === Team.X ? Card.X : Card.O, weight: 5 },
   ];
 
-  if (round >= 4) {
+  if (round >= 2 + difficulty) {
     cardPool.push(
       { item: Card.Block, weight: 1 },
       { item: Card.Lowercase, weight: 1 },
@@ -428,7 +437,7 @@ function sampleCard(round: number, team: Team): Card {
     );
   }
 
-  if (round >= 6) {
+  if (round >= 4 + difficulty) {
     cardPool.push(
       { item: Card.Extend, weight: 2 },
       { item: Card.Block, weight: 1 },
@@ -437,7 +446,7 @@ function sampleCard(round: number, team: Team): Card {
     );
   }
 
-  if (round >= 8) {
+  if (round >= 6 + difficulty) {
     cardPool.push(
       { item: Card.Extend, weight: 4 },
       { item: Card.Block, weight: 2 },

@@ -302,7 +302,7 @@
   *,
   *::before,
   *::after {
-    cursor: none !important;
+    cursor: none;
   }
   body {
     @apply bg-background text-foreground;

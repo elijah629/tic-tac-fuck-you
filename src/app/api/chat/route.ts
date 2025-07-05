@@ -1,5 +1,5 @@
 import { convertToModelMessages, streamText, UIMessage } from "ai";
-import { SYSTEM_PROMPT } from "@/lib/prompts";
+import { systemPrompt } from "@/lib/prompts";
 import { auth } from "@/lib/auth";
 import { ratelimit } from "@/lib/redis";
 import { hackclub } from "@/lib/hackclub";
@@ -7,11 +7,10 @@ import { hackclub } from "@/lib/hackclub";
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
+  const session = await auth();
+  const id = session?.user?.name;
+
   if (process.env.NODE_ENV === "production") {
-    const session = await auth();
-
-    const id = session?.user?.name;
-
     if (!id) return new Response("Unauthorized", { status: 401 });
 
     const { success } = await ratelimit.blockUntilReady(id, 10_000);
@@ -23,7 +22,7 @@ export async function POST(req: Request) {
 
   const result = streamText({
     model: hackclub, //groq(MODEL),
-    system: SYSTEM_PROMPT,
+    system: systemPrompt(id ?? "Eli Ozcan"), // use my name in dev
     messages: convertToModelMessages(messages),
     //toolChoice: "required",
     /*tools: {

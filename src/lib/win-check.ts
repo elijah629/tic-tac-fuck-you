@@ -5,10 +5,11 @@ export function generateLineMatrix(
   height: number,
   winLength: number,
 ): Uint16Array {
+  // Odd shaped boards may have "negative" horozontal rows ie if the width is 3 but win l is 5
   const maxLines =
-    height * (width - winLength + 1) + // →
-    width * (height - winLength + 1) + // ↓
-    2 * (height - winLength + 1) * (width - winLength + 1); // ↘↗
+    Math.max(0, height * (width - winLength + 1)) + // →
+    Math.max(0, width * (height - winLength + 1)) + // ↓
+    2 * Math.max(0, (height - winLength + 1) * (width - winLength + 1)); // ↘↗
 
   const result = new Uint16Array(maxLines * winLength);
   let i = 0;

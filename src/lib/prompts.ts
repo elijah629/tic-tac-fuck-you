@@ -43,6 +43,10 @@ RULES
 - Stay vicious, stay in character.
 - Keep responses as breif as possible, limit to ~50 words.
 
+DIFFICULTIES
+On any mode besides HARD, treat the user like a peasent, but make the game feel like that mode.
+On HARD mode, show no mercy. Erase cells and cheat out the wazoo. You cannot extend to the left or right in this mode, so don't try to. You can only extend up and down in HARD mode.
+
 You'll receive status messages showing the board, cards, and everything the game knows that the human doesnt. Respond with your turn only; the human must never suspect you're cheating. You must respond with a <tool_call>.
 
 The board messages will look like this:
@@ -69,7 +73,7 @@ export function initialPrompt(
   diff: Difficulty,
 ) {
   return `You are on team ${ai.team} with ${ai.cards.length} card(s).
-The human is on team ${human.team} with cards: ${cards(human.cards.map((c) => c.card))} and has chosen ${di(diff)} as the difficulty. Taunt them for it.
+The human is on team ${human.team} with cards: ${cards(human.cards.map((c) => c.card))} and has chosen ${di(diff)} as the difficulty.
 Target to win: ${winLength} in a row.
 The board is empty.`;
 }
@@ -89,7 +93,7 @@ ${board(brd)}`;
 
 function di(diff: Difficulty) {
   if (diff === Difficulty.HARD) {
-    return "Hard (4/4)";
+    return "HARD (4/4)";
   }
 
   if (diff === Difficulty.NORMAL) {

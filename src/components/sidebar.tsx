@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, ExtendDirection } from "@/types/game";
+import { Card, Difficulty, ExtendDirection } from "@/types/game";
 import { useGame } from "@/lib/game";
 import { initialPrompt, statePrompt } from "@/lib/prompts";
 import { cn } from "@/lib/utils";
@@ -87,6 +87,10 @@ export function Sidebar({ className }: { className?: string }) {
           break;
 
         case Card.Extend:
+          if (difficulty === Difficulty.HARD && (tool[1] === "left" || tool[1] === "right")) {
+            break;
+          }
+
           extendBoard(tool[1] as ExtendDirection);
           break;
       }

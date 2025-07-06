@@ -2,6 +2,7 @@ import { Board, Card, Cell, EVENTS, GameState, Team } from "@/types/game";
 import { extendBoard, getSmallestDirection } from "./board";
 import { InitializedGameStore } from ".";
 import { sampleCard } from "./cards";
+import { changeWinLength } from "./win-length";
 /*
 export function makeMove(move) {
     switch (move.card) {
@@ -148,6 +149,22 @@ export function applyCard(
     } else {
       return { valid: false };
     }
+  }
+
+  if (card === Card.IncrementWinLength) {
+    if (winLength + 1 > Math.max(board.size.rows, board.size.cols)) {
+      return { valid: false };
+    }
+
+    return { valid: true, ...changeWinLength(1, winLength, board) };
+  }
+
+  if (card === Card.DecrementWinLength) {
+    if (winLength - 1 < 2) {
+      return { valid: false }
+    }
+
+    return { valid: true, ...changeWinLength(-1, winLength, board) };
   }
 
   // [Card.X, Card.O, Card.Neutralize, Card.Block] {

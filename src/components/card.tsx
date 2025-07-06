@@ -8,6 +8,8 @@ import lowercase from "@/images/cards/lowercase.png";
 import blocked from "@/images/cards/blocked.png";
 import neutralize from "@/images/cards/neutral.png";
 import back from "@/images/cards/deck-back.png";
+import inc from "@/images/cards/inc-win.png";
+import dec from "@/images/cards/dec-win.png";
 import styles from "@/components/card.module.css";
 import { Card as C } from "@/types/game";
 import { useCallback, useEffect, useRef } from "react";
@@ -20,6 +22,8 @@ export function cardSrc(card: C) {
   if (card === C.Lowercase) return lowercase.src;
   if (card === C.Block) return blocked.src;
   if (card === C.Extend) return extend.src;
+  if (card === C.IncrementWinLength) return inc.src;
+  if (card === C.DecrementWinLength) return dec.src;
 
   return back.src;
 }

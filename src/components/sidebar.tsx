@@ -8,17 +8,18 @@ import { useChat } from "@ai-sdk/react";
 import { useEffect, useRef } from "react";
 
 export function Sidebar({ className }: { className?: string }) {
-  const xp = useGame((s) => s.xp);
-  const xpEvents = useGame((s) => s.xpEvents);
   const removeXpEvent = useGame((s) => s.removeXpEvent);
   const removeCard = useGame((s) => s.removeCard);
   const applyCard = useGame((s) => s.applyCard);
-  const winLength = useGame((s) => s.winLength);
   const extendBoard = useGame((s) => s.extendBoard);
+  const endTurn = useGame((s) => s.endTurn);
+  const changeWinLength = useGame((s) => s.changeWinLength);
+  const xp = useGame((s) => s.xp);
+  const xpEvents = useGame((s) => s.xpEvents);
+  const winLength = useGame((s) => s.winLength);
   const turn = useGame((s) => s.turn);
   const ai = useGame((s) => s.ai);
   const board = useGame((s) => s.board);
-  const endTurn = useGame((s) => s.endTurn);
   const round = useGame((s) => s.round);
   const winner = useGame((s) => s.winner);
   const difficulty = useGame((s) => s.difficulty);
@@ -92,6 +93,14 @@ export function Sidebar({ className }: { className?: string }) {
           }
 
           extendBoard(tool[1] as ExtendDirection);
+          break;
+
+        case Card.IncrementWinLength:
+          changeWinLength(1);
+          break;
+
+        case Card.DecrementWinLength:
+          changeWinLength(-1);
           break;
       }
 

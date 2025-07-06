@@ -17,19 +17,24 @@ export function sampleCard(
   team: Team,
   difficulty: Difficulty,
 ): Card {
-  const cardPool: { item: Card; weight: number }[] = [
-    { item: team === Team.X ? Card.X : Card.O, weight: 5 },
-  ];
+  const cardPool: { item: Card; weight: number }[] = [];
 
-  if (round >= 2 + difficulty) {
+  if (difficulty !== Difficulty.HARD) { // Unlock team cards with HARD mode!
+    cardPool.push({ item: team === Team.X ? Card.X : Card.O, weight: 10 });
+  } else {
+    cardPool.push({ item: Card.Block, weight: 1 });
+  }
+
+  if (round >= 1 + difficulty) {
     cardPool.push(
       { item: Card.Block, weight: 1 },
       { item: Card.Lowercase, weight: 1 },
       { item: Card.Neutralize, weight: 2 },
+      { item: team === Team.X ? Card.X : Card.O, weight: 10 }
     );
   }
 
-  if (round >= 4 + difficulty) {
+  if (round >= 2 + difficulty) {
     cardPool.push(
       { item: Card.Extend, weight: 2 },
       { item: Card.Block, weight: 1 },
@@ -38,12 +43,29 @@ export function sampleCard(
     );
   }
 
-  if (round >= 6 + difficulty) {
+  if (round >= 3 + difficulty) {
     cardPool.push(
       { item: Card.Extend, weight: 4 },
       { item: Card.Block, weight: 2 },
       { item: Card.Lowercase, weight: 2 },
       { item: Card.Neutralize, weight: 2 },
+      { item: Card.DecrementWinLength, weight: 2 },
+      { item: Card.IncrementWinLength, weight: 2 },
+    );
+  }
+
+  if (round >= 4 + difficulty) {
+    cardPool.push(
+      { item: Card.Block, weight: 1 },
+      { item: Card.Lowercase, weight: 1 },
+      { item: Card.DecrementWinLength, weight: 4 },
+      { item: Card.IncrementWinLength, weight: 4 },
+    );
+  }
+
+  if (round >= 20 + difficulty) {
+    cardPool.push(
+      { item: team === Team.X ? Card.X : Card.O, weight: 10 }
     );
   }
 

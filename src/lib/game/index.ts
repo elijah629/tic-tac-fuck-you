@@ -20,6 +20,7 @@ import { removeCard, sampleCard } from "./cards";
 import { extendBoard } from "./board";
 import { addXpEvent, removeXpEvent } from "./xp";
 import { applyCard, endTurn } from "./move";
+import { changeWinLength } from "./win-length";
 
 type GameStore = {
   status: "uninitialized" | "initialized";
@@ -136,6 +137,12 @@ export const useMaybeGame = create<GameStore>((set, get) => ({
     );
   },
 
+  changeWinLength(change) {
+    set(withInit(({ winLength, board }) => {
+      return changeWinLength(change, winLength, board);
+    }))
+  },
+
   applyCard(row, col, card, shouldOverwite) {
     let valid = true;
 
@@ -151,7 +158,7 @@ export const useMaybeGame = create<GameStore>((set, get) => ({
         );
 
         if (application.valid) {
-          return { board: application.board };
+          return { ...application };
         } else {
           valid = false;
           return {};

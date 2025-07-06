@@ -33,6 +33,9 @@ export enum Card {
 
   Block = "block",
 
+  IncrementWinLength = "inc_win_length",
+  DecrementWinLength = "dec_win_length",
+
   // Use by the AI renderer only, this is so we can assign an Id to every card, even if the value doesn't exist. This card only renders a "back" side and not a front
   // To Be Determined
   TBD = "",
@@ -81,8 +84,8 @@ export interface GameState {
 
 export type GameActions = {
   removeCard(team: Team, id?: number): void;
+  changeWinLength(change: number): void;
   extendBoard(direction: ExtendDirection): void;
-  //makeMove(move: Move): void;
   applyCard(
     row: number,
     col: number,

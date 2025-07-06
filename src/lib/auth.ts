@@ -6,7 +6,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [Slack({
     authorization: {
       params: {
-        scope: "openid" // We only need name, not email profile etc
+        scope: "openid profile" // We only need name, not email etc
       }
     }
   })],

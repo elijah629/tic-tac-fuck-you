@@ -1,7 +1,7 @@
 import Image from "next/image";
 
 import styles from "@/components/card.module.css";
-import { Card as C } from "@/lib/game";
+import { Card as C } from "@/types/game";
 import { cardSrc } from "./card";
 
 const WIDTH = 71;

@@ -1,5 +1,5 @@
 import { Card } from "@/components/card";
-import { Card as C } from "@/lib/game";
+import { Card as C } from "@/types/game";
 import {
   Table,
   TableBody,
@@ -212,7 +212,7 @@ export default function HowToPlay() {
             </TableCell>
           </TableRow>
         </TableBody>
-      </Table>{" "}
+      </Table>
     </main>
   );
 }

@@ -9,7 +9,7 @@ import blocked from "@/images/cards/blocked.png";
 import neutralize from "@/images/cards/neutral.png";
 import back from "@/images/cards/deck-back.png";
 import styles from "@/components/card.module.css";
-import { Card as C } from "@/lib/game";
+import { Card as C } from "@/types/game";
 import { useCallback, useEffect, useRef } from "react";
 
 // pick correct image src

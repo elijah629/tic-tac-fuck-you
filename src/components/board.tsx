@@ -1,14 +1,14 @@
 "use client";
 
 import { Cell } from "./cell";
-import { useGame } from "@/lib/game-store";
+import { useGame } from "@/lib/game";
 import { cn } from "@/lib/utils";
 
 export function Board({ className }: { className?: string }) {
   const {
     size: { rows, cols },
     cells,
-  } = useGame().board!;
+  } = useGame((s) => s.board);
 
   return (
     <div className="flex items-center justify-center">

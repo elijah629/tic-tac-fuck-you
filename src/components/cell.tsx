@@ -1,10 +1,8 @@
-import { Cell as C } from "@/lib/game";
-import { useGame } from "@/lib/game-store";
+import { Cell as C } from "@/types/game";
+import { useGame } from "@/lib/game";
 
 export function Cell({ index, cell }: { index: number; cell: C }) {
-  const {
-    size: { rows, cols },
-  } = useGame().board!;
+  const { rows, cols } = useGame((s) => s.board.size);
 
   const x = index % cols;
   const y = (index / cols) | 0;

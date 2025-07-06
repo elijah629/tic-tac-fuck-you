@@ -1,32 +1,33 @@
 "use client";
 
-import { Card, ExtendDirection, GameState } from "@/lib/game";
-import { useGame } from "@/lib/game-store";
+import { Card, ExtendDirection } from "@/types/game";
+import { useGame } from "@/lib/game";
 import { initialPrompt, statePrompt } from "@/lib/prompts";
 import { cn } from "@/lib/utils";
 import { useChat } from "@ai-sdk/react";
 import { useEffect, useRef } from "react";
 
 export function Sidebar({ className }: { className?: string }) {
-  const game = useGame();
-  const {
-    xp,
-    xpEvents,
-    removeXpEvent,
-    removeAnyCard,
-    winLength,
-    turn,
-    ai,
-    board,
-    endTurn,
-    round,
-    makeMove,
-  } = game;
+  const xp = useGame((s) => s.xp);
+  const xpEvents = useGame((s) => s.xpEvents);
+  const removeXpEvent = useGame((s) => s.removeXpEvent);
+  const removeCard = useGame((s) => s.removeCard);
+  const applyCard = useGame((s) => s.applyCard);
+  const winLength = useGame((s) => s.winLength);
+  const extendBoard = useGame((s) => s.extendBoard);
+  const turn = useGame((s) => s.turn);
+  const ai = useGame((s) => s.ai);
+  const board = useGame((s) => s.board);
+  const endTurn = useGame((s) => s.endTurn);
+  const round = useGame((s) => s.round);
+  const winner = useGame((s) => s.winner);
+  const difficulty = useGame((s) => s.difficulty);
+  const human = useGame((s) => s.human);
 
   // XP
-  // queue of event-times to remove
+  // queue of ids to remove
   const removalQueue = useRef<number[]>([]);
-  // track which event-times we've already queued
+  // track which ids we've already queued
   const seenTimes = useRef<Set<number>>(new Set());
 
   // whenever xpEvents changes, enqueue any **new** events by their .time
@@ -51,7 +52,6 @@ export function Sidebar({ className }: { className?: string }) {
   }, [removeXpEvent]);
 
   // + AI
-
   const first = useRef(true);
   const hasSent = useRef(false);
 
@@ -83,25 +83,22 @@ export function Sidebar({ className }: { className?: string }) {
         case Card.Block:
         case Card.Lowercase:
         case Card.Neutralize:
-          makeMove({
-            card,
-            position: { row: Number(tool[1]), col: Number(tool[2]) },
-          });
+          applyCard(Number(tool[1]), Number(tool[2]), card, true);
           break;
 
         case Card.Extend:
-          makeMove({ card, direction: tool[1] as ExtendDirection });
+          extendBoard(tool[1] as ExtendDirection);
           break;
       }
 
-      removeAnyCard(ai!.team);
+      removeCard(ai.team);
       endTurn();
     },
   });
 
   useEffect(() => {
     // if it's not AI's turn (or game over), reset our guard so next AI turn will fire
-    if (turn !== ai!.team || game.winner !== false) {
+    if (turn !== ai!.team || winner !== false) {
       hasSent.current = false;
       return;
     }
@@ -110,14 +107,14 @@ export function Sidebar({ className }: { className?: string }) {
     if (hasSent.current) return;
     hasSent.current = true;
 
-    // first AI turn ever?
+    // first AI turn ever
     if (first.current) {
-      sendMessage({ text: initialPrompt(game as GameState) });
+      sendMessage({ text: initialPrompt(ai, human, winLength, difficulty) });
       first.current = false;
     } else {
-      sendMessage({ text: statePrompt(game as GameState) });
+      sendMessage({ text: statePrompt(ai, human, winLength, board) });
     }
-  }, [ai, game, sendMessage, turn]);
+  }, [ai, difficulty, board, winLength, human, winner, sendMessage, turn]);
 
   const raw_msg = messages[messages.length - 1];
   const content: string[] | undefined =

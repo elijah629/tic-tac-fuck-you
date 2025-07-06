@@ -1,5 +1,4 @@
-import { z } from "zod";
-import { Winner } from "./win-check";
+import { Winner } from "@/lib/game/win-check";
 
 export interface XpEvent {
   id: number;
@@ -19,30 +18,7 @@ export enum Difficulty {
   INFANT,
   TODDLER,
   NORMAL,
-  HARD
-}
-
-export interface GameState {
-  board: Board;
-
-  winLength: number;
-  winner: Winner;
-
-  round: number;
-  turn: Team;
-
-  human: Player;
-  ai: Player;
-
-  xp: number;
-  xpCounter: number;
-  xpEvents: XpEvent[];
-}
-
-export interface Player {
-  team: Team;
-  idCounter: number;
-  cards: { id: number; card: Card }[];
+  HARD,
 }
 
 export enum Card {
@@ -69,6 +45,62 @@ export enum ExtendDirection {
   Right = "right",
 }
 
+export enum Cell {
+  X = "X",
+  x = "x",
+  O = "O",
+  o = "o",
+
+  Neutral = "?",
+  Empty = "_",
+  Blocked = "#",
+}
+
+export enum Team {
+  X = "X",
+  O = "O",
+}
+
+export interface GameState {
+  board: Board;
+
+  winLength: number;
+  winner: Winner;
+
+  round: number;
+  turn: Team;
+  startingTeam: Team;
+
+  human: Player;
+  ai: Player;
+
+  xp: number;
+  xpCounter: number;
+  xpEvents: XpEvent[];
+}
+
+export type GameActions = {
+  removeCard(team: Team, id?: number): void;
+  extendBoard(direction: ExtendDirection): void;
+  //makeMove(move: Move): void;
+  applyCard(
+    row: number,
+    col: number,
+    card: Card,
+    shouldOverwite: boolean,
+  ): boolean;
+  addXpEvent(event: Omit<XpEvent, "id">): void;
+  removeXpEvent(id: number): void;
+  winState(): Winner;
+  endTurn(): void;
+};
+
+export interface Player {
+  team: Team;
+  idCounter: number;
+  cards: { id: number; card: Card }[];
+}
+/*
 // TODO: We don't need zod anymore! No tools = no zod. I am keeping this in case hackclub/ai merges #11 and responds to #16 and #17
 const position = z
   .object({
@@ -101,42 +133,8 @@ export const move = z
     "A move has a card, as well as optional data to tell the card what to do",
   );
 
-export const moveSchema = move; //.describe("A list of moves you would like to play");
-
 export type Move = z.infer<typeof move>;
-
-export type GameActions = {
-  removeAnyCard(f: Team): void;
-  removeCard(f: Team, id: number): void;
-  makeMove(move: Move): void;
-  extendBoard(direction: ExtendDirection): void;
-  applyCardToCell(
-    row: number,
-    col: number,
-    card: Card,
-    shouldOverwite: boolean,
-  ): boolean;
-  xpEvent(event: Omit<XpEvent, "id">): void;
-  removeXpEvent(id: number): void;
-  winState(): Winner;
-  endTurn(): void;
-};
-
-export enum Cell {
-  X,
-  x,
-  O,
-  o,
-
-  Neutral,
-  Empty,
-  Blocked,
-}
-
-export enum Team {
-  X,
-  O,
-}
+*/
 
 export interface Board {
   size: Size;

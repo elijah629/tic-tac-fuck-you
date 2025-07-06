@@ -5,19 +5,24 @@ import { Board } from "@/components/board";
 import { HumanPlayer } from "@/components/human-player";
 import { Button } from "@/components/ui/button";
 import { Sidebar } from "@/components/sidebar";
-import { Difficulty, Team } from "@/lib/game";
-import { useGame } from "@/lib/game-store";
+import { Difficulty, Team } from "@/types/game";
 import { Slider } from "@/components/ui/slider";
 import { useState } from "react";
+import { useMaybeGame } from "@/lib/game";
 
 export function Game({ onWin }: { onWin: () => Promise<void> }) {
-  const { has_init, init, winner, human, ai } = useGame();
+  const init = useMaybeGame((s) => s.init);
+  const status = useMaybeGame((s) => s.status);
+  const winner = useMaybeGame((s) => s.winner);
+  const ai = useMaybeGame((s) => s.ai);
+  const human = useMaybeGame((s) => s.human);
+
   const [difficulty, setDifficulty] = useState([50]);
   const d = diff(difficulty[0]);
 
   const [unset, setUnset] = useState(true);
 
-  return has_init ? (
+  return status === "initialized" ? (
     <main className="h-screen grid grid-rows-[min-content_auto_min-content] grid-cols-[1fr_2fr]">
       <Sidebar className="row-span-3" />
       <AIPlayer className="hidden sm:flex" />
@@ -26,12 +31,12 @@ export function Game({ onWin }: { onWin: () => Promise<void> }) {
 
       {winner !== false && (
         <div className="flex flex-col h-full w-full absolute top-0 left-0 z-10 bg-background/80 items-center justify-center gap-4 p-4">
-          {winner === ai?.team ? (
+          {winner === ai!.team ? (
             <>
               <h1 className="text-7xl text-center text-enemy">GAME OVER</h1>
               <h2 className="text-5xl text-center">PATHETIC... YOUR LOSS</h2>
             </>
-          ) : winner === human?.team ? (
+          ) : winner === human!.team ? (
             <>
               <h1 className="text-7xl text-center text-ally">WIN!</h1>
               <h2 className="text-5xl text-center">
@@ -64,19 +69,35 @@ export function Game({ onWin }: { onWin: () => Promise<void> }) {
   ) : (
     <main className="flex flex-col h-screen items-center justify-center gap-8">
       <h2 className="text-5xl text-center">
-          {unset ?
-            <>PICK YOUR TEAM &amp; DIFFICULTY. <span className="text-enemy">CHOOSE WISELY.</span></> :
-            d === Difficulty.HARD ? <>GOOD LUCK. I DON&apos;T HAVE A NOSE AND I CAN SMELL YOUR LOSS.</> :
-            d === Difficulty.NORMAL ? <>YOU SELECTED THE DEFAULT. GOOD JOB IDIOT 👍</> :
-            d === Difficulty.TODDLER ? <>YOUR <span className="italic">REALLY</span> THAT SCARED OF ME?</> :
-            <>be fucking stupid. level impossible (pass ✅)</>
-          }
+        {unset ? (
+          <>
+            PICK YOUR TEAM &amp; DIFFICULTY.{" "}
+            <span className="text-enemy">CHOOSE WISELY.</span>
+          </>
+        ) : d === Difficulty.HARD ? (
+          <>GOOD LUCK. I DON&apos;T HAVE A NOSE AND I CAN SMELL YOUR LOSS.</>
+        ) : d === Difficulty.NORMAL ? (
+          <>YOU SELECTED THE DEFAULT. GOOD JOB IDIOT 👍</>
+        ) : d === Difficulty.TODDLER ? (
+          <>
+            YOUR <span className="italic">REALLY</span> THAT SCARED OF ME?
+          </>
+        ) : (
+          <>be fucking stupid. level impossible (pass ✅)</>
+        )}
       </h2>
 
-        <Slider className="max-w-[85vw]" max={100} min={0} step={1} value={difficulty} onValueChange={v => {
+      <Slider
+        className="max-w-[85vw]"
+        max={100}
+        min={0}
+        step={1}
+        value={difficulty}
+        onValueChange={(v) => {
           setUnset(false);
           setDifficulty(v);
-        }}/>
+        }}
+      />
       <div className="flex rounded-md w-min">
         <Button
           onClick={() => init(Team.O, Team.X, Team.O, onWin, d)}

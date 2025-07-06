@@ -6,13 +6,19 @@ export default function TTFUCursor() {
   const [position, setPosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
-    const update = (e: MouseEvent) =>
-      setPosition({ x: e.clientX, y: e.clientY });
+    let animationFrameId: number;
 
-    window.addEventListener("mousemove", update, { passive: true });
+    const update = (e: PointerEvent) => {
+      animationFrameId = requestAnimationFrame(() =>
+        setPosition({ x: e.clientX, y: e.clientY }),
+      );
+    };
+
+    window.addEventListener("pointermove", update);
 
     return () => {
-      window.removeEventListener("mousemove", update);
+      cancelAnimationFrame(animationFrameId);
+      window.removeEventListener("pointermove", update);
     };
   }, []);
 

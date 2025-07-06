@@ -1,4 +1,4 @@
-import { Team } from "@/lib/game";
+import { Team } from "@/types/game";
 import { cn } from "@/lib/utils";
 
 export function PlayerIndicator({

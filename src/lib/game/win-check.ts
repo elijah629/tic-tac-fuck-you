@@ -1,4 +1,76 @@
-import { Cell, Team } from "./game";
+import { Cell, Team, Board } from "@/types/game";
+
+export type Winner = Team | "tie" | false;
+
+const CELL_TO_TEAM = {
+  [Cell.X]: Team.X,
+  [Cell.x]: Team.X,
+  [Cell.O]: Team.O,
+  [Cell.o]: Team.O,
+  [Cell.Empty]: false, // No team
+  [Cell.Blocked]: false, // No team
+  [Cell.Neutral]: "tie", // Both teams
+} satisfies Record<Cell, Winner>;
+
+// BAD
+let lineMatrix: Uint16Array | null = null;
+
+export function setLineMatrix(matrix: Uint16Array | null) {
+  lineMatrix = matrix;
+}
+
+export function winState(winLength: number, board: Board): Winner {
+  if (!lineMatrix) {
+    lineMatrix = generateLineMatrix(
+      board.size.cols,
+      board.size.rows,
+      winLength!,
+    );
+  }
+
+  const winner = getWinner(board.cells, lineMatrix, winLength!);
+
+  return winner;
+}
+
+/*
+ * k-in-a-row 2D board algorithim
+ */
+function getWinner(board: Cell[], lineMatrix: Uint16Array, K: number): Winner {
+  const lines = iterateLines(lineMatrix, K);
+  const winners = new Set<Winner>();
+
+  let hasNeutral = false;
+
+  for (const line of lines) {
+    const cell = lineValue(board, line);
+
+    if (cell === null) continue;
+    const team = CELL_TO_TEAM[cell];
+
+    if (team === false) continue;
+
+    if (team === "tie") {
+      hasNeutral = true;
+      continue;
+    }
+
+    winners.add(team); // Just x and o.
+  }
+
+  if (winners.size === 0) {
+    // no X/O winners
+    return hasNeutral ? "tie" : false;
+  }
+
+  if (winners.size === 1) {
+    // just one winning team
+    return winners.values().next().value!;
+  }
+
+  // more than one team and no empty blocked or neutral
+  return "tie";
+}
 
 export function generateLineMatrix(
   width: number,
@@ -79,58 +151,4 @@ function lineValue(board: Cell[], line: Uint16Array): Cell | null {
 
   // If we only saw Cell.Neutral, return neutral, otherwize return the other cell / null on conflict.
   return winner === null ? Cell.Neutral : winner;
-}
-
-export type Winner = Team | "tie" | false;
-const CELL_TO_TEAM = {
-  [Cell.X]: Team.X,
-  [Cell.x]: Team.X,
-  [Cell.O]: Team.O,
-  [Cell.o]: Team.O,
-  [Cell.Empty]: false, // No team
-  [Cell.Blocked]: false, // No team
-  [Cell.Neutral]: "tie", // Both teams
-} satisfies Record<Cell, Winner>;
-
-/*
- * k-in-a-row 2D board algorithim
- */
-export function getWinner(
-  board: Cell[],
-  lineMatrix: Uint16Array,
-  K: number,
-): Winner {
-  const lines = iterateLines(lineMatrix, K);
-  const winners = new Set<Winner>();
-
-  let hasNeutral = false;
-
-  for (const line of lines) {
-    const cell = lineValue(board, line);
-
-    if (cell === null) continue;
-    const team = CELL_TO_TEAM[cell];
-
-    if (team === false) continue;
-
-    if (team === "tie") {
-      hasNeutral = true;
-      continue;
-    }
-
-    winners.add(team); // Just x and o.
-  }
-
-  if (winners.size === 0) {
-    // no X/O winners
-    return hasNeutral ? "tie" : false;
-  }
-
-  if (winners.size === 1) {
-    // just one winning team
-    return winners.values().next().value!;
-  }
-
-  // more than one team and no empty blocked or neutral
-  return "tie";
 }

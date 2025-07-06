@@ -1,6 +1,6 @@
 "use client";
 
-import { Card as C } from "@/lib/game";
+import { Card as C } from "@/types/game";
 import { StaticCard } from "@/components/static-card";
 
 export function StaticCardFan(props: { cards: { id: number; card: C }[] }) {

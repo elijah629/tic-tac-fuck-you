@@ -1,14 +1,18 @@
 "use client";
 
-import { Card as C, EVENTS, Team } from "@/lib/game";
+import { Card as C, EVENTS, Team } from "@/types/game";
 import { Card } from "./card";
-import { useGame } from "@/lib/game-store";
+import { useGame } from "@/lib/game";
 
 export function CardFan(props: {
   for: Team;
   cards: { id: number; card: C }[];
 }) {
-  const { removeCard, turn, applyCardToCell, xpEvent, endTurn } = useGame();
+  const removeCard = useGame((s) => s.removeCard);
+  const turn = useGame((s) => s.turn);
+  const applyCard = useGame((s) => s.applyCard);
+  const addXpEvent = useGame((s) => s.addXpEvent);
+  const endTurn = useGame((s) => s.endTurn);
 
   return props.cards.map(({ card, id }, i) => {
     const mid = (props.cards.length - 1) / 2;
@@ -22,23 +26,21 @@ export function CardFan(props: {
         key={id}
         id={id}
         onDrop={(card, x, y) => {
-          if (applyCardToCell(y, x, card, false)) {
+          if (applyCard(y, x, card, false)) {
             switch (card) {
               case C.Lowercase:
-                xpEvent(EVENTS.ULTRA_GOOBER_BONUS);
+                addXpEvent(EVENTS.ULTRA_GOOBER_BONUS);
               case C.Extend:
-                xpEvent(EVENTS.MAGICAL_BONUS);
+                addXpEvent(EVENTS.MAGICAL_BONUS);
               case C.Block:
               case C.Neutralize:
-                xpEvent(EVENTS.SPECIAL_BONUS);
+                addXpEvent(EVENTS.SPECIAL_BONUS);
               case C.X:
               case C.O:
-                xpEvent(EVENTS.PLACE);
-                break;
-
-              default:
+                addXpEvent(EVENTS.PLACE);
                 break;
             }
+
             removeCard(props.for, id);
             endTurn();
             return true;

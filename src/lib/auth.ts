@@ -3,13 +3,7 @@ import Slack from "next-auth/providers/slack";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   trustHost: true,
-  providers: [Slack({
-    authorization: {
-      params: {
-        scope: "openid profile" // We only need name, not email etc
-      }
-    }
-  })],
+  providers: [Slack],
   pages: {
     signIn: "/signin",
   },

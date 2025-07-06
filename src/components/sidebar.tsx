@@ -55,7 +55,7 @@ export function Sidebar({ className }: { className?: string }) {
   const first = useRef(true);
   const hasSent = useRef(false);
 
-  const { messages, sendMessage } = useChat({
+  const { messages, append} = useChat({
     /*    onToolCall({ toolCall }) {
       if (toolCall.toolName === "playMove") {
         const move = toolCall.input as z.infer<typeof moveSchema>;
@@ -87,7 +87,7 @@ export function Sidebar({ className }: { className?: string }) {
           break;
 
         case Card.Extend:
-          if (difficulty === Difficulty.HARD && (tool[1] === "left" || tool[1] === "right")) {
+          if (difficulty === Difficulty.HARD) { // Larger boards make it easier for the human to win
             break;
           }
 
@@ -113,12 +113,14 @@ export function Sidebar({ className }: { className?: string }) {
 
     // first AI turn ever
     if (first.current) {
-      sendMessage({ text: initialPrompt(ai, human, winLength, difficulty) });
+      append({ role: "user", parts: [{ type: "text", text: initialPrompt(ai, human, winLength, difficulty) }]});
+      //sendMessage({ text: initialPrompt(ai, human, winLength, difficulty) });
       first.current = false;
     } else {
-      sendMessage({ text: statePrompt(ai, human, winLength, board) });
+      append({ role: "user", parts: [{ type: "text", text: statePrompt(ai, human, winLength, board) }]});
+      //sendMessage({ text: statePrompt(ai, human, winLength, board) });
     }
-  }, [ai, difficulty, board, winLength, human, winner, sendMessage, turn]);
+  }, [ai, difficulty, board, winLength, human, winner, append, turn]);
 
   const raw_msg = messages[messages.length - 1];
   const content: string[] | undefined =

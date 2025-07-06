@@ -5,6 +5,7 @@ import styles from "./crt.module.css";
 import { Navbar } from "@/components/navbar";
 import TTFUCursor from "@/components/cursor";
 import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 //import sphere from "@/images/sphere.png";
 
 const m6x11 = localFont({
@@ -37,6 +38,7 @@ export default function RootLayout({
         }}
       >
         <Analytics />
+        <SpeedInsights/>
         {/*  <svg xmlns="http://www.w3.org/2000/svg" height="0" className="absolute">
           <filter
             id="crtWarp"

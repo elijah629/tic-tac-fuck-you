@@ -51,7 +51,7 @@ export function sampleCard(
 }
 
 export function removeCard(player: Player, id?: number): Player {
-  if (id === undefined) {
+  if (id !== undefined) {
     return {
       ...player,
       cards: player.cards.filter((x) => x.id !== id),

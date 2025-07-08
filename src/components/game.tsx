@@ -34,7 +34,7 @@ export function Game({ onWin }: { onWin: () => Promise<void> }) {
           {winner === ai!.team ? (
             <>
               <h1 className="text-7xl text-center text-enemy">GAME OVER</h1>
-              <h2 className="text-5xl text-center">PATHETIC... YOUR LOSS</h2>
+              <h2 className="text-5xl text-center">PATHETIC... YOUR LOSE</h2>
             </>
           ) : winner === human!.team ? (
             <>
@@ -75,12 +75,12 @@ export function Game({ onWin }: { onWin: () => Promise<void> }) {
             <span className="text-enemy">CHOOSE WISELY.</span>
           </>
         ) : d === Difficulty.HARD ? (
-          <>GOOD LUCK. I DON&apos;T HAVE A NOSE AND I CAN SMELL YOUR LOSS.</>
+          <>I DON&apos;T HAVE A NOSE AND I CAN SMELL YOUR DEFEAT.</>
         ) : d === Difficulty.NORMAL ? (
           <>YOU SELECTED THE DEFAULT. GOOD JOB IDIOT 👍</>
         ) : d === Difficulty.TODDLER ? (
           <>
-            YOUR <span className="italic">REALLY</span> THAT SCARED OF ME?
+            YOU&apos;RE <span className="italic">REALLY</span> THAT SCARED OF ME?
           </>
         ) : (
           <>be fucking stupid. level impossible (pass ✅)</>

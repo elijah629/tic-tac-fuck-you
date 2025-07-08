@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-export default function TTFUCursor() {
+export function Cursor({ cursor }: { cursor: string }) {
   const [position, setPosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
@@ -31,7 +31,7 @@ export default function TTFUCursor() {
         transform: "translate(-50%, -50%)",
       }}
     >
-      🖕
+      {cursor}
     </div>
   );
 }

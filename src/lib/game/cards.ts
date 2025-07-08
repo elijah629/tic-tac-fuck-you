@@ -17,59 +17,51 @@ export function sampleCard(
   team: Team,
   difficulty: Difficulty,
 ): Card {
-  const cardPool: { item: Card; weight: number }[] = [];
+  const teamCard = team === Team.X ? Card.X : Card.O;
 
-  if (difficulty !== Difficulty.HARD) { // Unlock team cards with HARD mode!
-    cardPool.push({ item: team === Team.X ? Card.X : Card.O, weight: 10 });
-  } else {
-    cardPool.push({ item: Card.Block, weight: 1 });
+  // RBN Algo
+  // R - Rate per round
+  // B - Base value
+  // N - Unlock round
+  //
+  // max(b, b + r(x - n))
+  const rates = difficulty !== Difficulty.HARD ? new Map<Card, [number, number, number]>([
+    [teamCard, [1.2, 5, difficulty]],
+
+    // cells
+    [Card.Block, [0.9, 0, 5 + difficulty]],
+    [Card.Lowercase, [0.9, 0, 5 + difficulty]],
+    [Card.Neutralize, [0.9, 0, 5 + difficulty]],
+
+    // "game changers"
+    [Card.Extend, [0.6, 0, 6 + difficulty]],
+    [Card.DecrementWinLength, [0.6, 0, 6 + difficulty]],
+    [Card.IncrementWinLength, [0.6, 0, 6 + difficulty]],
+  ]) : new Map<Card, [number, number, number]>([
+    [teamCard, [2, 0, 3]],
+
+    // cells
+    [Card.Block, [0.5, 5, 0]],
+    [Card.Lowercase, [0.9, 0, 6]],
+    [Card.Neutralize, [0.9, 0, 6]],
+
+    // "game changers"
+    [Card.Extend, [1.5, 0, 2]],
+    [Card.DecrementWinLength, [0.6, 0, 11]],
+    [Card.IncrementWinLength, [0.6, 0, 11]],
+  ]);
+
+  const weights = new Map<Card, number>([]);
+
+  for (const [card, [r, b, n]] of rates) {
+    weights.set(card, Math.max(b, b + r * (round - n)));
   }
 
-  if (round >= 1 + difficulty) {
-    cardPool.push(
-      { item: Card.Block, weight: 1 },
-      { item: Card.Lowercase, weight: 1 },
-      { item: Card.Neutralize, weight: 2 },
-      { item: team === Team.X ? Card.X : Card.O, weight: 10 }
-    );
-  }
+  const pool = Array.from(weights.entries())
+    .filter(([, w]) => w > 0)
+    .map(([item, weight]) => ({ item, weight }));
 
-  if (round >= 2 + difficulty) {
-    cardPool.push(
-      { item: Card.Extend, weight: 2 },
-      { item: Card.Block, weight: 1 },
-      { item: Card.Lowercase, weight: 1 },
-      { item: Card.Neutralize, weight: 1 },
-    );
-  }
-
-  if (round >= 3 + difficulty) {
-    cardPool.push(
-      { item: Card.Extend, weight: 4 },
-      { item: Card.Block, weight: 2 },
-      { item: Card.Lowercase, weight: 2 },
-      { item: Card.Neutralize, weight: 2 },
-      { item: Card.DecrementWinLength, weight: 2 },
-      { item: Card.IncrementWinLength, weight: 2 },
-    );
-  }
-
-  if (round >= 4 + difficulty) {
-    cardPool.push(
-      { item: Card.Block, weight: 1 },
-      { item: Card.Lowercase, weight: 1 },
-      { item: Card.DecrementWinLength, weight: 4 },
-      { item: Card.IncrementWinLength, weight: 4 },
-    );
-  }
-
-  if (round >= 20 + difficulty) {
-    cardPool.push(
-      { item: team === Team.X ? Card.X : Card.O, weight: 10 }
-    );
-  }
-
-  return weightedRandom(cardPool);
+  return weightedRandom(pool);
 }
 
 export function removeCard(player: Player, id?: number): Player {

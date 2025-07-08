@@ -3,9 +3,10 @@ import localFont from "next/font/local";
 import "./globals.css";
 import styles from "./crt.module.css";
 import { Navbar } from "@/components/navbar";
-import TTFUCursor from "@/components/cursor";
+import { Cursor } from "@/components/cursor";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { isHardcore } from "@/lib/auth";
 //import sphere from "@/images/sphere.png";
 
 const m6x11 = localFont({
@@ -24,11 +25,14 @@ export const metadata: Metadata = {
   description: "Tic Tac Toe + Balatro + AI",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const hardcore = await isHardcore();
+  const icon = hardcore ? "🖕" : "🫶";
+
   return (
     <html lang="en">
       <body
@@ -67,8 +71,8 @@ export default function RootLayout({
             />
           </filter>
         </svg>*/}
-        <TTFUCursor />
-        <Navbar />
+        <Cursor cursor={icon} />
+        <Navbar logo={icon}/>
         {children}
       </body>
     </html>

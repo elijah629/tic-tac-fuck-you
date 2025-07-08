@@ -1,17 +1,11 @@
 import Link from "next/link";
-import { SignInButton, SignOutButton } from "./auth-buttons";
-import { auth } from "@/lib/auth";
-import TTFULogo from "./logo";
+import { AuthButton } from "./auth-buttons";
 
-export async function Navbar() {
-  const session = await auth();
-
-  const signed_out = !session?.user;
-
+export async function Navbar({ logo }: { logo: string }) {
   return (
     <div className="flex items-center p-4">
       <Link href="/" className="mr-4 flex items-center gap-2 lg:mr-6">
-        <TTFULogo />
+          <span className="hover:animate-spin text-4xl">{logo}</span>
       </Link>
       <nav className="flex items-center ml-auto p-4 gap-4 xl:gap-6">
         <Link
@@ -34,7 +28,7 @@ export async function Navbar() {
           Leaderboard
         </Link>
       </nav>
-      {signed_out ? <SignInButton /> : <SignOutButton />}
+      <AuthButton/>
     </div>
   );
 }

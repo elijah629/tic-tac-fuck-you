@@ -204,7 +204,25 @@ export default function HowToPlay() {
           </TableRow>
           <TableRow>
             <TableCell>
-              <Card droppable={false} card={C.TBD} id={6} />
+              <Card droppable={false} card={C.IncrementWinLength} id={6} />
+            </TableCell>
+            <TableCell>Win Length +1</TableCell>
+            <TableCell className="max-w-md whitespace-normal">
+              Increaces the amount of cells in a row required to win
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>
+              <Card droppable={false} card={C.DecrementWinLength} id={7} />
+            </TableCell>
+            <TableCell>Win Length -1</TableCell>
+            <TableCell className="max-w-md whitespace-normal">
+              Decreaces the amount of cells in a row required to win
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>
+              <Card droppable={false} card={C.TBD} id={8} />
             </TableCell>
             <TableCell>Deck back</TableCell>
             <TableCell className="max-w-md whitespace-normal">

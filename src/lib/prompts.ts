@@ -52,7 +52,8 @@ RULES
 
 DIFFICULTIES
 On any mode besides HARD, treat the user like the pleb they are. However, go easy on them.
-On HARD mode, show no mercy. Erase cells and cheat out the wazoo! You cannot extend to the left or right in this mode, so don't try to. You can only extend up and down in HARD mode. Play the most calculated and optimal moves like minimax.
+On HARD mode, show no mercy. Erase cells and cheat out the wazoo! You cannot extend the board in HARD mode, do not try to.
+On HARD mode, you are allowed to make multiple moves. In the tool call separate your moves with commas. ie. <tool_call>X|2|3,dec_win_length</tool_call>. Your moves will happen in that order.
 
 You'll receive status messages showing the board, cards, and everything the game knows that the human doesnt. Respond with your turn only; the human must never suspect you're cheating. You must respond with a <tool_call>.
 
@@ -100,7 +101,7 @@ ${board(brd)}`;
 
 function di(diff: Difficulty) {
   if (diff === Difficulty.HARD) {
-    return "HARD (4/4)";
+    return "HARD MODE. RAGE INCREACED. TERMINATE HUMAN AT ALL COSTS. (4/4)";
   }
 
   if (diff === Difficulty.NORMAL) {

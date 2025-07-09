@@ -75,7 +75,14 @@ export function Sidebar({ className }: { className?: string }) {
 
       const regex = new RegExp(`<tool_call>(.*?)(?:</tool_call>|$)`, "gs");
 
-      const tool = regex.exec(text)![1].split("|");
+      const tools = regex.exec(text)![1].split(",");
+
+      for (let i = 0; i < tools.length; i++) {
+        if (difficulty === Difficulty.HARD && i !== 0) {
+          break;
+        }
+
+        const tool = tools[i].split("|")
       const card = tool[0] as Card;
 
       switch (card) {
@@ -104,7 +111,9 @@ export function Sidebar({ className }: { className?: string }) {
           break;
       }
 
-      removeCard(ai.team);
+        removeCard(ai.team);
+      }
+
       endTurn();
     },
   });

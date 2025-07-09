@@ -11,10 +11,10 @@ export function Board({ className }: { className?: string }) {
   } = useGame((s) => s.board);
 
   return (
-    <div className="flex items-center justify-center">
+    <div className="flex items-center justify-center @container">
       <div
         className={cn(
-          "grid max-w-[50vw] w-full",
+          "grid max-w-[30cqw] w-full h-auto",
           className,
         )}
         style={{

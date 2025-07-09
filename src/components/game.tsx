@@ -34,7 +34,7 @@ export function Game({ onWin }: { onWin: () => Promise<void> }) {
           {winner === ai!.team ? (
             <>
               <h1 className="text-7xl text-center text-enemy">GAME OVER</h1>
-              <h2 className="text-5xl text-center">PATHETIC... YOUR LOSE</h2>
+              <h2 className="text-5xl text-center">PATHETIC... YOU LOSE</h2>
             </>
           ) : winner === human!.team ? (
             <>

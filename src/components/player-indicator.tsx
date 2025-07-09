@@ -12,7 +12,7 @@ export function PlayerIndicator({
     <div
       className={cn(
         "bg-secondary h-25 w-25 rounded-xl text-center",
-        active && "animate-ping",
+        active && "animate-caret-blink",
       )}
     >
       <TeamSymbol team={team} />

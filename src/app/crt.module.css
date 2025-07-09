@@ -21,8 +21,10 @@
   bottom: 0;
   right: 0;
 
-  background-image:
-    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+  background-image: linear-gradient(
+      rgba(18, 16, 16, 0) 50%,
+      rgba(0, 0, 0, 0.25) 50%
+    ),
     linear-gradient(
       90deg,
       rgba(255, 0, 0, 0.06),
@@ -47,6 +49,7 @@
 
 .crt {
   /*filter: url(#crtWarp);*/
+  filter: saturate(1.5);
   animation: textShadow 1.6s infinite;
 }
 

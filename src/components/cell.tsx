@@ -61,6 +61,6 @@ function CellContent({ cell }: { cell: C }) {
   }
 
   if (cell === C.Blocked) {
-    return <span className="-rotate-45">BLOCKED</span>;
+    return <span className="-rotate-45 text-[30cqw]">BLOCKED</span>;
   }
 }

@@ -14,7 +14,7 @@ export function Board({ className }: { className?: string }) {
     <div className="flex items-center justify-center">
       <div
         className={cn(
-          "grid max-w-[50vw] w-full sm:max-h-[50vh] md:h-full md:w-auto md:max-w-none",
+          "grid max-w-[50vw] w-full",
           className,
         )}
         style={{

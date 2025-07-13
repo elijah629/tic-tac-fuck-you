@@ -23,6 +23,10 @@ const serenityOSEmoji = localFont({
 export const metadata: Metadata = {
   title: "Tic Tac Fuck You",
   description: "Tic Tac Toe + Balatro + AI",
+  openGraph: {
+    siteName: "Tic Tac Fuck You",
+    url: "https://tic-tac-fuck-you.vercel.app"
+  }
 };
 
 export default async function RootLayout({

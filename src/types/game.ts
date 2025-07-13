@@ -77,6 +77,8 @@ export interface GameState {
   human: Player;
   ai: Player;
 
+  ai_expression: string;
+
   xp: number;
   xpCounter: number;
   xpEvents: XpEvent[];
@@ -96,6 +98,7 @@ export type GameActions = {
   removeXpEvent(id: number): void;
   winState(): Winner;
   endTurn(): void;
+  setAiExpression(emoji: string): void;
 };
 
 export interface Player {

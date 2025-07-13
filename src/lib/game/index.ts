@@ -116,6 +116,7 @@ export const useMaybeGame = create<GameStore>((set, get) => ({
           .fill(Card.TBD)
           .map((card, id) => ({ id, card })),
       },
+      ai_expression: aiTeam === Team.X ? "X" : "O",
       onWin:
         difficulty === Difficulty.HARD
           ? onWin
@@ -128,6 +129,10 @@ export const useMaybeGame = create<GameStore>((set, get) => ({
 
     setLineMatrix(generateLineMatrix(cols, rows, winLength)); // CAN BE VERY BIG! Not storing in state due to updates
   },
+
+setAiExpression(emoji) {
+    set({ ai_expression: emoji });
+},
 
   endTurn() {
     set(

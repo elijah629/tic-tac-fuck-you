@@ -67,7 +67,7 @@ export function Game({ onWin }: { onWin: () => Promise<void> }) {
       )}
     </main>
   ) : (
-    <main className="flex flex-col h-screen items-center justify-center gap-8">
+    <main className="flex flex-col h-screen items-center justify-center gap-8 p-5">
       <h2 className="text-5xl text-center">
         {unset ? (
           <>
@@ -87,8 +87,9 @@ export function Game({ onWin }: { onWin: () => Promise<void> }) {
         )}
       </h2>
 
+        <div className="flex w-full max-w-[85vw] gap-4">
+        <span className="text-neutral">INFANT</span>
       <Slider
-        className="max-w-[85vw]"
         max={100}
         min={0}
         step={1}
@@ -98,6 +99,8 @@ export function Game({ onWin }: { onWin: () => Promise<void> }) {
           setDifficulty(v);
         }}
       />
+        <span className="text-enemy">HARD</span>
+        </div>
       <div className="flex rounded-md w-min">
         <Button
           onClick={() => init(Team.O, Team.X, Team.O, onWin, d)}
@@ -109,7 +112,7 @@ export function Game({ onWin }: { onWin: () => Promise<void> }) {
         </Button>
         <Button
           onClick={() => {
-            if (Math.random() > 0.5) {
+            if (Math.random() > 0.51) { // Not random
               init(Team.X, Team.O, Team.X, onWin, d);
             } else {
               init(Team.O, Team.X, Team.O, onWin, d);

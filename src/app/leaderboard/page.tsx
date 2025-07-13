@@ -11,7 +11,7 @@ import {
 import { auth, signIn } from "@/lib/auth";
 import { ratelimit, redis } from "@/lib/redis";
 
-const TOP = 10;
+const TOP = 20;
 const medalMap = ["🥇", "🥈", "🥉"];
 
 type Leaderboard = LeaderboardItem[];
@@ -30,7 +30,7 @@ export default async function Leaderboard() {
   if (!success && !id) await signIn();
   if (!success && id) return <>429. Too many requests! Try again later</>;
 
-  const raw = await redis.zrange("leaderboard", 0, TOP, {
+  const raw = await redis.zrange("leaderboard", 0, TOP - 1, {
     withScores: true,
     rev: true,
   });
@@ -65,7 +65,7 @@ export default async function Leaderboard() {
   );
 
   return (
-    <main className="flex w-full justify-center">
+    <main className="flex w-full justify-center p-4">
       <Table className="max-w-3xl mx-auto text-2xl">
         <TableCaption>
           Top {leaderboard.length} performing specimen
@@ -80,7 +80,10 @@ export default async function Leaderboard() {
           {ranked.map(({ name, wins, rank }) => (
             <TableRow key={name}>
               <TableCell className="font-medium">
-                {name} {medalMap[rank] ?? "#" + (rank + 1) + "."}
+                {medalMap[rank] ?
+                  <span className="text-4xl -m-4">{medalMap[rank]} {name} {medalMap[rank]}</span> :
+                  <><span className="text-3xl">{rank + 1}. </span> {name}</>
+                }
               </TableCell>
               <TableCell className="text-right">{wins}</TableCell>
             </TableRow>

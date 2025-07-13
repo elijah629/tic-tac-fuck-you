@@ -1,11 +1,13 @@
 "use client";
 
+import emoji from "emoji-regex";
 import { Card, Difficulty, ExtendDirection } from "@/types/game";
 import { useGame } from "@/lib/game";
 import { initialPrompt, statePrompt } from "@/lib/prompts";
 import { cn } from "@/lib/utils";
 import { useChat } from "@ai-sdk/react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Input } from "./ui/input";
 
 export function Sidebar({ className }: { className?: string }) {
   const removeXpEvent = useGame((s) => s.removeXpEvent);
@@ -24,6 +26,7 @@ export function Sidebar({ className }: { className?: string }) {
   const winner = useGame((s) => s.winner);
   const difficulty = useGame((s) => s.difficulty);
   const human = useGame((s) => s.human);
+  const setExpression = useGame((s) => s.setAiExpression);
 
   // XP
   // queue of ids to remove
@@ -56,7 +59,8 @@ export function Sidebar({ className }: { className?: string }) {
   const first = useRef(true);
   const hasSent = useRef(false);
 
-  const { messages, append} = useChat({
+  const [input, setInput] = useState<string>("");
+  const { messages, append, status } = useChat({
     /*    onToolCall({ toolCall }) {
       if (toolCall.toolName === "playMove") {
         const move = toolCall.input as z.infer<typeof moveSchema>;
@@ -73,7 +77,14 @@ export function Sidebar({ className }: { className?: string }) {
     onFinish({ message: { parts } }) {
       const text = parts.filter((x) => x.type === "text")[0].text;
 
+      const emojis = emoji();
       const regex = new RegExp(`<tool_call>(.*?)(?:</tool_call>|$)`, "gs");
+
+      const expr = text.match(emojis)?.[0];
+
+      if (expr !== undefined) {
+        setExpression(expr);
+      }
 
       const tools = regex.exec(text)![1].split(",");
 
@@ -171,6 +182,20 @@ export function Sidebar({ className }: { className?: string }) {
           })}
         </div>
       )}
+      <form onSubmit={e => {
+        e.preventDefault();
+
+        if (input.trim() && turn === human.team) {
+          append({  role: "user", parts: [{ type: "text", text: `The human decided not to play a move, but instead talk back to you, the game state is the same, respond to this appropriately: Human: ${input}` }]});
+          hasSent.current = true;
+          setInput("");
+          endTurn();
+        }
+      }}>
+        <Input           value={input}
+          onChange={e => setInput(e.target.value)}
+          disabled={status !== 'ready' || turn === ai.team} placeholder="Talk back 😠 (uses turn)"/>
+      </form>
       <div className="p-4 bg-secondary rounded-md">
         <div className="font-bold sm:text-3xl">Win Length: {winLength}</div>
         <div className="font-bold sm:text-3xl">

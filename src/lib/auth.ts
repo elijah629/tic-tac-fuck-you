@@ -42,5 +42,5 @@ export const { handlers, signIn, signOut, auth, unstable_update } = NextAuth({
 export async function isHardcore(session?: Session | null): Promise<boolean> {
   const s = session ?? await auth();
 
-  return !!((s?.user as unknown as ({ hardcore: boolean | undefined } | undefined))?.hardcore)
+  return process.env.NODE_ENV === "development" || !!((s?.user as unknown as ({ hardcore: boolean | undefined } | undefined))?.hardcore)
 }

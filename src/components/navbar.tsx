@@ -12,7 +12,7 @@ export async function Navbar({ logo }: { logo: string }) {
           href="/how-to-play"
           className={"transition-colors hover:text-foreground/80"}
         >
-          How?
+          How to Play?
         </Link>
 
         <Link

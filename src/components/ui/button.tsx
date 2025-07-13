@@ -21,9 +21,9 @@ const buttonVariants = cva(
           "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
         link: "text-primary underline-offset-4 hover:underline",
         neutral:
-          "bg-neutral text-secondary-foreground shadow-xs hover:bg-neutral/90",
-        ally: "bg-ally text-secondary-foreground shadow-xs hover:bg-ally/90",
-        enemy: "bg-enemy text-secondary-foreground shadow-xs hover:bg-enemy/90",
+          "bg-neutral/90 text-secondary-foreground shadow-xs hover:bg-neutral/80",
+        ally: "bg-ally/90 text-secondary-foreground shadow-xs hover:bg-ally/80",
+        enemy: "bg-enemy/90 text-secondary-foreground shadow-xs hover:bg-enemy/80",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",

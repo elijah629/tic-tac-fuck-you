@@ -178,8 +178,16 @@ export function applyCard(
   const cell = CARD_TO_CELL[card];
   if (cell === undefined) return { valid: false };
 
-  if (!shouldOverwrite && cell !== Cell.Blocked && current !== Cell.Empty) {
-    return { valid: false };
+  if (shouldOverwrite || (cell === Cell.Blocked && current !== Cell.Blocked)) {
+    board.cells[index] = cell;
+  } else {
+    const valid = cell !== current && current === Cell.Empty;
+
+    if (valid) {
+      board.cells[index] = cell;
+    } else {
+      return { valid: false };
+    }
   }
 
   board.cells[index] = cell;
@@ -188,5 +196,4 @@ export function applyCard(
     valid: true,
     board,
   };
-  //}
 }

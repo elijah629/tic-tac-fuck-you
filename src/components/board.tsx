@@ -10,11 +10,14 @@ export function Board({ className }: { className?: string }) {
     cells,
   } = useGame((s) => s.board);
 
+  const colBound = cols > rows;
+
   return (
     <div className="flex items-center justify-center @container">
       <div
         className={cn(
-          "grid max-w-[30cqw] w-full h-auto",
+          "grid",
+          colBound ? "max-w-[90cqw] lg:max-w-[60cqw] xl:max-w-[50cqw] w-full h-auto" : "max-h-[90cqw] xl:max-h-[50cqw] h-full w-auto",
           className,
         )}
         style={{

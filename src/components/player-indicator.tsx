@@ -6,12 +6,12 @@ export function PlayerIndicator({
   team,
 }: {
   active: boolean;
-  team: Team;
+  team: Team | string;
 }) {
   return (
     <div
       className={cn(
-        "bg-secondary h-25 w-25 rounded-xl text-center",
+        "bg-secondary h-25 w-25 rounded-xl flex items-center justify-center",
         active && "animate-caret-blink",
       )}
     >
@@ -20,12 +20,14 @@ export function PlayerIndicator({
   );
 }
 
-function TeamSymbol({ team }: { team: Team }) {
+function TeamSymbol({ team }: { team: Team | string }) {
   if (team === Team.O) {
-    return <span className="text-ally text-8xl ml-1">O</span>;
+    return <span className="text-ally text-8xl ml-1">{Team.O}</span>;
   }
 
   if (team === Team.X) {
-    return <span className="text-enemy text-8xl ml-1">X</span>;
+    return <span className="text-enemy text-8xl ml-1">{Team.X}</span>;
   }
+
+  return <span className="text-5xl ml-1">{team}</span>;
 }

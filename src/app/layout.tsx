@@ -38,7 +38,7 @@ export default async function RootLayout({
       <body
         className={`${m6x11.variable} ${serenityOSEmoji.variable} ${styles.crt} h-screen flex flex-col select-none text-2xl antialiased dark`}
         style={{
-          fontFamily: `var(--font-m6x11), system-ui, var(--font-emoji)`,
+          fontFamily: `var(--font-m6x11), var(--font-emoji), system-ui`,
         }}
       >
         <Analytics />

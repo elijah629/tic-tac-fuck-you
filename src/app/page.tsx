@@ -20,12 +20,10 @@ export default async function Home() {
   return (
     <main>
       <section className="flex flex-col items-center gap-3">
-        <h1 className="text-4xl md:text-6xl font-bold">Tic Tac { hardcore ? "Fuck" : <span>
+        <h1 className="text-4xl md:text-6xl font-bold">Tic Tac F{ hardcore ? "uc" : <span>
           <span className="text-enemy">*</span>
           <span className="text-ally">&deg;</span>
-          <span className="text-enemy">*</span>
-          <span className="text-ally">&deg;</span>
-        </span>} You</h1>
+        </span>}k You</h1>
         <p className="max-w-2/3 md:max-w-100 text-center">
           <span className="text-ally underline">YOU</span>{" "}
           <span className="text-neutral">vs a</span>{" "}

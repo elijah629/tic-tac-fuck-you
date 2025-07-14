@@ -17,7 +17,9 @@ export function Board({ className }: { className?: string }) {
       <div
         className={cn(
           "grid",
-          colBound ? "max-w-[90cqw] lg:max-w-[60cqw] xl:max-w-[50cqw] w-full h-auto" : "max-h-[90cqw] xl:max-h-[50cqw] h-full w-auto",
+          colBound
+            ? "max-w-[90cqw] lg:max-w-[60cqw] xl:max-w-[50cqw] w-full h-auto"
+            : "max-h-[90cqw] xl:max-h-[50cqw] h-full w-auto",
           className,
         )}
         style={{

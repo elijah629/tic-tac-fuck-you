@@ -5,7 +5,7 @@ export async function Navbar({ logo }: { logo: string }) {
   return (
     <div className="flex items-center p-4">
       <Link href="/" className="mr-4 flex items-center gap-2 lg:mr-6">
-          <span className="hover:animate-spin text-4xl">{logo}</span>
+        <span className="hover:animate-spin text-4xl">{logo}</span>
       </Link>
       <nav className="flex items-center ml-auto p-4 gap-4 xl:gap-6">
         <Link
@@ -28,7 +28,7 @@ export async function Navbar({ logo }: { logo: string }) {
           Leaderboard
         </Link>
       </nav>
-      <AuthButton/>
+      <AuthButton />
     </div>
   );
 }

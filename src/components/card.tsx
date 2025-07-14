@@ -266,47 +266,48 @@ export function Card({
     [updateTransform],
   );
 
-  const handlePointerUp = useCallback((e: PointerEvent) => {
-    const state = stateRef.current;
-    if (!state.dragging) return;
+  const handlePointerUp = useCallback(
+    (e: PointerEvent) => {
+      const state = stateRef.current;
+      if (!state.dragging) return;
 
-    const elCard = cardRef.current;
-    if (!elCard) return;
+      const elCard = cardRef.current;
+      if (!elCard) return;
 
-    state.dragging = false;
-    elCard.style.zIndex = "10";
-    elCard.style.pointerEvents = "auto";
-    state.y += 16;
+      state.dragging = false;
+      elCard.style.zIndex = "10";
+      elCard.style.pointerEvents = "auto";
+      state.y += 16;
 
-    stopWindEffect();
+      stopWindEffect();
 
-    if (!droppable) {
-      // This card cannot be dropped, always return
-      returnToOrigin();
-      return;
-    }
+      if (!droppable) {
+        // This card cannot be dropped, always return
+        returnToOrigin();
+        return;
+      }
 
+      const zone = document
+        .elementsFromPoint(e.clientX, e.clientY)
+        .filter((x) => x.hasAttribute("data-board-cell"))[0];
 
-    const zone = document.elementsFromPoint(e.clientX, e.clientY).filter(x => x.hasAttribute("data-board-cell"))[0];
+      if (!zone) {
+        // Dropped outside of the board
 
-    if (!zone) {
-      // Dropped outside of the board
+        returnToOrigin();
+        return;
+      }
 
-      returnToOrigin();
-      return;
-    }
+      const x = Number(zone.getAttribute("data-board-cell-x"));
+      const y = Number(zone.getAttribute("data-board-cell-y"));
 
-    const x = Number(zone.getAttribute("data-board-cell-x"));
-    const y = Number(zone.getAttribute("data-board-cell-y"));
+      if (!onDrop?.(card, x, y)) {
+        // The move was NOT a valid move, return the card.
+        returnToOrigin();
+        return;
+      }
 
-    if (!onDrop?.(card, x, y)) {
-      // The move was NOT a valid move, return the card.
-      returnToOrigin();
-      return;
-    }
-
-
-    /*
+      /*
     // Optimized drop zone detection
     const cardRect = elCard.getBoundingClientRect();
     const centerX = cardRect.left + cardRect.width / 2;
@@ -334,8 +335,10 @@ export function Card({
       }
     }*/
 
-    //returnToOrigin(); // If card is not in a drop zone, return it.
-  }, [stopWindEffect, onDrop, droppable, card, returnToOrigin]);
+      //returnToOrigin(); // If card is not in a drop zone, return it.
+    },
+    [stopWindEffect, onDrop, droppable, card, returnToOrigin],
+  );
 
   useEffect(() => {
     const card = cardRef.current;

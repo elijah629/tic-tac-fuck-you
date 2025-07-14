@@ -130,9 +130,9 @@ export const useMaybeGame = create<GameStore>((set, get) => ({
     setLineMatrix(generateLineMatrix(cols, rows, winLength)); // CAN BE VERY BIG! Not storing in state due to updates
   },
 
-setAiExpression(emoji) {
+  setAiExpression(emoji) {
     set({ ai_expression: emoji });
-},
+  },
 
   endTurn() {
     set(
@@ -143,9 +143,11 @@ setAiExpression(emoji) {
   },
 
   changeWinLength(change) {
-    set(withInit(({ winLength, board }) => {
-      return changeWinLength(change, winLength, board);
-    }))
+    set(
+      withInit(({ winLength, board }) => {
+        return changeWinLength(change, winLength, board);
+      }),
+    );
   },
 
   applyCard(row, col, card, shouldOverwite) {

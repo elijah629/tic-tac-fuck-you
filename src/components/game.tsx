@@ -80,29 +80,34 @@ export function Game({ onWin }: { onWin: () => Promise<void> }) {
           <>YOU SELECTED THE DEFAULT. GOOD JOB IDIOT 👍</>
         ) : d === Difficulty.TODDLER ? (
           <>
-            YOU&apos;RE <span className="italic">REALLY</span> THAT SCARED OF ME?
+            YOU&apos;RE <span className="italic">REALLY</span> THAT SCARED OF
+            ME?
           </>
         ) : (
           <>🫵 ar fuckng stoped. (level impossible, pass ✅)</>
         )}
       </h2>
-        <span>{difficulty[0].toFixed(1)}%{(difficulty[0] === 69 || difficulty[0] === 42) && ", nice"}</span>
+      <span>
+        {difficulty[0].toFixed(1)}%
+        {(difficulty[0] === 69 || difficulty[0] === 42) && ", nice"}
+      </span>
 
-        <div className="flex max-w-[80vw] w-full gap-4">
-        <span className="text-neutral">👨‍🦲 INFANT</span> {/* Emoji font makes 👨‍🦲 appear like a baby ish */}
-      <Slider
-        max={100}
-        min={0}
-        step={1}
-            className="flex-1"
-        value={difficulty}
-        onValueChange={(v) => {
-          setUnset(false);
-          setDifficulty(v);
-        }}
-      />
+      <div className="flex max-w-[80vw] w-full gap-4">
+        <span className="text-neutral">👨‍🦲 INFANT</span>{" "}
+        {/* Emoji font makes 👨‍🦲 appear like a baby ish */}
+        <Slider
+          max={100}
+          min={0}
+          step={1}
+          className="flex-1"
+          value={difficulty}
+          onValueChange={(v) => {
+            setUnset(false);
+            setDifficulty(v);
+          }}
+        />
         <span className="text-enemy text-3xl">HARD ☠️</span>
-        </div>
+      </div>
       <div className="flex rounded-md w-min">
         <Button
           onClick={() => init(Team.O, Team.X, Team.O, onWin, d)}
@@ -114,7 +119,8 @@ export function Game({ onWin }: { onWin: () => Promise<void> }) {
         </Button>
         <Button
           onClick={() => {
-            if (Math.random() > 0.51) { // Not random
+            if (Math.random() > 0.51) {
+              // Not random
               init(Team.X, Team.O, Team.X, onWin, d);
             } else {
               init(Team.O, Team.X, Team.O, onWin, d);

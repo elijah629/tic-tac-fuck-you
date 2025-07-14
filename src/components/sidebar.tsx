@@ -93,34 +93,35 @@ export function Sidebar({ className }: { className?: string }) {
           break;
         }
 
-        const tool = tools[i].split("|")
-      const card = tool[0] as Card;
+        const tool = tools[i].split("|");
+        const card = tool[0] as Card;
 
-      switch (card) {
-        case Card.X:
-        case Card.O:
-        case Card.Block:
-        case Card.Lowercase:
-        case Card.Neutralize:
-          applyCard(Number(tool[1]), Number(tool[2]), card, true);
-          break;
-
-        case Card.Extend:
-          if (difficulty === Difficulty.HARD) { // Larger boards make it easier for the human to win
+        switch (card) {
+          case Card.X:
+          case Card.O:
+          case Card.Block:
+          case Card.Lowercase:
+          case Card.Neutralize:
+            applyCard(Number(tool[1]), Number(tool[2]), card, true);
             break;
-          }
 
-          extendBoard(tool[1] as ExtendDirection);
-          break;
+          case Card.Extend:
+            if (difficulty === Difficulty.HARD) {
+              // Larger boards make it easier for the human to win
+              break;
+            }
 
-        case Card.IncrementWinLength:
-          changeWinLength(1);
-          break;
+            extendBoard(tool[1] as ExtendDirection);
+            break;
 
-        case Card.DecrementWinLength:
-          changeWinLength(-1);
-          break;
-      }
+          case Card.IncrementWinLength:
+            changeWinLength(1);
+            break;
+
+          case Card.DecrementWinLength:
+            changeWinLength(-1);
+            break;
+        }
 
         removeCard(ai.team);
       }
@@ -142,11 +143,24 @@ export function Sidebar({ className }: { className?: string }) {
 
     // first AI turn ever
     if (first.current) {
-      append({ role: "user", parts: [{ type: "text", text: initialPrompt(ai, human, winLength, difficulty) }]});
+      append({
+        role: "user",
+        parts: [
+          {
+            type: "text",
+            text: initialPrompt(ai, human, winLength, difficulty),
+          },
+        ],
+      });
       //sendMessage({ text: initialPrompt(ai, human, winLength, difficulty) });
       first.current = false;
     } else {
-      append({ role: "user", parts: [{ type: "text", text: statePrompt(ai, human, winLength, board) }]});
+      append({
+        role: "user",
+        parts: [
+          { type: "text", text: statePrompt(ai, human, winLength, board) },
+        ],
+      });
       //sendMessage({ text: statePrompt(ai, human, winLength, board) });
     }
   }, [ai, difficulty, board, winLength, human, winner, append, turn]);
@@ -172,26 +186,38 @@ export function Sidebar({ className }: { className?: string }) {
         </ul>
       </div>
       {content && (
-<div className="p-4 bg-secondary rounded-md">
-  {content?.map((text, i) => <HighlightedText text={text} key={i}/>)}
-</div>
-
-
+        <div className="p-4 bg-secondary rounded-md">
+          {content?.map((text, i) => (
+            <HighlightedText text={text} key={i} />
+          ))}
+        </div>
       )}
-      <form onSubmit={e => {
-        e.preventDefault();
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
 
-        if (input.trim() && turn === human.team) {
-          append({  role: "user", parts: [{ type: "text", text: `The human decided not to play a move, but instead talk back to you, the game state is the same, respond to this appropriately: Human: ${input}` }]});
-          hasSent.current = true;
-          setInput("");
-          endTurn();
-        }
-      }}>
+          if (input.trim() && turn === human.team) {
+            append({
+              role: "user",
+              parts: [
+                {
+                  type: "text",
+                  text: `The human decided not to play a move, but instead talk back to you, the game state is the same, respond to this appropriately: Human: ${input}`,
+                },
+              ],
+            });
+            hasSent.current = true;
+            setInput("");
+            endTurn();
+          }
+        }}
+      >
         <Input
           value={input}
-          onChange={e => setInput(e.target.value)}
-          disabled={status !== 'ready' || turn === ai.team} placeholder="Talk back 😠 (uses turn)"/>
+          onChange={(e) => setInput(e.target.value)}
+          disabled={status !== "ready" || turn === ai.team}
+          placeholder="Talk back 😠 (uses turn)"
+        />
       </form>
       <div className="p-4 bg-secondary rounded-md">
         <div className="font-bold sm:text-3xl">Win Length: {winLength}</div>
@@ -212,7 +238,6 @@ function colorXp(xp: number): string {
   return "text-legendary";
 }
 
-
 const regex = /(^|\W)([OX])(?=\W|$)/g;
 
 function HighlightedText({ text }: { text: string }) {
@@ -232,9 +257,9 @@ function HighlightedText({ text }: { text: string }) {
       }
 
       items.push(
-        <span key={start} className={char === 'O' ? 'text-ally' : 'text-enemy'}>
+        <span key={start} className={char === "O" ? "text-ally" : "text-enemy"}>
           {char}
-        </span>
+        </span>,
       );
 
       lastIndex = start + 1;

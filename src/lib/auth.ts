@@ -7,25 +7,29 @@ export const { handlers, signIn, signOut, auth, unstable_update } = NextAuth({
   pages: {
     signIn: "/signin",
   },
-    callbacks: {
+  callbacks: {
     async jwt({ token, user, trigger, session }) {
-      if (user) { // Initial login
+      if (user) {
+        // Initial login
         token.hardcore = false;
       }
 
-      if (trigger === "update" && session?.user?.hardcore !== undefined) { // Sync token and auth;
+      if (trigger === "update" && session?.user?.hardcore !== undefined) {
+        // Sync token and auth;
         token.hardcore = session.user.hardcore;
       }
 
       return token;
     },
-    async session({ session, token }) { // Get session
+    async session({ session, token }) {
+      // Get session
       // FUCK YEAH! ENABLE SWEARING!
-      (session.user as unknown as { hardcore: boolean }).hardcore = token.hardcore as boolean;
+      (session.user as unknown as { hardcore: boolean }).hardcore =
+        token.hardcore as boolean;
 
       return session;
-    }
-  }
+    },
+  },
   /* callbacks: {
     authorized({ request, auth }) {
       const pathname = new URL(request.url).pathname;
@@ -40,7 +44,11 @@ export const { handlers, signIn, signOut, auth, unstable_update } = NextAuth({
 });
 
 export async function isHardcore(session?: Session | null): Promise<boolean> {
-  const s = session ?? await auth();
+  const s = session ?? (await auth());
 
-  return process.env.NODE_ENV === "development" || !!((s?.user as unknown as ({ hardcore: boolean | undefined } | undefined))?.hardcore)
+  return (
+    process.env.NODE_ENV === "development" ||
+    !!(s?.user as unknown as { hardcore: boolean | undefined } | undefined)
+      ?.hardcore
+  );
 }

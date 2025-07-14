@@ -161,7 +161,7 @@ export function applyCard(
 
   if (card === Card.DecrementWinLength) {
     if (winLength - 1 < 2) {
-      return { valid: false }
+      return { valid: false };
     }
 
     return { valid: true, ...changeWinLength(-1, winLength, board) };

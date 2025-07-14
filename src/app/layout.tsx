@@ -25,8 +25,8 @@ export const metadata: Metadata = {
   description: "Tic Tac Toe + Balatro + AI",
   openGraph: {
     siteName: "Tic Tac Fuck You",
-    url: "https://tic-tac-fuck-you.vercel.app"
-  }
+    url: "https://tic-tac-fuck-you.vercel.app",
+  },
 };
 
 export default async function RootLayout({
@@ -46,7 +46,7 @@ export default async function RootLayout({
         }}
       >
         <Analytics />
-        <SpeedInsights/>
+        <SpeedInsights />
         {/*  <svg xmlns="http://www.w3.org/2000/svg" height="0" className="absolute">
           <filter
             id="crtWarp"
@@ -76,7 +76,7 @@ export default async function RootLayout({
           </filter>
         </svg>*/}
         <Cursor cursor={icon} />
-        <Navbar logo={icon}/>
+        <Navbar logo={icon} />
         {children}
       </body>
     </html>

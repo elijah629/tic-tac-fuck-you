@@ -6,6 +6,8 @@ Tic Tac Fuck You
 
 <img src="https://raw.githubusercontent.com/catppuccin/catppuccin/main/assets/palette/macchiato.png" width="600px" />
 
+![hackatime](https://hackatime-badge.hackclub.com/U092FMXURQV/tic-tac-fuck-you)
+
 </h1>
 
 <p align=center>Tic Tac Toe for the strong-willed</p>

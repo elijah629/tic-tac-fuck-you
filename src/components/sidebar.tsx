@@ -6,7 +6,7 @@ import { useGame } from "@/lib/game";
 import { initialPrompt, statePrompt } from "@/lib/prompts";
 import { cn } from "@/lib/utils";
 import { useChat } from "@ai-sdk/react";
-import { useEffect, useRef, useState } from "react";
+import React, { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { Input } from "./ui/input";
 
 export function Sidebar({ className }: { className?: string }) {
@@ -172,15 +172,11 @@ export function Sidebar({ className }: { className?: string }) {
         </ul>
       </div>
       {content && (
-        <div className="p-4 bg-secondary rounded-md">
-          {content?.map((text, i) => {
-            return (
-              <span className="whitespace-pre-wrap" key={`${raw_msg.id}-${i}`}>
-                {text}
-              </span>
-            );
-          })}
-        </div>
+<div className="p-4 bg-secondary rounded-md">
+  {content?.map((text, i) => <HighlightedText text={text} key={i}/>)}
+</div>
+
+
       )}
       <form onSubmit={e => {
         e.preventDefault();
@@ -192,7 +188,8 @@ export function Sidebar({ className }: { className?: string }) {
           endTurn();
         }
       }}>
-        <Input           value={input}
+        <Input
+          value={input}
           onChange={e => setInput(e.target.value)}
           disabled={status !== 'ready' || turn === ai.team} placeholder="Talk back 😠 (uses turn)"/>
       </form>
@@ -213,4 +210,42 @@ function colorXp(xp: number): string {
   }
 
   return "text-legendary";
+}
+
+
+const regex = /(^|\W)([OX])(?=\W|$)/g;
+
+function HighlightedText({ text }: { text: string }) {
+  const parts = useMemo<ReactNode[]>(() => {
+    const items: ReactNode[] = [];
+    let lastIndex = 0;
+    let match: RegExpExecArray | null;
+
+    // Use global regex with exec
+    while ((match = regex.exec(text)) !== null) {
+      const prefix = match[1];
+      const char = match[2];
+      const start = match.index + prefix.length;
+
+      if (start > lastIndex) {
+        items.push(text.slice(lastIndex, start));
+      }
+
+      items.push(
+        <span key={start} className={char === 'O' ? 'text-ally' : 'text-enemy'}>
+          {char}
+        </span>
+      );
+
+      lastIndex = start + 1;
+    }
+
+    if (lastIndex < text.length) {
+      items.push(text.slice(lastIndex));
+    }
+
+    return items;
+  }, [text]);
+
+  return <>{parts}</>;
 }

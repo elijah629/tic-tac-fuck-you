@@ -81,7 +81,7 @@ export default async function Leaderboard() {
             <TableRow key={name}>
               <TableCell className="font-medium">
                 {medalMap[rank] ?
-                  <span className="text-4xl -m-4">{medalMap[rank]} {name} {medalMap[rank]}</span> :
+                  <span className="text-3xl -m-4">{medalMap[rank]} {name} {medalMap[rank]}</span> :
                   <><span className="text-3xl">{rank + 1}. </span> {name}</>
                 }
               </TableCell>

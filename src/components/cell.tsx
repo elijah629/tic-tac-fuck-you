@@ -17,7 +17,7 @@ export function Cell({ index, cell }: { index: number; cell: C }) {
       data-board-cell
       data-board-cell-x={x}
       data-board-cell-y={y}
-      className="flex items-center justify-center @container border-primary border-2"
+      className="flex items-center justify-center hover:bg-secondary @container border-primary border-2"
       key={`${x}-${y}`}
       style={{
         borderTop: isTop ? "none" : undefined,
@@ -54,7 +54,7 @@ function CellContent({ cell }: { cell: C }) {
 
   if (cell === C.Neutral) {
     return (
-      <div className="bg-neutral w-full h-full text-[100cqw] flex items-center justify-center">
+      <div className="bg-neutral/80 w-full h-full text-[100cqw] flex items-center justify-center">
         ?
       </div>
     );

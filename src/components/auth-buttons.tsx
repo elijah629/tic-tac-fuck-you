@@ -42,6 +42,15 @@ export async function AuthButton({ redirect }: { redirect?: string }) {
         <Image alt="Slack Technologies Icon" width={24} src={SlackIcon} /> Sign
         in with Slack
       </Button>
+      <Button
+        size="icon"
+        className="text-2xl scale-110 md:hidden flex"
+        type="submit"
+      >
+        <Image alt="Slack Technologies Icon" width={24} src={SlackIcon} />
+      </Button>
+
+
 
     </form>)
   );

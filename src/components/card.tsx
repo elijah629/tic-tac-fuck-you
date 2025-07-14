@@ -30,7 +30,7 @@ export function cardSrc(card: C) {
 
 const MAX_WIND_ANGLE = 30;
 const WIND_RESPONSIVENESS = 0.5;
-const VELOCITY_SAMPLES = 5;
+const VELOCITY_SAMPLES = 10;
 const MIN_VELOCITY_THRESHOLD = 0.05;
 
 enum ReturnPhase {
@@ -239,8 +239,10 @@ export function Card({
     const state = stateRef.current;
 
     state.dragging = true;
+    state.y -= 16;
+    card.style.pointerEvents = "none";
     card.style.zIndex = "11";
-    cardRef.current?.classList.remove(styles.wave);
+    card.classList.remove(styles.wave);
 
     state.returnPhase = ReturnPhase.NONE;
 
@@ -264,7 +266,7 @@ export function Card({
     [updateTransform],
   );
 
-  const handlePointerUp = useCallback(() => {
+  const handlePointerUp = useCallback((e: PointerEvent) => {
     const state = stateRef.current;
     if (!state.dragging) return;
 
@@ -273,6 +275,8 @@ export function Card({
 
     state.dragging = false;
     elCard.style.zIndex = "10";
+    elCard.style.pointerEvents = "auto";
+    state.y += 16;
 
     stopWindEffect();
 
@@ -282,6 +286,27 @@ export function Card({
       return;
     }
 
+
+    const zone = document.elementsFromPoint(e.clientX, e.clientY).filter(x => x.hasAttribute("data-board-cell"))[0];
+
+    if (!zone) {
+      // Dropped outside of the board
+
+      returnToOrigin();
+      return;
+    }
+
+    const x = Number(zone.getAttribute("data-board-cell-x"));
+    const y = Number(zone.getAttribute("data-board-cell-y"));
+
+    if (!onDrop?.(card, x, y)) {
+      // The move was NOT a valid move, return the card.
+      returnToOrigin();
+      return;
+    }
+
+
+    /*
     // Optimized drop zone detection
     const cardRect = elCard.getBoundingClientRect();
     const centerX = cardRect.left + cardRect.width / 2;
@@ -307,9 +332,9 @@ export function Card({
 
         return; // Stop checking all other zones and return early
       }
-    }
+    }*/
 
-    returnToOrigin(); // If card is not in a drop zone, return it.
+    //returnToOrigin(); // If card is not in a drop zone, return it.
   }, [stopWindEffect, onDrop, droppable, card, returnToOrigin]);
 
   useEffect(() => {
@@ -344,9 +369,8 @@ export function Card({
       draggable={false}
       alt="Card"
       src={cardSrc(card)}
-      className={`transition-transform duration-300 ease-out hover:-translate-y-4 ${styles.wave}`}
+      className={`transition-transform duration-300 ease-out z-[10] hover:z-[11] hover:-translate-y-4 ${styles.wave}`}
       style={{
-        zIndex: 10,
         ["--base-transform" as string]: `translate(0px, ${translateY ?? 0}px) rotate(${angle ?? 0}deg)`,
         animationDelay: `-${((id * 16807) % 1000) / 1000}s`,
       }}

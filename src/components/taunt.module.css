@@ -1,0 +1,22 @@
+@keyframes taunt {
+  0% {
+    transform: translateY(-4px) rotate(0deg);
+  }
+  25% {
+    transform: translateY(0px) rotate(-4deg);
+  }
+  50% {
+    transform: translateY(4px) rotate(4deg);
+  }
+  75% {
+    transform: translateY(0px) rotate(-4deg);
+  }
+  100% {
+    transform: translateY(-4px) rotate(0deg);
+  }
+}
+
+.taunt {
+  transform-origin: center;
+  animation: taunt 10s ease-in-out infinite;
+}

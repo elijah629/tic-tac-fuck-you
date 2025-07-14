@@ -38,11 +38,11 @@ export default async function RootLayout({
   const icon = hardcore ? "🖕" : "🫶";
 
   return (
-    <html lang="en">
+    <html lang="en" className="saturate-150">
       <body
         className={`${m6x11.variable} ${serenityOSEmoji.variable} ${styles.crt} h-screen flex flex-col select-none text-2xl antialiased dark`}
         style={{
-          fontFamily: `var(--font-m6x11), var(--font-emoji), system-ui`,
+          fontFamily: `var(--font-m6x11), system-ui, var(--font-emoji)`,
         }}
       >
         <Analytics />

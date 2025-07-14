@@ -1,17 +1,4 @@
-.crt::after {
-  content: " ";
-  display: block;
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  background: rgba(18, 16, 16, 0.1);
-  opacity: 0;
-  z-index: 100;
-  pointer-events: none;
-  animation: flicker 0.15s infinite;
-}
+.crt::after,
 .crt::before {
   content: " ";
   display: block;
@@ -20,7 +7,18 @@
   left: 0;
   bottom: 0;
   right: 0;
+  z-index: 100;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+}
 
+.crt::after {
+  background: rgba(18, 16, 16, 0.1);
+  opacity: 0;
+  animation: flicker 0.15s infinite;
+}
+.crt::before {
   background-image: linear-gradient(
       rgba(18, 16, 16, 0) 50%,
       rgba(0, 0, 0, 0.25) 50%
@@ -37,8 +35,6 @@
     3px 100%;
 
   animation: scanlines 1.5s steps(60) infinite;
-  z-index: 100;
-  pointer-events: none;
 }
 
 @keyframes scanlines {
@@ -48,8 +44,6 @@
 }
 
 .crt {
-  /*filter: url(#crtWarp);*/
-  filter: saturate(1.5);
   animation: textShadow 1.6s infinite;
 }
 

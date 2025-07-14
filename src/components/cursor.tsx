@@ -10,7 +10,7 @@ export function Cursor({ cursor }: { cursor: string }) {
 
     const update = (e: PointerEvent) => {
       animationFrameId = requestAnimationFrame(() =>
-        setPosition({ x: e.pageX, y: e.pageY }),
+        setPosition({ x: e.clientX, y: e.clientY }),
       );
     };
 

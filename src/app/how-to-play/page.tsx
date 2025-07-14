@@ -13,7 +13,7 @@ import {
 export default function HowToPlay() {
   return (
     <main className="px-8 space-y-2">
-      <h1 className="text-6xl text-center font-bold">HOW 2 PLAY?</h1>
+      <h1 className="text-6xl text-center font-bold">How to play</h1>
       <hr />
       <h2 className="text-3xl">Premise</h2>
       <p className="text-muted-foreground">

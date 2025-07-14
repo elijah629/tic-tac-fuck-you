@@ -42,7 +42,7 @@ export function Game({ onWin }: { onWin: () => Promise<void> }) {
               <h2 className="text-5xl text-center">
                 IMPOSSIBLE. VERY LUCKY.{" "}
                 <span className="text-enemy font-bold">
-                  DON&apos;T DO IT AGAIN
+                  DON&apos;T DO IT AGAIN...
                 </span>
               </h2>
             </>
@@ -67,7 +67,7 @@ export function Game({ onWin }: { onWin: () => Promise<void> }) {
       )}
     </main>
   ) : (
-    <main className="flex flex-col h-screen items-center justify-center gap-8 p-5">
+    <main className="flex flex-col h-screen items-center justify-center gap-4 p-5">
       <h2 className="text-5xl text-center">
         {unset ? (
           <>
@@ -83,23 +83,25 @@ export function Game({ onWin }: { onWin: () => Promise<void> }) {
             YOU&apos;RE <span className="italic">REALLY</span> THAT SCARED OF ME?
           </>
         ) : (
-          <>be fucking stupid. level impossible (pass ✅)</>
+          <>🫵 ar fuckng stoped. (level impossible, pass ✅)</>
         )}
       </h2>
+        <span>{difficulty[0].toFixed(1)}%{(difficulty[0] === 69 || difficulty[0] === 42) && ", nice"}</span>
 
-        <div className="flex w-full max-w-[85vw] gap-4">
-        <span className="text-neutral">INFANT</span>
+        <div className="flex max-w-[80vw] w-full gap-4">
+        <span className="text-neutral">👨‍🦲 INFANT</span> {/* Emoji font makes 👨‍🦲 appear like a baby ish */}
       <Slider
         max={100}
         min={0}
         step={1}
+            className="flex-1"
         value={difficulty}
         onValueChange={(v) => {
           setUnset(false);
           setDifficulty(v);
         }}
       />
-        <span className="text-enemy">HARD</span>
+        <span className="text-enemy text-3xl">HARD ☠️</span>
         </div>
       <div className="flex rounded-md w-min">
         <Button

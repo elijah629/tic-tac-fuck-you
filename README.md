@@ -1,72 +1,34 @@
-# Tic Tac Fuck You
+<h1 align="center">
 
-## Premise
+![Tic Tac Fuck You](https://tic-tac-fuck-you.vercel.app/opengraph-image)
 
-You are playing a custom version of tic-tac-toe against a LLM, more specifically
-`meta-llama/llama-4-maverick-17b-128e-instruct`. However, everything isn't as it
-seems, the AI has more power than you do, and will do anything to bring you to
-the ground... I mean anything.
+Tic Tac Fuck You
 
-The game is played on an N by K board, which starts as 3x3, however can grow
-with various expansion cards.
+<img src="https://raw.githubusercontent.com/catppuccin/catppuccin/main/assets/palette/macchiato.png" width="600px" />
 
-- Players: There are two players: you and the AI
-- Hands: Each player starts with 5 cards and auto-refills every 2 rounds.
-- Cards: Cards can be as simple as your team letter, or as complex as inverting
-  the board. You unlock new cards based on your level, which increases every two
-  rounds.
+</h1>
 
-## Gameplay
+<p align=center>Tic Tac Toe for the strong-willed</p>
 
-Place cards on the board by dragging them from the bottom onto the grid. You can
-test this out below (the cards are quite fun to play around with).
+---
 
-## Scoring and Winning
+<br>
+</div>
 
-Scoring is quite simple, but it can seem complicated for few. The goal is to get
-K cells of the same kind that belong to your team in a row. The win condition
-(K) is custom and controlled by the win condition cards, it starts at 3 to mimic
-regular tic-tac-toe, but can be as small as 2.
+![ttfu](https://hc-cdn.hel1.your-objectstorage.com/s/v3/9ee3949d5b675e6025681ef4c6519f07442fb866_image.png)
+![ttfu](https://hc-cdn.hel1.your-objectstorage.com/s/v3/229185ead398a72f1be121de6964ed71d3ec800e_image.png)
+![ttfu](https://hc-cdn.hel1.your-objectstorage.com/s/v3/10be0e7bd3f711ac6963c07c679c5b90d2bf0035_image.png)
+![ttfu](https://hc-cdn.hel1.your-objectstorage.com/s/v3/77a86a493985bb60737f7a32d4d16d8b2ab90396_image.png)
 
-### But what about the different cells
+<p align="center"> Screenshots</p>
 
-- Blocked cells count like empty cells, except they cannot be changed by you,
-  only the AI possesses that power.
-- Neutral cells count for both teams, if there is a line of neutrals and no line
-  for another team, it is a tie.
-- Lowercase cells count for your team, but cannot mix with capital cells.
+---
 
-### Examples
+# How to play
 
-For all of these examples, assume the win length is set to 3, but these hold
-true for any win length.
+Read [this](https://tic-tac-fuck-you.vercel.app/how-to-play) first!
 
-| Lines                                           | Outcome   |
-| ----------------------------------------------- | --------- |
-| X X X                                           | Win for X |
-| x x x                                           | Win for X |
-| ? ? ? and X X X                                 | Win for X |
-| ? O O                                           | Win for O |
-| X x X                                           | No win    |
-| # O O                                           | No win    |
-| ? ? ?                                           | Tie       |
-| ? X ? and O O O                                 | Tie       |
-| X X X, x x x, o o o, O O O, # # #, ? ? ?        | Tie       |
-| X X X, ? ? O                                    | Tie       |
-| The entire board is filled, but no one has won. | Tie       |
+# Where to play
 
-_Game states and outcomes_
-
-# Cards
-
-| Card                                              | Name       | Info                                                                                                                                                             |
-| ------------------------------------------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ![X Card](src/images/cards/x.png)                 | X          | Base card for the X team, places an X at the selected position if the cell is empty. If the cell is not empty the card is returned.                              |
-| ![O Card](src/images/cards/o.png)                 | O          | Base card for the O team, places an O at the selected position if the cell is empty. If the cell is not empty the card is returned.                              |
-| ![Extend Card](src/images/cards/extenda.png)      | Extend     | Extends the board by row/column on the side closest to where the card was placed. If the card is the same distance from many sides (ie. center), it is returned. |
-| ![Lowercase Card](src/images/cards/lowercase.png) | Lowercase  | Lowercases a cell. If the cell is not a capital X or O, it is returned.                                                                                          |
-| ![Block Card](src/images/cards/blocked.png)       | Block      | Blocks a cell. Why would you do this? This cell is only controllable by the AI.                                                                                  |
-| ![Neutralize Card](src/images/cards/neutral.png)  | Neutralize | Makes a cell neutral, the cell must be empty. If it is not, the card is returned.                                                                                |
-| ![Deck back](src/images/cards/deck-back.png)      | Deck back  | Not a card, but it is what the AI holds.                                                                                                                         |
-
-_Card list_
+You can play [here](https://tic-tac-fuck-you.vercel.app), or
+[https://ttfu.vercel.app](https://ttfu.vercel.app) for short.

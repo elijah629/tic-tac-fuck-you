@@ -3,7 +3,7 @@ import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 
 // Image metadata
-export const alt = 'About Acme'
+export const alt = 'Tic Tac Fuck You'
 export const size = {
   width: 1200,
   height: 630,

@@ -25,6 +25,7 @@ export default function Soundtrack() {
       track.connect(gain.current).connect(ctx.destination);
 
       audio.current.play();
+      audio.current.loop = true;
     }
 
     window.addEventListener('click', handleClick);

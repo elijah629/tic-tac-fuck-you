@@ -24,7 +24,7 @@ export function Cursor({ cursor }: { cursor: string }) {
 
   return (
     <div
-      className="fixed z-[20] pointer-events-none text-3xl select-none"
+      className="fixed z-[90] pointer-events-none text-3xl select-none"
       style={{
         left: position.x + 2,
         top: position.y + 18,

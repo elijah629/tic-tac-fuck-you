@@ -1,6 +1,6 @@
 import { auth, signIn, signOut } from "@/lib/auth";
 import { Button } from "./ui/button";
-import SlackIcon from "@/images/slack.svg";
+import SlackIcon from "@/assets/images/slack.svg";
 import Image from "next/image";
 
 export async function AuthButton({ redirect }: { redirect?: string }) {

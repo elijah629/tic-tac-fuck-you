@@ -1,0 +1,37 @@
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0) translateY(0) rotate(0deg);
+  }
+  10% {
+    transform: translateX(-8px) translateY(-3px) rotate(-1.5deg);
+  }
+  20% {
+    transform: translateX(10px) translateY(2px) rotate(1deg);
+  }
+  30% {
+    transform: translateX(-6px) translateY(-4px) rotate(-2deg);
+  }
+  40% {
+    transform: translateX(8px) translateY(3px) rotate(1.5deg);
+  }
+  50% {
+    transform: translateX(-10px) translateY(-2px) rotate(-1deg);
+  }
+  60% {
+    transform: translateX(6px) translateY(4px) rotate(2deg);
+  }
+  70% {
+    transform: translateX(-4px) translateY(-3px) rotate(-1.5deg);
+  }
+  80% {
+    transform: translateX(5px) translateY(2px) rotate(1deg);
+  }
+  90% {
+    transform: translateX(-3px) translateY(-1px) rotate(-0.5deg);
+  }
+}
+
+.shake {
+  animation: shake 0.4s ease-in-out;
+}

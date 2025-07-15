@@ -52,6 +52,7 @@ export default async function Home() {
             {!session && "login to "} enable swearing
           </Button>
         </div>
+        CLICK FOR MUSIC!
       </section>
     </main>
   );

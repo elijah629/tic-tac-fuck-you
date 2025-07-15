@@ -7,16 +7,20 @@ import { Cursor } from "@/components/cursor";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { isHardcore } from "@/lib/auth";
-//import sphere from "@/images/sphere.png";
+import React from "react";
+import { Falling } from "@/components/falling";
+import { Settings } from "@/components/settings";
+import Soundtrack from "@/components/soundtrack";
+//import sphere from "@/assets/images/sphere.png";
 
 const m6x11 = localFont({
-  src: "./m6x11plus.ttf",
+  src: "../assets/fonts/m6x11plus.ttf",
   variable: "--font-m6x11",
   adjustFontFallback: false,
 });
 
 const serenityOSEmoji = localFont({
-  src: "./SerenityOS-Emoji.ttf",
+  src: "../assets/fonts/SerenityOS-Emoji.ttf",
   variable: "--font-emoji",
 });
 
@@ -47,6 +51,11 @@ export default async function RootLayout({
       >
         <Analytics />
         <SpeedInsights />
+        {/* no hydration error since client does not rerender layout*/}
+        <Falling/>
+        <Settings/>
+        <Soundtrack/>
+
         {/*  <svg xmlns="http://www.w3.org/2000/svg" height="0" className="absolute">
           <filter
             id="crtWarp"

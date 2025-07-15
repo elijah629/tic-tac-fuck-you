@@ -7,7 +7,7 @@ import { initialPrompt, statePrompt } from "@/lib/prompts";
 import { cn } from "@/lib/utils";
 import { useChat } from "@ai-sdk/react";
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from "react";
-import { Input } from "./ui/input";
+import { ShakingInput } from "./shaking-input";
 
 export function Sidebar({ className }: { className?: string }) {
   const removeXpEvent = useGame((s) => s.removeXpEvent);
@@ -212,9 +212,9 @@ export function Sidebar({ className }: { className?: string }) {
           }
         }}
       >
-        <Input
+        <ShakingInput
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={(e) => setInput((e.target as HTMLInputElement).value)}
           disabled={status !== "ready" || turn === ai.team}
           placeholder="Talk back 😠 (uses turn)"
         />

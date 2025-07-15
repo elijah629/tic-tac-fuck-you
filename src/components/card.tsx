@@ -1,15 +1,15 @@
 "use client";
 
 import Image from "next/image";
-import x from "@/images/cards/x.png";
-import o from "@/images/cards/o.png";
-import extend from "@/images/cards/extenda.png"; // APNG ANIMATED!
-import lowercase from "@/images/cards/lowercase.png";
-import blocked from "@/images/cards/blocked.png";
-import neutralize from "@/images/cards/neutral.png";
-import back from "@/images/cards/deck-back.png";
-import inc from "@/images/cards/inc-win.png";
-import dec from "@/images/cards/dec-win.png";
+import x from "@/assets/images/cards/x.png";
+import o from "@/assets/images/cards/o.png";
+import extend from "@/assets/images/cards/extenda.png"; // APNG ANIMATED!
+import lowercase from "@/assets/images/cards/lowercase.png";
+import blocked from "@/assets/images/cards/blocked.png";
+import neutralize from "@/assets/images/cards/neutral.png";
+import back from "@/assets/images/cards/deck-back.png";
+import inc from "@/assets/images/cards/inc-win.png";
+import dec from "@/assets/images/cards/dec-win.png";
 import styles from "@/components/card.module.css";
 import { Card as C } from "@/types/game";
 import { useCallback, useEffect, useRef } from "react";

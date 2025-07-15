@@ -108,12 +108,11 @@ export function Game({ onWin }: { onWin: () => Promise<void> }) {
         />
         <span className="text-enemy text-3xl">HARD ☠️</span>
       </div>
-      <div className="flex rounded-md w-min">
+      <div className="flex gap-4 items-center">
         <Button
           onClick={() => init(Team.O, Team.X, Team.O, onWin, d)}
-          size="icon"
           variant="enemy"
-          className="rounded-none text-2xl"
+          className="text-2xl"
         >
           X
         </Button>
@@ -126,8 +125,9 @@ export function Game({ onWin }: { onWin: () => Promise<void> }) {
               init(Team.O, Team.X, Team.O, onWin, d);
             }
           }}
+            size="lg"
           variant="neutral"
-          className="rounded-none text-2xl"
+          className="text-2xl"
         >
           Random?
         </Button>
@@ -136,7 +136,7 @@ export function Game({ onWin }: { onWin: () => Promise<void> }) {
             init(Team.X, Team.O, Team.X, onWin, d);
           }}
           variant="ally"
-          className="rounded-none text-2xl"
+          className="text-2xl"
         >
           O
         </Button>

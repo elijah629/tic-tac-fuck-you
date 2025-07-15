@@ -125,7 +125,7 @@ export function Game({ onWin }: { onWin: () => Promise<void> }) {
               init(Team.O, Team.X, Team.O, onWin, d);
             }
           }}
-            size="lg"
+          size="lg"
           variant="neutral"
           className="text-2xl"
         >

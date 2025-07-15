@@ -5,7 +5,8 @@ import { SOUNDTRACKS } from "@/types/settings";
 import { useEffect, useRef } from "react";
 
 export default function Soundtrack() {
-  const { volume, soundtrackId, getAudioContext, audioContext } = useGameSettings();
+  const { volume, soundtrackId, getAudioContext, audioContext } =
+    useGameSettings();
 
   const gain = useRef<GainNode | null>(null);
 
@@ -28,12 +29,18 @@ export default function Soundtrack() {
       audio.current.loop = true;
     }
 
-    window.addEventListener('click', handleClick);
+    window.addEventListener("click", handleClick);
 
     return () => {
-      window.removeEventListener('click', handleClick);
+      window.removeEventListener("click", handleClick);
     };
-  }, [volume.master, volume.soundtrack, audioContext, getAudioContext, soundtrackId]);
+  }, [
+    volume.master,
+    volume.soundtrack,
+    audioContext,
+    getAudioContext,
+    soundtrackId,
+  ]);
 
   useEffect(() => {
     if (!gain.current) return;

@@ -14,7 +14,9 @@ export const contentType = "image/png";
 // Image generation
 export default async function Image() {
   // Font loading, process.cwd() is Next.js project directory
-  const m6x11 = await readFile(join(process.cwd(), "src/app/m6x11plus.ttf"));
+  const m6x11 = await readFile(
+    join(process.cwd(), "src/assets/fonts/m6x11plus.ttf"),
+  );
 
   return new ImageResponse(
     (

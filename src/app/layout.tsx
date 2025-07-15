@@ -25,6 +25,7 @@ const serenityOSEmoji = localFont({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://tic-tac-fuck-you.vercel.app"),
   title: "Tic Tac Fuck You",
   description: "Tic Tac Toe + Balatro + AI",
   openGraph: {
@@ -52,9 +53,9 @@ export default async function RootLayout({
         <Analytics />
         <SpeedInsights />
         {/* no hydration error since client does not rerender layout*/}
-        <Falling/>
-        <Settings/>
-        <Soundtrack/>
+        <Falling />
+        <Settings />
+        <Soundtrack />
 
         {/*  <svg xmlns="http://www.w3.org/2000/svg" height="0" className="absolute">
           <filter

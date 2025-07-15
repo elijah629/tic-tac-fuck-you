@@ -1,8 +1,8 @@
 "use client";
 
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import { GameSettings } from '@/types/settings';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import { GameSettings } from "@/types/settings";
 
 export const useGameSettings = create(
   persist<GameSettings>(
@@ -25,7 +25,7 @@ export const useGameSettings = create(
         return newAudioContext;
       },
       setVolume: (volume) => set({ volume }),
-      setTrack: (soundtrackId) =>   set({ soundtrackId }),
+      setTrack: (soundtrackId) => set({ soundtrackId }),
     }),
     {
       name: "settings",
@@ -35,6 +35,6 @@ export const useGameSettings = create(
 
         return persistedState;
       },
-    }
-  )
+    },
+  ),
 );

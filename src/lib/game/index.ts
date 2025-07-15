@@ -122,7 +122,7 @@ export const useMaybeGame = create<GameStore>((set, get) => ({
           ? onWin
           : async () => {
               alert(
-                "You won! Now, to log your score on the leaderboard, play in Hard mode.",
+                "You won! Now, to log your score on the leaderboard, play in Hard mode ( ALL THE WAY TO THE RIGHT 100% ).",
               );
             },
     });

@@ -53,7 +53,7 @@ export default async function RootLayout({
         {/* Since filters create a new block, and fixed is fixed to the parent block, we cannot combine the two
           SOLUTION: backdrop-filter! We make one top-level overlay which stores every effect we need, then we make it transparent so it applies to everything under it!
         */}
-        <CrtFilter/>
+        <CrtFilter />
 
         <Cursor cursor={icon} />
         <Settings />
@@ -68,7 +68,6 @@ export default async function RootLayout({
         <>
           <Analytics />
           <SpeedInsights />
-
           <Soundtrack /> {/* <audio> node */}
         </>
 
@@ -77,7 +76,6 @@ export default async function RootLayout({
           {/* no hydration error since client does not rerender layout */}
           <Falling />
         </>
-
       </body>
     </html>
   );

@@ -6,7 +6,9 @@ import styles from "./crt.module.css";
 
 export function Falling() {
   return (
-    <div className={`flex justify-between blur-[2px] -z-10 gap-1 p-2 ${styles.overlay}`}>
+    <div
+      className={`flex justify-between blur-[2px] -z-10 gap-1 p-2 ${styles.overlay}`}
+    >
       {Array.from({ length: 4 }, (_, i) => (
         <React.Fragment key={i}>
           <div
@@ -19,14 +21,15 @@ export function Falling() {
           >
             X
           </div>
-          <div className={falling.falling}
-           style={{
+          <div
+            className={falling.falling}
+            style={{
               animationDelay: `${i * 5 + Math.random() * 3}s`,
               animationDuration: `${5 + Math.random() * 2}s`,
               transform: `rotate(${Math.random() * 20 - 10}deg)`,
             }}
           >
-            <StaticCard card={C.TBD} id={0}/>
+            <StaticCard card={C.TBD} id={0} />
           </div>
           {/*}<div
             className={`${falling.falling} text-ally`}

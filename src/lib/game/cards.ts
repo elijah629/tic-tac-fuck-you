@@ -49,7 +49,7 @@ export function sampleCard(
           [Card.Neutralize, [0.9, 0, 6]],
 
           // "game changers"
-          [Card.Extend, [1.5, 0, 2]],
+          [Card.Extend, [2, 0, 2]],
           [Card.DecrementWinLength, [0.6, 0, 11]],
           [Card.IncrementWinLength, [0.6, 0, 11]],
         ]);

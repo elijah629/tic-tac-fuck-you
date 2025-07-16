@@ -40,8 +40,17 @@ export default function HowToPlay() {
         </li>
       </ul>
       <h2 className="text-3xl">Difficulty</h2>
-      <p className="text-muted-foreground">The below Gameplay information is for Normal mode, which is the default on the slider. HARD mode is selected by dragging the slider to the far right, Baby mode is the close left side, and Infant mode is selected by dragging the slider to the far left.</p>
-      <p className="text-muted-foreground">Difficulties change the initial settings and probabilities in the game. This includes starting win length, board size, and unlock levels/growth rates for chance for cards.</p>
+      <p className="text-muted-foreground">
+        The below Gameplay information is for Normal mode, which is the default
+        on the slider. HARD mode is selected by dragging the slider to the far
+        right, Baby mode is the close left side, and Infant mode is selected by
+        dragging the slider to the far left.
+      </p>
+      <p className="text-muted-foreground">
+        Difficulties change the initial settings and probabilities in the game.
+        This includes starting win length, board size, and unlock levels/growth
+        rates for chance for cards.
+      </p>
       <h2 className="text-3xl">Gameplay</h2>
       <p className="text-muted-foreground">
         Place cards on the board by dragging them from the bottom onto the grid.

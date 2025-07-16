@@ -80,7 +80,9 @@ export default async function Leaderboard() {
         <TableBody>
           {ranked.map(({ name, wins, rank }) => (
             <TableRow key={name}>
-              <TableCell className={cn("font-medium", name === id && "text-legendary")}>
+              <TableCell
+                className={cn("font-medium", name === id && "text-legendary")}
+              >
                 {medalMap[rank] ? (
                   <span className="text-3xl -m-4">
                     {medalMap[rank]} {name} {medalMap[rank]}
@@ -91,7 +93,11 @@ export default async function Leaderboard() {
                   </>
                 )}
               </TableCell>
-              <TableCell className={cn("text-right", name === id && "text-legendary")}>{wins}</TableCell>
+              <TableCell
+                className={cn("text-right", name === id && "text-legendary")}
+              >
+                {wins}
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

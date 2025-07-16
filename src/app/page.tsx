@@ -20,7 +20,9 @@ export default async function Home() {
 
   return (
     <main className="flex flex-col items-center">
-      <section className={`flex flex-col w-min items-center gap-3 ${taunt.taunt}`}>
+      <section
+        className={`flex flex-col w-min items-center gap-3 ${taunt.taunt}`}
+      >
         <h1 className="text-4xl md:text-6xl font-bold">
           Tic Tac F
           {hardcore ? (

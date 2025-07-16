@@ -117,14 +117,7 @@ export const useMaybeGame = create<GameStore>((set, get) => ({
           .map((card, id) => ({ id, card })),
       },
       ai_expression: aiTeam === Team.X ? "X" : "O",
-      onWin:
-        difficulty === Difficulty.HARD
-          ? onWin
-          : async () => {
-              alert(
-                "You won! Now, to log your score on the leaderboard, play in Hard mode ( ALL THE WAY TO THE RIGHT 100% ).",
-              );
-            },
+      onWin,
     });
 
     setLineMatrix(generateLineMatrix(cols, rows, winLength)); // CAN BE VERY BIG! Not storing in state due to updates

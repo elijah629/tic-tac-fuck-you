@@ -14,7 +14,10 @@ export async function POST(req: Request) {
   if (process.env.NODE_ENV === "production") {
     // if (!id) return new Response("Unauthorized", { status: 401 });
 
-    const { success } = await ratelimit.blockUntilReady(id ?? "GHOST_USER", 10_000);
+    const { success } = await ratelimit.blockUntilReady(
+      id ?? "GHOST_USER",
+      10_000,
+    );
 
     if (!success) return new Response("Too Many Requests", { status: 429 });
   }

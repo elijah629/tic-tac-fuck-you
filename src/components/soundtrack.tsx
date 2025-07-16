@@ -1,37 +1,20 @@
 "use client";
 
-import { perceivedVolume } from "@/lib/audio";
 import { useGameSettings } from "@/lib/settings";
 import { SOUNDTRACKS } from "@/types/settings";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 
 export default function Soundtrack() {
-  const { volume, soundtrackId, getAudioContext, audioContext } =
+  const { volume, soundtrackId, play, loadAllTracks, audioContext } =
     useGameSettings();
 
-  const gain = useRef<GainNode | null>(null);
-
-  const audio = useRef<HTMLAudioElement | null>(null);
-
   useEffect(() => {
-    if (!audio.current) {
-      audio.current = new Audio(SOUNDTRACKS[soundtrackId].url);
-      audio.current.loop = true;
-    }
+    async function handleClick() {
+      if (!audioContext) {
+        await loadAllTracks();
 
-    function handleClick() {
-      if (!audio.current || !!audioContext) return;
-
-      const ctx = getAudioContext()!;
-
-      const track = ctx.createMediaElementSource(audio.current);
-      gain.current = ctx.createGain();
-
-      gain.current.gain.value = perceivedVolume(volume.master * volume.soundtrack);
-
-      track.connect(gain.current).connect(ctx.destination);
-
-      audio.current.play();
+        play(SOUNDTRACKS[soundtrackId].url, true);
+      }
     }
 
     window.addEventListener("click", handleClick);
@@ -43,15 +26,10 @@ export default function Soundtrack() {
     volume.master,
     volume.soundtrack,
     audioContext,
-    getAudioContext,
+    loadAllTracks,
+    play,
     soundtrackId,
   ]);
-
-  useEffect(() => {
-    if (!gain.current) return;
-
-    gain.current.gain.value = perceivedVolume(volume.master * volume.soundtrack);
-  }, [volume.master, volume.soundtrack]);
 
   return null;
 }

@@ -7,16 +7,17 @@ import { redis } from "@/lib/redis";
 export default async function Play({
   searchParams,
 }: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
   const free = (await searchParams).free !== undefined;
   const session = await auth();
   const user = session?.user?.name;
 
   // user may use ?free but be logged in
-  if (!user && !free) await signIn(undefined, {
-    redirectTo: "/play"
-  });
+  if (!user && !free)
+    await signIn(undefined, {
+      redirectTo: "/play",
+    });
 
   async function onWin() {
     "use server";

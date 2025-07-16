@@ -8,15 +8,15 @@ export function getDifficultySettings(difficulty: Difficulty): {
   aiCards: number;
 } {
   if (difficulty === Difficulty.INFANT) {
-    return { rows: 2, cols: 2, winLength: 2, humanCards: 8, aiCards: 3 };
+    return { rows: 3, cols: 3, winLength: 3, humanCards: 8, aiCards: 3 };
   }
 
   if (difficulty === Difficulty.TODDLER) {
-    return { rows: 2, cols: 2, winLength: 2, humanCards: 5, aiCards: 5 };
+    return { rows: 3, cols: 3, winLength: 3, humanCards: 5, aiCards: 5 };
   }
 
   if (difficulty === Difficulty.NORMAL) {
-    return { rows: 3, cols: 3, winLength: 3, humanCards: 5, aiCards: 5 };
+    return { rows: 4, cols: 4, winLength: 3, humanCards: 5, aiCards: 5 };
   }
 
   // if (difficulty === Difficulty.HARD) {

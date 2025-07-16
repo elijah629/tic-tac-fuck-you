@@ -26,10 +26,18 @@ export function Settings() {
   const track = SOUNDTRACKS[soundtrackId];
 
   return (
+    <>
+      <span className="fixed text-sm bottom-10 left-10 z-30">Playing               <Link href={track.source} className="underline">
+                {track.name}
+              </Link> by <Link href={track.author.link} className="underline">
+                  {track.author.name}
+                </Link>
+</span>
+
     <Popover onOpenChange={setOpen} open={open}>
       <PopoverTrigger asChild>
         <Button
-          className="fixed bottom-10 right-10 z-20"
+          className="fixed bottom-10 right-10 z-30"
           size="icon"
           variant="outline"
         >
@@ -120,5 +128,6 @@ export function Settings() {
         </div>
       </PopoverContent>
     </Popover>
+    </>
   );
 }

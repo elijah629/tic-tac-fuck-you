@@ -121,7 +121,7 @@ function di(diff: Difficulty) {
   }
 }
 
-function board(board: Board) {
+/*function board(board: Board) {
   let b = "";
 
   for (let row = 0; row < board.size.rows; row++) {
@@ -129,6 +129,18 @@ function board(board: Board) {
       b += board.cells[board.size.cols * row + col];
     }
     b += "\n";
+  }
+
+  return b;
+}*/
+
+function board(board: Board) {
+  let b = "";
+
+  for (let row = 0; row < board.size.rows; row++) {
+    for (let col = 0; col < board.size.cols; col++) {
+      b += `${board.cells[board.size.cols * row + col]} at ${row}|${col}\n`;
+    }
   }
 
   return b;

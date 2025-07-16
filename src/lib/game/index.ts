@@ -205,6 +205,10 @@ export const useMaybeGame = create<GameStore>((set, get) => ({
     );
   },
 
+  reset() {
+    set({ status: "uninitialized" });
+  },
+
   removeCard(team, id) {
     set(
       withInit(({ human, ai }) => {

@@ -1,26 +1,22 @@
-.crt::after,
-.crt::before {
-  content: " ";
-  display: block;
+.overlay {
   position: fixed;
   top: 0;
   left: 0;
   bottom: 0;
   right: 0;
-  z-index: 100;
-  width: 100vw;
-  height: 100vh;
   pointer-events: none;
 }
 
-.crt::after {
+.flicker {
   background: rgba(18, 16, 16, 0.1);
   opacity: 0;
   animation: flicker 0.15s infinite;
 }
-.crt::before {
-  background-image:
-    linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+.scanlines {
+  background-image: linear-gradient(
+      rgba(18, 16, 16, 0) 50%,
+      rgba(0, 0, 0, 0.25) 50%
+    ),
     linear-gradient(
       90deg,
       rgba(255, 0, 0, 0.06),
@@ -35,14 +31,14 @@
   animation: scanlines 1.5s steps(60) infinite;
 }
 
+.textShadow {
+  animation: textShadow 1.6s infinite;
+}
+
 @keyframes scanlines {
   0% {
     background-position: 0 50%;
   }
-}
-
-.crt {
-  animation: textShadow 1.6s infinite;
 }
 
 @keyframes flicker {

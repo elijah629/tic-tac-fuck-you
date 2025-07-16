@@ -10,17 +10,22 @@ import { Slider } from "@/components/ui/slider";
 import { useState } from "react";
 import { useMaybeGame } from "@/lib/game";
 
-export function Game({ onWin }: { onWin: () => Promise<void> }) {
+export function Game({ free, onWin: ow }: { free: boolean, onWin: () => Promise<void> }) {
   const init = useMaybeGame((s) => s.init);
   const status = useMaybeGame((s) => s.status);
   const winner = useMaybeGame((s) => s.winner);
   const ai = useMaybeGame((s) => s.ai);
   const human = useMaybeGame((s) => s.human);
+  const reset = useMaybeGame((s) => s.reset);
 
   const [difficulty, setDifficulty] = useState([50]);
   const d = diff(difficulty[0]);
 
   const [unset, setUnset] = useState(true);
+
+  const onWin = free ? async () => {
+    alert("To log on LB: Play signed in & hard mode");
+  } : ow;
 
   return status === "initialized" ? (
     <main className="h-screen grid grid-rows-[min-content_auto_min-content] grid-cols-[1fr_2fr]">
@@ -56,7 +61,7 @@ export function Game({ onWin }: { onWin: () => Promise<void> }) {
           )}
           <Button
             onClick={() => {
-              location.reload();
+              reset();
             }}
             variant="neutral"
             className="text-2xl"

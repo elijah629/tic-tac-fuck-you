@@ -4,6 +4,8 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { GameSettings } from "@/types/settings";
 
+//const audioBuffers = {};
+
 export const useGameSettings = create(
   persist<GameSettings>(
     (set, get) => ({

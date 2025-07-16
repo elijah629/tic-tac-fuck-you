@@ -12,7 +12,7 @@ import {
 
 export default function HowToPlay() {
   return (
-    <main className="px-8 space-y-2">
+    <main className="px-8 space-y-2 backdrop-blur-3xl">
       <h1 className="text-6xl text-center font-bold">How to play</h1>
       <hr />
       <h2 className="text-3xl">Premise</h2>
@@ -39,13 +39,16 @@ export default function HowToPlay() {
           increaces every two rounds.
         </li>
       </ul>
+      <h2 className="text-3xl">Difficulty</h2>
+      <p className="text-muted-foreground">The below Gameplay information is for Normal mode, which is the default on the slider. HARD mode is selected by dragging the slider to the far right, Baby mode is the close left side, and Infant mode is selected by dragging the slider to the far left.</p>
+      <p className="text-muted-foreground">Difficulties change the initial settings and probabilities in the game. This includes starting win length, board size, and unlock levels/growth rates for chance for cards.</p>
       <h2 className="text-3xl">Gameplay</h2>
       <p className="text-muted-foreground">
         Place cards on the board by dragging them from the bottom onto the grid.
         You can test this out below (the cards are quite fun to play around
         with).
       </p>
-      <h2 className="text-3xl">Scoring and Winning</h2>
+      <h3 className="text-3xl">Scoring and Winning</h3>
       <p className="text-muted-foreground">
         Scoring is quite simple, but it can seem complicated for few. The goal
         is to get K cells of the same kind that belong to your team in a row.
@@ -130,7 +133,7 @@ export default function HowToPlay() {
           </TableRow>
         </TableBody>
       </Table>
-      <h1>Cards</h1>
+      <h1>Cards (draggable)</h1>
       <Table className="text-2xl">
         <TableCaption>Card list</TableCaption>
         <TableHeader>

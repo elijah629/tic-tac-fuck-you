@@ -99,6 +99,7 @@ export type GameActions = {
   winState(): Winner;
   endTurn(): void;
   setAiExpression(emoji: string): void;
+  reset(): void;
 };
 
 export interface Player {

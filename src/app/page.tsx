@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { auth, isHardcore, unstable_update } from "@/lib/auth";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import taunt from "@/components/taunt.module.css";
 
 export default async function Home() {
   const session = await auth();
@@ -18,8 +19,8 @@ export default async function Home() {
   }
 
   return (
-    <main>
-      <section className="flex flex-col items-center gap-3">
+    <main className="flex flex-col items-center">
+      <section className={`flex flex-col w-min items-center gap-3 ${taunt.taunt}`}>
         <h1 className="text-4xl md:text-6xl font-bold">
           Tic Tac F
           {hardcore ? (
@@ -46,13 +47,13 @@ export default async function Home() {
           <Button
             size="lg"
             className="text-2xl"
-            variant="enemy"
+            variant={hardcore ? "ally" : "enemy"}
             onClick={toggleHardcoreMode}
           >
-            {!session && "login to "} enable swearing
+            {!session && "login to "} {hardcore ? "disable" : "enable"} swearing
           </Button>
         </div>
-        CLICK FOR MUSIC!
+        CLICK ANYWHERE FOR MUSIC!
       </section>
     </main>
   );

@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/table";
 import { auth, signIn } from "@/lib/auth";
 import { ratelimit, redis } from "@/lib/redis";
+import { cn } from "@/lib/utils";
 
 const TOP = 20;
 const medalMap = ["🥇", "🥈", "🥉"];
@@ -79,7 +80,7 @@ export default async function Leaderboard() {
         <TableBody>
           {ranked.map(({ name, wins, rank }) => (
             <TableRow key={name}>
-              <TableCell className="font-medium">
+              <TableCell className={cn("font-medium", name === id && "text-legendary")}>
                 {medalMap[rank] ? (
                   <span className="text-3xl -m-4">
                     {medalMap[rank]} {name} {medalMap[rank]}
@@ -90,7 +91,7 @@ export default async function Leaderboard() {
                   </>
                 )}
               </TableCell>
-              <TableCell className="text-right">{wins}</TableCell>
+              <TableCell className={cn("text-right", name === id && "text-legendary")}>{wins}</TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -98,7 +99,7 @@ export default async function Leaderboard() {
           <TableRow>
             <TableCell>Total Wins</TableCell>
             <TableCell className="text-right">
-              {leaderboard.map(([, wins]) => wins).reduce((a, b) => a + b)}
+              {leaderboard.reduce((a, b) => a + b[1], 0)}
             </TableCell>
           </TableRow>
         </TableFooter>

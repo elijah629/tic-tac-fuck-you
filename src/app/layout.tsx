@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import styles from "./crt.module.css";
 import { Navbar } from "@/components/navbar";
 import { Cursor } from "@/components/cursor";
 import { Analytics } from "@vercel/analytics/next";
@@ -11,7 +10,8 @@ import React from "react";
 import { Falling } from "@/components/falling";
 import { Settings } from "@/components/settings";
 import Soundtrack from "@/components/soundtrack";
-//import sphere from "@/assets/images/sphere.png";
+import styles from "@/components/crt.module.css";
+import CrtFilter from "@/components/crt-filter";
 
 const m6x11 = localFont({
   src: "../assets/fonts/m6x11plus.ttf",
@@ -43,51 +43,41 @@ export default async function RootLayout({
   const icon = hardcore ? "🖕" : "🫶";
 
   return (
-    <html lang="en" className="saturate-150">
+    <html lang="en">
       <body
-        className={`${m6x11.variable} ${serenityOSEmoji.variable} ${styles.crt} h-screen flex flex-col select-none text-2xl antialiased dark`}
+        className={`${m6x11.variable} ${serenityOSEmoji.variable} ${styles.textShadow} h-screen select-none text-2xl antialiased dark`}
         style={{
           fontFamily: `var(--font-m6x11), system-ui, var(--font-emoji)`,
         }}
       >
-        <Analytics />
-        <SpeedInsights />
-        {/* no hydration error since client does not rerender layout*/}
-        <Falling />
-        <Settings />
-        <Soundtrack />
+        {/* Since filters create a new block, and fixed is fixed to the parent block, we cannot combine the two
+          SOLUTION: backdrop-filter! We make one top-level overlay which stores every effect we need, then we make it transparent so it applies to everything under it!
+        */}
+        <CrtFilter/>
 
-        {/*  <svg xmlns="http://www.w3.org/2000/svg" height="0" className="absolute">
-          <filter
-            id="crtWarp"
-            x="0"
-            y="0"
-            width="100%"
-            height="100%"
-            filterUnits="userSpaceOnUse"
-          >
-            <feImage
-              href={sphere.src}
-              x="-100%"
-              y="0"
-              width="300%"
-              height="100%"
-              preserveAspectRatio="none"
-              result="disp"
-            />
-
-            <feDisplacementMap
-              in="SourceGraphic"
-              in2="disp"
-              scale="0"
-              xChannelSelector="R"
-              yChannelSelector="G"
-            />
-          </filter>
-        </svg>*/}
         <Cursor cursor={icon} />
-        <Navbar logo={icon} />
-        {children}
+        <Settings />
+
+        {/* Page content */}
+        <div className="flex flex-col h-screen">
+          <Navbar logo={icon} />
+          {children}
+        </div>
+
+        {/* Scripts & Assets */}
+        <>
+          <Analytics />
+          <SpeedInsights />
+
+          <Soundtrack /> {/* <audio> node */}
+        </>
+
+        {/* Background */}
+        <>
+          {/* no hydration error since client does not rerender layout */}
+          <Falling />
+        </>
+
       </body>
     </html>
   );

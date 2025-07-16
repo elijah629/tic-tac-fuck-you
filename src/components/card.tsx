@@ -1,32 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import x from "@/assets/images/cards/x.png";
-import o from "@/assets/images/cards/o.png";
-import extend from "@/assets/images/cards/extenda.png"; // APNG ANIMATED!
-import lowercase from "@/assets/images/cards/lowercase.png";
-import blocked from "@/assets/images/cards/blocked.png";
-import neutralize from "@/assets/images/cards/neutral.png";
-import back from "@/assets/images/cards/deck-back.png";
-import inc from "@/assets/images/cards/inc-win.png";
-import dec from "@/assets/images/cards/dec-win.png";
+
 import styles from "@/components/card.module.css";
 import { Card as C } from "@/types/game";
 import { useCallback, useEffect, useRef } from "react";
-
-// pick correct image src
-export function cardSrc(card: C) {
-  if (card === C.O) return o.src;
-  if (card === C.X) return x.src;
-  if (card === C.Neutralize) return neutralize.src;
-  if (card === C.Lowercase) return lowercase.src;
-  if (card === C.Block) return blocked.src;
-  if (card === C.Extend) return extend.src;
-  if (card === C.IncrementWinLength) return inc.src;
-  if (card === C.DecrementWinLength) return dec.src;
-
-  return back.src;
-}
+import { cardSrc } from "@/lib/cards";
 
 const MAX_WIND_ANGLE = 30;
 const WIND_RESPONSIVENESS = 0.5;
@@ -224,6 +203,8 @@ export function Card({
         state.rotation = 0;
         state.returnPhase = ReturnPhase.NONE;
         updateTransform();
+
+        cardRef.current!.style.zIndex = "10";
         cardRef.current?.classList.add(styles.wave);
       }
     };
@@ -241,7 +222,7 @@ export function Card({
     state.dragging = true;
     state.y -= 16;
     card.style.pointerEvents = "none";
-    card.style.zIndex = "11";
+    card.style.zIndex = "15";
     card.classList.remove(styles.wave);
 
     state.returnPhase = ReturnPhase.NONE;
@@ -275,7 +256,6 @@ export function Card({
       if (!elCard) return;
 
       state.dragging = false;
-      elCard.style.zIndex = "10";
       elCard.style.pointerEvents = "auto";
       state.y += 16;
 
@@ -372,7 +352,7 @@ export function Card({
       draggable={false}
       alt="Card"
       src={cardSrc(card)}
-      className={`transition-transform duration-300 ease-out z-[10] hover:z-[11] hover:-translate-y-4 ${styles.wave}`}
+      className={`transition-transform duration-300 relative ease-out z-[10] hover:z-[11] hover:-translate-y-4 ${styles.wave}`}
       style={{
         ["--base-transform" as string]: `translate(0px, ${translateY ?? 0}px) rotate(${angle ?? 0}deg)`,
         animationDelay: `-${((id * 16807) % 1000) / 1000}s`,

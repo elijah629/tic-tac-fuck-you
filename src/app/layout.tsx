@@ -45,7 +45,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${m6x11.variable} ${serenityOSEmoji.variable} ${styles.textShadow} h-screen select-none text-2xl antialiased dark`}
+        className={`${m6x11.variable} ${serenityOSEmoji.variable} ${styles.textShadow} min-h-screen select-none text-2xl antialiased dark`}
         style={{
           fontFamily: `var(--font-m6x11), system-ui, var(--font-emoji)`,
         }}
@@ -59,7 +59,7 @@ export default async function RootLayout({
         <Settings />
 
         {/* Page content */}
-        <div className="flex flex-col h-screen">
+        <div className="flex flex-col min-h-screen">
           <Navbar logo={icon} />
           {children}
         </div>

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { AuthButton } from "./auth-buttons";
+import { AuthButton } from "@/components/auth-buttons";
 
 export async function Navbar({ logo }: { logo: string }) {
   return (

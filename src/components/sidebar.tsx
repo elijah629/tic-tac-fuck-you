@@ -7,7 +7,7 @@ import { initialPrompt, statePrompt } from "@/lib/prompts";
 import { cn } from "@/lib/utils";
 import { useChat } from "@ai-sdk/react";
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from "react";
-import { ShakingInput } from "./shaking-input";
+import { ShakingInput } from "@/components/shaking-input";
 
 export function Sidebar({ className }: { className?: string }) {
   const removeXpEvent = useGame((s) => s.removeXpEvent);

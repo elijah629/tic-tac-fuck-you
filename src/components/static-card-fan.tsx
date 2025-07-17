@@ -1,5 +1,3 @@
-"use client";
-
 import { Card as C } from "@/types/game";
 import { StaticCard } from "@/components/static-card";
 

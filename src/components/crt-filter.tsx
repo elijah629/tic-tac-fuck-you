@@ -1,26 +1,25 @@
 import { cn } from "@/lib/utils";
-import styles from "./crt.module.css";
+import styles from "@/components/crt.module.css";
+//import barrel from "@/assets/images/sphere.png";
 
 export default function CrtFilter() {
   return (
     <div>
-      {/* Screen warp (beta)
-    <svg xmlns="http://www.w3.org/2000/svg" height={0} width={0} className="absolute">
-      <defs>
+      {/* Screen warp (beta) VERY SLOW */}
+      {/*<svg height={0} width={0}>
+        <defs>
           <filter
-            id="crt-warp"
+            id="color"
             x="0"
             y="0"
             width="100%"
             height="100%"
-            //filterUnits="userSpaceOnUse"
+            filterUnits="userSpaceOnUse"
           >
             <feImage
               href={barrel.src}
               //x="-100%"
               //y="0"
-              width="100%"
-              height="100%"
               preserveAspectRatio="none"
               result="disp"
             />
@@ -28,7 +27,7 @@ export default function CrtFilter() {
             <feDisplacementMap
               in="SourceGraphic"
               in2="disp"
-              scale="100"
+              scale="0"
               xChannelSelector="R"
               yChannelSelector="G"
             />

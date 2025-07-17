@@ -1,6 +1,6 @@
 "use client";
 
-import { Cell } from "./cell";
+import { Cell } from "@/components/cell";
 import { useGame } from "@/lib/game";
 import { cn } from "@/lib/utils";
 

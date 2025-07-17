@@ -1,10 +1,10 @@
 "use client";
 
 import { useGame } from "@/lib/game";
-import { PlayerIndicator } from "./player-indicator";
+import { PlayerIndicator } from "@/components/player-indicator";
 import { cn } from "@/lib/utils";
 
-import { CardFan } from "./card-fan";
+import { CardFan } from "@/components/card-fan";
 
 export function HumanPlayer({ className }: { className?: string }) {
   const human = useGame((s) => s.human);

@@ -15,12 +15,12 @@ import {
   setLineMatrix,
   winState,
 } from "@/lib/game/win-check";
-import { getDifficultySettings } from "./difficulty";
-import { removeCard, sampleCard } from "./cards";
-import { extendBoard } from "./board";
-import { addXpEvent, removeXpEvent } from "./xp";
-import { applyCard, endTurn } from "./move";
-import { changeWinLength } from "./win-length";
+import { getDifficultySettings } from "@/lib/game/difficulty";
+import { removeCard, sampleCard } from "@/lib/game/cards";
+import { extendBoard } from "@/lib/game/board";
+import { addXpEvent, removeXpEvent } from "@/lib/game/xp";
+import { applyCard, endTurn } from "@/lib/game/move";
+import { changeWinLength } from "@/lib/game/win-length";
 
 type GameStore = {
   status: "uninitialized" | "initialized";

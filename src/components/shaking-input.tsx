@@ -2,8 +2,8 @@
 
 import type React from "react";
 import { HTMLProps, useState } from "react";
-import shake from "./shaking.module.css";
-import { Input } from "./ui/input";
+import shake from "@/components/shaking.module.css";
+import { Input } from "@/components/ui/input";
 
 export function ShakingInput({
   onChange,

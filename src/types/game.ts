@@ -107,6 +107,7 @@ export interface Player {
   idCounter: number;
   cards: { id: number; card: Card }[];
 }
+
 /*
 // TODO: We don't need zod anymore! No tools = no zod. I am keeping this in case hackclub/ai merges #11 and responds to #16 and #17
 const position = z

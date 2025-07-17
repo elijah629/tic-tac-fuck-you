@@ -5,15 +5,15 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Button } from "./ui/button";
-import { Label } from "./ui/label";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 import {
   AudioLinesIcon,
   LucideChevronLeft,
   LucideChevronRight,
 } from "lucide-react";
 import { useState } from "react";
-import { Slider } from "./ui/slider";
+import { Slider } from "@/components/ui/slider";
 import Link from "next/link";
 import { useGameSettings } from "@/lib/settings";
 import { SOUNDTRACKS } from "@/types/settings";

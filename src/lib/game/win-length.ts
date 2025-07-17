@@ -1,5 +1,5 @@
 import { Board, GameState } from "@/types/game";
-import { generateLineMatrix, setLineMatrix } from "./win-check";
+import { generateLineMatrix, setLineMatrix } from "@/lib/game/win-check";
 
 export function changeWinLength(
   change: number,

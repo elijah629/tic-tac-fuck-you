@@ -11,6 +11,7 @@ export enum SOUNDTRACK_SOUNDS {
 
 export enum SFX_SOUNDS {
   WIN = "/win.mp3",
+  POWERUP = "/powerup.wav",
 }
 
 export const SOUNDTRACKS: Soundtrack[] = [

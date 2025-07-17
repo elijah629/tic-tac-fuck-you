@@ -1,3 +1,5 @@
+"use client";
+
 import { Cell as C } from "@/types/game";
 import { useGame } from "@/lib/game";
 

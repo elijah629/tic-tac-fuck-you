@@ -1,5 +1,5 @@
 import { Board, Cell, ExtendDirection } from "@/types/game";
-import { setLineMatrix, generateLineMatrix } from "./win-check";
+import { setLineMatrix, generateLineMatrix } from "@/lib/game/win-check";
 
 export function getSmallestDirection(
   dL: number,

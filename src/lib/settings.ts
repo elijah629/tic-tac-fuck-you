@@ -3,7 +3,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { GameSettings, SFX_SOUNDS, SOUNDTRACK_SOUNDS } from "@/types/settings";
-import { perceivedVolume } from "./audio";
+import { perceivedVolume } from "@/lib/audio";
 
 const audioBuffers: Record<string, HTMLAudioElement> = {};
 let sfxGain: null | GainNode = null;

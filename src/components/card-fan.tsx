@@ -1,8 +1,10 @@
 "use client";
 
 import { Card as C, EVENTS, Team } from "@/types/game";
-import { Card } from "./card";
+import { Card } from "@/components/card";
 import { useGame } from "@/lib/game";
+import { useGameSettings } from "@/lib/settings";
+import { SFX_SOUNDS } from "@/types/settings";
 
 export function CardFan(props: {
   for: Team;
@@ -13,6 +15,7 @@ export function CardFan(props: {
   const applyCard = useGame((s) => s.applyCard);
   const addXpEvent = useGame((s) => s.addXpEvent);
   const endTurn = useGame((s) => s.endTurn);
+  const play = useGameSettings((s) => s.play);
 
   return props.cards.map(({ card, id }, i) => {
     const mid = (props.cards.length - 1) / 2;
@@ -31,6 +34,9 @@ export function CardFan(props: {
               case C.Lowercase:
                 addXpEvent(EVENTS.ULTRA_GOOBER_BONUS);
               case C.Extend:
+              case C.DecrementWinLength:
+              case C.IncrementWinLength:
+                play(SFX_SOUNDS.POWERUP, false);
                 addXpEvent(EVENTS.MAGICAL_BONUS);
               case C.Block:
               case C.Neutralize:

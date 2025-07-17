@@ -1,8 +1,16 @@
 import React from "react";
-import falling from "./falling.module.css";
+import falling from "@/components/falling.module.css";
 import { Card as C } from "@/types/game";
-import { StaticCard } from "./static-card";
-import styles from "./crt.module.css";
+import { StaticCard } from "@/components/static-card";
+import styles from "@/components/crt.module.css";
+
+function randomCard() {
+  const cards = Object.values(C);
+
+  const index = Math.floor(Math.random() * cards.length);
+
+  return cards[index];
+}
 
 export function Falling() {
   return (
@@ -29,7 +37,7 @@ export function Falling() {
               transform: `rotate(${Math.random() * 20 - 10}deg)`,
             }}
           >
-            <StaticCard card={C.TBD} id={0} />
+            <StaticCard card={randomCard()} id={0} />
           </div>
           {/*}<div
             className={`${falling.falling} text-ally`}

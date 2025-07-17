@@ -1,5 +1,5 @@
 import { auth, signIn, signOut } from "@/lib/auth";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import SlackIcon from "@/assets/images/slack.svg";
 import Image from "next/image";
 

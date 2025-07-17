@@ -1,31 +1,9 @@
 import { Board, Card, Cell, EVENTS, GameState, Team } from "@/types/game";
-import { extendBoard, getSmallestDirection } from "./board";
-import { InitializedGameStore } from ".";
-import { sampleCard } from "./cards";
-import { changeWinLength } from "./win-length";
-/*
-export function makeMove(move) {
-    switch (move.card) {
-      case Card.X:
-      case Card.O:
-      case Card.Lowercase:
-      case Card.Neutralize:
-      case Card.Block:
-        const game = get();
-        game.applyCardToCell(
-          move.position.row,
-          move.position.col,
-          move.card,
-          true,
-        ); // Due to the previous assumption, we can overwrite since the AI always overwrites
+import { extendBoard, getSmallestDirection } from "@/lib/game/board";
+import { InitializedGameStore } from "@/lib/game";
+import { sampleCard } from "@/lib/game/cards";
+import { changeWinLength } from "@/lib/game/win-length";
 
-        break;
-
-      case Card.Extend:
-        get().extendBoard(move.direction);
-        break;
-    }
-}*/
 export function endTurn({
   addXpEvent,
   onWin,

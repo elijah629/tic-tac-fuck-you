@@ -1,10 +1,10 @@
 "use client";
 
 import { useGame } from "@/lib/game";
-import { PlayerIndicator } from "./player-indicator";
+import { PlayerIndicator } from "@/components/player-indicator";
 import { cn } from "@/lib/utils";
-import { StaticCardFan } from "./static-card-fan";
-import taunt from "./taunt.module.css";
+import { StaticCardFan } from "@/components/static-card-fan";
+import taunt from "@/components/taunt.module.css";
 
 export function AIPlayer({ className }: { className?: string }) {
   const turn = useGame((s) => s.turn);

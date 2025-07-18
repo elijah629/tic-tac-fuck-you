@@ -25,14 +25,14 @@ import { changeWinLength } from "@/lib/game/win-length";
 type GameStore = {
   status: "uninitialized" | "initialized";
   difficulty?: Difficulty;
-  onWin?: () => Promise<void>;
+  onWin?: (winner: "human" | "ai" | "tie") => Promise<void>;
 } & Partial<GameState> &
   GameActions & {
     init: (
       turn: Team,
       humanTeam: Team,
       aiTeam: Team,
-      onWin: () => Promise<void>,
+      onWin: (winner: "human" | "ai" | "tie") => Promise<void>,
       difficulty: Difficulty,
     ) => void;
   };
@@ -40,7 +40,7 @@ type GameStore = {
 export type InitializedGameStore = {
   status: "initialized";
   difficulty: Difficulty;
-  onWin: () => Promise<void>;
+  onWin: (winner: "human" | "ai" | "tie") => Promise<void>;
 } & GameState &
   GameActions;
 

@@ -1,8 +1,11 @@
 "use client";
 
+import { useGameSettings } from "@/lib/settings";
+import { SFX_SOUNDS } from "@/types/settings";
 import { useEffect, useState } from "react";
 
 export function Cursor({ cursor }: { cursor: string }) {
+  const play = useGameSettings((s) => s.play);
   const [position, setPosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
@@ -14,13 +17,26 @@ export function Cursor({ cursor }: { cursor: string }) {
       );
     };
 
+    const click = (e: PointerEvent) => {
+      const elements = document.elementsFromPoint(e.clientX, e.clientY);
+      const interactive = elements.some(
+        (x) => x.tagName === "BUTTON" || x.tagName === "A",
+      );
+
+      if (interactive) {
+        play(SFX_SOUNDS.EXPLODE, false);
+      }
+    };
+
+    window.addEventListener("pointerdown", click);
     window.addEventListener("pointermove", update);
 
     return () => {
       cancelAnimationFrame(animationFrameId);
+      window.addEventListener("pointerdown", click);
       window.removeEventListener("pointermove", update);
     };
-  }, []);
+  }, [play]);
 
   return (
     <div

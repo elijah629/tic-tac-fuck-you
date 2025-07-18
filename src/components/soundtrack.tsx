@@ -2,34 +2,42 @@
 
 import { useGameSettings } from "@/lib/settings";
 import { SOUNDTRACKS } from "@/types/settings";
-import { useEffect } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export default function Soundtrack() {
-  const { volume, soundtrackId, play, loadAllTracks, audioContext } =
-    useGameSettings();
+  const { soundtrackId, play, pause, close, loadAllTracks } = useGameSettings();
+
+  const [isInit, setInit] = useState(false);
+  const playing = useRef<string | null>(null);
+
+  const handleClick = useCallback(async () => {
+    await loadAllTracks();
+    play(SOUNDTRACKS[soundtrackId].url, true);
+    playing.current = SOUNDTRACKS[soundtrackId].url;
+
+    setInit(true);
+  }, [loadAllTracks, play, soundtrackId]);
 
   useEffect(() => {
-    async function handleClick() {
-      if (!audioContext) {
-        await loadAllTracks();
-
-        play(SOUNDTRACKS[soundtrackId].url, true);
-      }
-    }
-
-    window.addEventListener("click", handleClick);
-
-    return () => {
+    if (!isInit) {
+      window.addEventListener("click", handleClick);
+    } else {
       window.removeEventListener("click", handleClick);
-    };
-  }, [
-    volume.master,
-    volume.soundtrack,
-    audioContext,
-    loadAllTracks,
-    play,
-    soundtrackId,
-  ]);
+    }
+  }, [handleClick, isInit, close]);
+
+  useEffect(() => () => close(), [close]);
+
+  useEffect(() => {
+    if (!isInit) return;
+
+    if (playing.current) {
+      pause(playing.current);
+      play(SOUNDTRACKS[soundtrackId].url, true);
+
+      playing.current = SOUNDTRACKS[soundtrackId].url;
+    }
+  }, [soundtrackId, pause, play, isInit]);
 
   return null;
 }

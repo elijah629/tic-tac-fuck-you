@@ -25,21 +25,25 @@ export function Game({
   const ai = useMaybeGame((s) => s.ai);
   const human = useMaybeGame((s) => s.human);
   const reset = useMaybeGame((s) => s.reset);
-
-  const { play } = useGameSettings();
+  const play = useGameSettings((s) => s.play);
 
   const [difficulty, setDifficulty] = useState([50]);
   const d = diff(difficulty[0]);
 
   const [unset, setUnset] = useState(true);
 
-  const onWin = async () => {
-    if (d !== Difficulty.HARD || free) {
-      alert("You won! To log on leaderboard, sign in and play on hard mode!");
+  const onWin = async (winner: "human" | "tie" | "ai") => {
+    if (winner === "human") {
+      if (d !== Difficulty.HARD || free) {
+        alert("You won! To log on leaderboard, sign in and play on hard mode!");
+      } else {
+        await ow(); // Also prevents server side, but no need for an API call!
+      }
       play(SFX_SOUNDS.WIN, false);
+    } else if (winner === "tie") {
+      play(SFX_SOUNDS.TIE, false);
     } else {
-      play(SFX_SOUNDS.WIN, false);
-      await ow(); // Also prevents server side, but no need for an API call!
+      play(SFX_SOUNDS.LOSS, false);
     }
   };
 

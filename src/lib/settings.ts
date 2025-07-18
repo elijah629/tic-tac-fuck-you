@@ -5,7 +5,10 @@ import { persist } from "zustand/middleware";
 import { GameSettings, SFX_SOUNDS, SOUNDTRACK_SOUNDS } from "@/types/settings";
 import { perceivedVolume } from "@/lib/audio";
 
-const audioBuffers: Record<string, HTMLAudioElement> = {};
+const audioBuffers: Record<
+  string,
+  { audio: HTMLAudioElement; source: MediaElementAudioSourceNode }
+> = {};
 let sfxGain: null | GainNode = null;
 let soundtrackGain: null | GainNode = null;
 
@@ -13,9 +16,9 @@ export const useGameSettings = create(
   persist<GameSettings>(
     (set, get) => ({
       volume: {
-        master: 1,
-        sfx: 1,
-        soundtrack: 1,
+        master: 0.5,
+        sfx: 0.5,
+        soundtrack: 0.25,
       },
       soundtrackId: 0,
 
@@ -54,10 +57,10 @@ export const useGameSettings = create(
             );
           });
 
-          const track = audioContext.createMediaElementSource(audio);
-          track.connect(gainNode).connect(audioContext.destination);
+          const source = audioContext.createMediaElementSource(audio);
+          source.connect(gainNode).connect(audioContext.destination);
 
-          audioBuffers[src] = audio;
+          audioBuffers[src] = { audio, source };
         }
 
         await Promise.all([
@@ -80,11 +83,43 @@ export const useGameSettings = create(
       },
 
       play(sound, loop) {
-        audioBuffers[sound].play();
+        const audio = audioBuffers[sound]?.audio;
 
-        if (loop) {
-          audioBuffers[sound].loop = true;
+        if (!audio) {
+          return;
         }
+
+        audio.currentTime = 0;
+        audio.play();
+        audio.loop = loop;
+      },
+
+      pause(sound) {
+        audioBuffers[sound].audio.pause();
+      },
+
+      close() {
+        set(({ audioContext }) => {
+          if (!audioContext) {
+            return {};
+          }
+
+          for (const key in audioBuffers) {
+            const { audio, source } = audioBuffers[key];
+
+            audio.pause();
+            source.disconnect();
+
+            (audioBuffers[key].audio as HTMLAudioElement | null) = null;
+          }
+
+          sfxGain?.disconnect();
+          soundtrackGain?.disconnect();
+
+          audioContext.close();
+
+          return { audioContext: undefined };
+        });
       },
 
       setVolume: (volume) => {

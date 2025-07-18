@@ -10,8 +10,14 @@ export enum SOUNDTRACK_SOUNDS {
 }
 
 export enum SFX_SOUNDS {
-  WIN = "/win.mp3",
+  EXPLODE = "/explode.mp3",
+
   POWERUP = "/powerup.wav",
+  PLACE = "/place.mp3",
+
+  WIN = "/win.mp3",
+  LOSS = "/loss.wav",
+  TIE = "/tie.wav",
 }
 
 export const SOUNDTRACKS: Soundtrack[] = [
@@ -30,6 +36,9 @@ export interface GameSettings {
 
   loadAllTracks(): Promise<void>;
   play(sound: string, loop: boolean): void;
+  pause(sound: string): void;
+
+  close(): void;
 
   setVolume(volume: Volumes): void;
   setTrack(id: number): void;

@@ -44,6 +44,7 @@ export function CardFan(props: {
               case C.X:
               case C.O:
                 addXpEvent(EVENTS.PLACE);
+                play(SFX_SOUNDS.PLACE, false);
                 break;
             }
 

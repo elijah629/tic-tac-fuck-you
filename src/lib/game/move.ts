@@ -19,19 +19,25 @@ export function endTurn({
   const winner = winState();
 
   if (winner === human?.team) {
+    onWin("human");
     addXpEvent(EVENTS.WIN);
-    onWin?.(); // This only logs the win for the human on the leaderboard
-  }
-
-  if (winner !== false) {
-    // All other win states
-    return { winner }; // If we set the rest of the stuff, the AI will retrigger and hallucinate.
   }
 
   if (winner === false && board?.cells.every((x) => x !== Cell.Empty)) {
     // Every cell is filled and no one has won.
     // You could extend the board, but it is safe to say the game is a Tie according to standard TTT rules.
+    onWin("tie");
     return { winner: "tie" };
+  }
+
+  if (winner !== false) {
+    if (winner === "tie") {
+      onWin("tie");
+    } else if (winner === ai?.team) {
+      onWin("ai");
+    }
+
+    return { winner };
   }
 
   let newRound = round ?? 0;

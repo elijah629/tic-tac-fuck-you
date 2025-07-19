@@ -150,9 +150,23 @@ export interface Board {
 }
 
 export function new_board(rows: number, cols: number): Board {
+  const cells =  Array<Cell>(rows * cols).fill(Cell.Empty);
+
+  for (let i = 0; i < rows * cols; i++) {
+    const chance = Math.random();
+
+    if (chance >= 0.0 && chance <= 0.05) {
+      cells[i] = Cell.Blocked;
+    }
+
+    if (chance > 0.05  && chance <= 0.1) {
+      cells[i] = Cell.Neutral;
+    }
+  }
+
   return {
     size: { rows, cols },
-    cells: Array<Cell>(rows * cols).fill(Cell.Empty),
+    cells
   };
 }
 

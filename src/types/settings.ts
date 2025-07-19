@@ -10,14 +10,14 @@ export enum SOUNDTRACK_SOUNDS {
 }
 
 export enum SFX_SOUNDS {
-  EXPLODE = "/explode.mp3",
+  EXPLODE = "/explode.opus",
 
-  POWERUP = "/powerup.wav",
-  PLACE = "/place.mp3",
+  POWERUP = "/powerup.opus",
+  PLACE = "/place.opus",
 
-  WIN = "/win.mp3",
-  LOSS = "/loss.wav",
-  TIE = "/tie.wav",
+  WIN = "/win.opus",
+  LOSS = "/loss.opus",
+  TIE = "/tie.opus",
 }
 
 export const SOUNDTRACKS: Soundtrack[] = [

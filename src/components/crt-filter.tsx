@@ -1,6 +1,5 @@
 import { cn } from "@/lib/utils";
 import styles from "@/components/crt.module.css";
-import barrel from "@/assets/images/barrel.png";
 
 export default function CrtFilter() {
   return (

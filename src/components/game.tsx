@@ -26,7 +26,7 @@ export function Game({
       <Board />
       <HumanPlayer />
 
-      {winner !== false && <GameOver winner={winner!} />}
+      {winner !== false && <GameOver free={free} winner={winner!} />}
     </main>
   ) : (
     <NewGame onWin={onWin} free={free} />

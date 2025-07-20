@@ -28,6 +28,7 @@
     "lucide-react": "^0.525.0",
     "next": "^15.4.2",
     "next-auth": "^5.0.0-beta.29",
+    "sharp": "^0.34.3",
     "tailwind-merge": "^3.3.1",
     "zustand": "^5.0.6"
   },

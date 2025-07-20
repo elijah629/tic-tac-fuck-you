@@ -7,6 +7,8 @@ import neutralize from "@/assets/images/cards/neutral.png";
 import back from "@/assets/images/cards/deck-back.png";
 import inc from "@/assets/images/cards/inc-win.png";
 import dec from "@/assets/images/cards/dec-win.png";
+import science from "@/assets/images/cards/scientific-reaction.png";
+import gun from "@/assets/images/cards/revolver.png";
 import { Card as C } from "@/types/game";
 
 // pick correct image src
@@ -19,6 +21,8 @@ export function cardSrc(card: C) {
   if (card === C.Extend) return extend.src;
   if (card === C.IncrementWinLength) return inc.src;
   if (card === C.DecrementWinLength) return dec.src;
+  if (card === C.Roulette) return gun.src;
+  if (card === C.ScientificReaction) return science.src;
 
   return back.src;
 }

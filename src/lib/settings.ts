@@ -11,6 +11,61 @@ const audioBuffers: Record<
 > = {};
 let sfxGain: null | GainNode = null;
 let soundtrackGain: null | GainNode = null;
+let audioContext: null | AudioContext = null;
+
+export async function play(sound: string, loop: boolean = false, wait: boolean = false): Promise<void> {
+  if (loop && wait) {
+    throw new Error("waiting on looping audio will wait forever");
+  }
+
+  const audio = audioBuffers[sound]?.audio;
+
+  if (!audio) {
+    return;
+  }
+
+  audio.currentTime = 0;
+  await audio.play();
+
+  return new Promise(r => {
+    if (loop) {
+      audio.loop = loop;
+      r(); // Loop never ends, js finish immediately
+    } else if (wait) {
+      audio.addEventListener("ended", () => {
+        r(); // Wait
+      }, { once: true });
+    }
+  });
+}
+
+export function pause(sound: string) {
+  audioBuffers[sound].audio.pause();
+}
+
+export function close() {
+  if (!audioContext) {
+    return;
+  }
+
+  for (const key in audioBuffers) {
+    const { audio, source } = audioBuffers[key];
+
+    audio.pause();
+    source.disconnect();
+
+    (audioBuffers[key].audio as HTMLAudioElement | null) = null;
+  }
+
+  sfxGain?.disconnect();
+  soundtrackGain?.disconnect();
+
+  audioContext.close();
+
+  sfxGain = null;
+  soundtrackGain = null;
+  audioContext = null;
+}
 
 export const useGameSettings = create(
   persist<GameSettings>(
@@ -22,24 +77,13 @@ export const useGameSettings = create(
       },
       soundtrackId: 0,
 
-      getAudioContext: () => {
-        const { audioContext } = get();
-        if (audioContext) return audioContext;
-
-        const newAudioContext = new AudioContext();
-
-        set({ audioContext: newAudioContext });
-
-        return newAudioContext;
-      },
-
       async loadAllTracks() {
-        const audioContext = new AudioContext();
+        const ctx = new AudioContext();
         const sfx_sounds = Object.values(SFX_SOUNDS);
         const soundtrack_sounds = Object.values(SOUNDTRACK_SOUNDS);
 
-        sfxGain = audioContext.createGain();
-        soundtrackGain = audioContext.createGain();
+        sfxGain = ctx.createGain();
+        soundtrackGain = ctx.createGain();
 
         async function loadAudioElement(src: string, gainNode: GainNode) {
           if (src in audioBuffers) return;
@@ -57,8 +101,8 @@ export const useGameSettings = create(
             );
           });
 
-          const source = audioContext.createMediaElementSource(audio);
-          source.connect(gainNode).connect(audioContext.destination);
+          const source = ctx.createMediaElementSource(audio);
+          source.connect(gainNode).connect(ctx.destination);
 
           audioBuffers[src] = { audio, source };
         }
@@ -70,56 +114,14 @@ export const useGameSettings = create(
           ),
         ]);
 
-        set(({ volume }) => {
-          sfxGain!.gain.value = perceivedVolume(volume.master * volume.sfx);
-          soundtrackGain!.gain.value = perceivedVolume(
-            volume.soundtrack * volume.master,
-          );
+        audioContext = ctx;
 
-          return {
-            audioContext,
-          };
-        });
-      },
+        const { volume } = get();
 
-      play(sound, loop) {
-        const audio = audioBuffers[sound]?.audio;
-
-        if (!audio) {
-          return;
-        }
-
-        audio.currentTime = 0;
-        audio.play();
-        audio.loop = loop;
-      },
-
-      pause(sound) {
-        audioBuffers[sound].audio.pause();
-      },
-
-      close() {
-        set(({ audioContext }) => {
-          if (!audioContext) {
-            return {};
-          }
-
-          for (const key in audioBuffers) {
-            const { audio, source } = audioBuffers[key];
-
-            audio.pause();
-            source.disconnect();
-
-            (audioBuffers[key].audio as HTMLAudioElement | null) = null;
-          }
-
-          sfxGain?.disconnect();
-          soundtrackGain?.disconnect();
-
-          audioContext.close();
-
-          return { audioContext: undefined };
-        });
+        sfxGain!.gain.value = perceivedVolume(volume.master * volume.sfx);
+        soundtrackGain!.gain.value = perceivedVolume(
+          volume.soundtrack * volume.master,
+        );
       },
 
       setVolume: (volume) => {
@@ -134,12 +136,6 @@ export const useGameSettings = create(
     }),
     {
       name: "settings",
-      partialize(state) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { audioContext, ...persistedState } = state;
-
-        return persistedState;
-      },
     },
   ),
 );

@@ -24,6 +24,7 @@ export function Sidebar({ className }: { className?: string }) {
   const board = useGame((s) => s.board);
   const round = useGame((s) => s.round);
   const winner = useGame((s) => s.winner);
+  const roulette = useGame((s) => s.roulette);
   const difficulty = useGame((s) => s.difficulty);
   const human = useGame((s) => s.human);
   const setExpression = useGame((s) => s.setAiExpression);
@@ -74,7 +75,7 @@ export function Sidebar({ className }: { className?: string }) {
       return true;
     },*/
 
-    onFinish({ message: { parts } }) {
+    async onFinish({ message: { parts } }) {
       const text = parts.filter((x) => x.type === "text")[0].text;
 
       const emojis = emoji();
@@ -89,9 +90,9 @@ export function Sidebar({ className }: { className?: string }) {
       const tools = regex.exec(text)![1].split(",");
 
       for (let i = 0; i < tools.length; i++) {
-        if (difficulty === Difficulty.HARD && i !== 0) {
+/*        if (difficulty === Difficulty.HARD && i !== 0) { // idefk when or what this was for. i prob wrote this at the ass crack of dawn
           break;
-        }
+        }*/
 
         const tool = tools[i].split("|");
         const card = tool[0] as Card;
@@ -102,13 +103,25 @@ export function Sidebar({ className }: { className?: string }) {
           case Card.Block:
           case Card.Lowercase:
           case Card.Neutralize:
-            applyCard(Number(tool[1]), Number(tool[2]), card, true);
+          case Card.ScientificReaction:
+            await applyCard(Number(tool[1]), Number(tool[2]), card, true);
             break;
+
+          case Card.Roulette:
+            const forced_winner = await roulette();
+
+            if (forced_winner === false) {
+              break;
+            } else {
+              removeCard(ai.team);
+              endTurn(forced_winner);
+              return;
+            }
 
           case Card.Extend:
             if (difficulty === Difficulty.HARD) {
               // Larger boards make it easier for the human to win
-              break;
+              continue;
             }
 
             extendBoard(tool[1] as ExtendDirection);

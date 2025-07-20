@@ -3,46 +3,15 @@
 import { Cell } from "@/components/cell";
 import { useGame } from "@/lib/game";
 import { cn } from "@/lib/utils";
-import barrel from "@/assets/images/sphere.png";
 
 export function Board({ className }: { className?: string }) {
-  const {
-    size: { rows, cols },
-    cells,
-  } = useGame((s) => s.board);
+  const cells = useGame((s) => s.board.cells);
+  const { rows, cols } = useGame((s) => s.board.size);
 
   const colBound = cols > rows;
 
   return (
     <div className="flex items-center justify-center @container">
-      <svg height={0} width={0}>
-        <defs>
-          <filter
-            id="crt"
-            x="0"
-            y="0"
-            width="100%"
-            height="100%"
-            filterUnits="userSpaceOnUse"
-          >
-            <feImage
-              href={barrel.src}
-              //x="-100%"
-              //y="0"
-              preserveAspectRatio="none"
-              result="disp"
-            />
-
-            <feDisplacementMap
-              in="SourceGraphic"
-              in2="disp"
-              scale="20"
-              xChannelSelector="R"
-              yChannelSelector="G"
-            />
-          </filter>
-        </defs>
-    </svg>
       <div
         className={cn(
           "grid",

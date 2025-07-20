@@ -7,8 +7,11 @@ const CELL_TO_TEAM = {
   [Cell.x]: Team.X,
   [Cell.O]: Team.O,
   [Cell.o]: Team.O,
+
   [Cell.Empty]: false, // No team
-  [Cell.Blocked]: false, // No team
+  [Cell.Blocked]: false,
+  [Cell.Chemical]: false,
+
   [Cell.Neutral]: "tie", // Both teams
 } satisfies Record<Cell, Winner>;
 
@@ -137,7 +140,7 @@ function lineValue(board: Cell[], line: Uint16Array): Cell | null {
 
   for (const idx of line) {
     const cell = board[idx];
-    if (cell === Cell.Neutral) {
+    if (CELL_TO_TEAM[cell] === "tie") {
       continue;
     }
 
@@ -149,6 +152,6 @@ function lineValue(board: Cell[], line: Uint16Array): Cell | null {
     }
   }
 
-  // If we only saw Cell.Neutral, return neutral, otherwize return the other cell / null on conflict.
+  // If we only saw Neutral-like cells, return neutral, otherwize return the other cell / null on conflict.
   return winner === null ? Cell.Neutral : winner;
 }

@@ -25,16 +25,19 @@ export enum Card {
   X = "X",
   O = "O",
 
-  Extend = "extend_board",
+  Extend = "wxtend board",
 
   Lowercase = "lowercase",
 
-  Neutralize = "neutralize",
+  Neutralize = "make neutral",
 
   Block = "block",
 
-  IncrementWinLength = "inc_win_length",
-  DecrementWinLength = "dec_win_length",
+  ScientificReaction = "chemical reaction",
+  Roulette = "roulette",
+
+  IncrementWinLength = "increment win length",
+  DecrementWinLength = "decrement win length",
 
   // Use by the AI renderer only, this is so we can assign an Id to every card, even if the value doesn't exist. This card only renders a "back" side and not a front
   // To Be Determined
@@ -54,9 +57,11 @@ export enum Cell {
   O = "O",
   o = "o",
 
-  Neutral = "?",
+  Chemical = "chemical",
+
+  Neutral = "neutral",
   Empty = "_",
-  Blocked = "#",
+  Blocked = "blocked",
 }
 
 export enum Team {
@@ -93,13 +98,14 @@ export type GameActions = {
     col: number,
     card: Card,
     shouldOverwite: boolean,
-  ): boolean;
+  ): Promise<boolean>;
   addXpEvent(event: Omit<XpEvent, "id">): void;
   removeXpEvent(id: number): void;
   winState(): Winner;
-  endTurn(): void;
+  endTurn(forced_winner?: Winner): void;
   setAiExpression(emoji: string): void;
   reset(): void;
+  roulette(): Promise<Team | false>;
 };
 
 export interface Player {
@@ -150,23 +156,23 @@ export interface Board {
 }
 
 export function new_board(rows: number, cols: number): Board {
-  const cells =  Array<Cell>(rows * cols).fill(Cell.Empty);
+  const cells = Array<Cell>(rows * cols).fill(Cell.Empty);
 
   for (let i = 0; i < rows * cols; i++) {
-    const chance = Math.random();
+    const chance = Math.floor(Math.random() * 40);
 
-    if (chance >= 0.0 && chance <= 0.05) {
+    if (chance === 1) {
       cells[i] = Cell.Blocked;
     }
 
-    if (chance > 0.05  && chance <= 0.1) {
+    if (chance === 2) {
       cells[i] = Cell.Neutral;
     }
   }
 
   return {
     size: { rows, cols },
-    cells
+    cells,
   };
 }
 

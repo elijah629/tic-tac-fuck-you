@@ -2,6 +2,8 @@
 
 import { Cell as C } from "@/types/game";
 import { useGame } from "@/lib/game";
+import chemical from "@/assets/images/cells/chemical.png";
+import Image from "next/image";
 
 export function Cell({ index, cell }: { index: number; cell: C }) {
   const { rows, cols } = useGame((s) => s.board.size);
@@ -59,6 +61,14 @@ function CellContent({ cell }: { cell: C }) {
       <div className="bg-neutral/80 w-full h-full text-[100cqw] flex items-center justify-center">
         ?
       </div>
+    );
+  }
+
+  if (cell === C.Chemical) {
+    return (
+      <>
+        <Image src={chemical.src} width={256} height={256} alt="Chemical" />
+      </>
     );
   }
 

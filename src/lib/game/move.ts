@@ -1,11 +1,11 @@
-import { Board, Card, Cell, EVENTS, GameState, Team } from "@/types/game";
+import { Board, Card, Cell, GameState, Team } from "@/types/game";
 import { extendBoard, getSmallestDirection } from "@/lib/game/board";
 import { InitializedGameStore } from "@/lib/game";
 import { sampleCard } from "@/lib/game/cards";
 import { changeWinLength } from "@/lib/game/win-length";
+import { Winner } from "./win-check";
 
 export function endTurn({
-  addXpEvent,
   onWin,
   ai,
   startingTeam,
@@ -15,13 +15,21 @@ export function endTurn({
   difficulty,
   winState,
   board,
-}: InitializedGameStore): Partial<GameState> {
-  const winner = winState();
+}: InitializedGameStore, forced_winner?: Winner): Partial<GameState> {
 
-  if (winner === human?.team) {
-    onWin("human");
-    addXpEvent(EVENTS.WIN);
+  if (forced_winner) {
+    if (forced_winner === "tie") {
+      onWin("tie");
+    } else if (forced_winner === ai?.team) {
+      onWin("ai");
+    } else if (forced_winner === human?.team) {
+      onWin("human");
+    }
+
+    return { winner: forced_winner }
   }
+
+  const winner = winState();
 
   if (winner === false && board?.cells.every((x) => x !== Cell.Empty)) {
     // Every cell is filled and no one has won.
@@ -35,6 +43,8 @@ export function endTurn({
       onWin("tie");
     } else if (winner === ai?.team) {
       onWin("ai");
+    } else if (winner === human?.team) {
+      onWin("human");
     }
 
     return { winner };
@@ -50,6 +60,7 @@ export function endTurn({
 
     if (newRound % 2 === 0) {
       return {
+        board: spreadChemical(board),
         winner,
         round: newRound,
         turn: nextTurn,
@@ -88,15 +99,49 @@ export function endTurn({
   };
 }
 
-export function applyCard(
+function spreadChemical(board: Board): Board {
+  const {
+    size: { rows, cols },
+    cells,
+  } = board;
+
+  const chemicalPositions: [number, number][] = [];
+
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      if (cells[row * cols + col] === Cell.Chemical) {
+        chemicalPositions.push([row, col]);
+      }
+    }
+  }
+
+  for (const [row, col] of chemicalPositions) {
+    const neighbors = [
+      [row - 1, col], // up
+      [row + 1, col], // down
+      [row, col - 1], // left
+      [row, col + 1], // right
+    ];
+
+    for (const [nRow, nCol] of neighbors) {
+      if (nRow >= 0 && nRow < rows && nCol >= 0 && nCol < cols) {
+        board.cells[nRow * cols + nCol] = Cell.Chemical;
+      }
+    }
+  }
+
+  return { size: { rows, cols }, cells: [...board.cells] };
+}
+
+export async function applyCard(
   row: number,
   col: number,
   card: Card,
   board: Board,
   winLength: number,
   shouldOverwrite: boolean,
-): { valid: false } | ({ valid: true } & Partial<GameState>) {
-  const index = board.size.cols * row + col;
+): Promise<{ valid: false } | ({ valid: true } & Partial<GameState>)> {
+  const index = row * board.size.cols + col;
   const current = board.cells[index];
 
   if (card === Card.Lowercase) {
@@ -151,33 +196,36 @@ export function applyCard(
     return { valid: true, ...changeWinLength(-1, winLength, board) };
   }
 
-  // [Card.X, Card.O, Card.Neutralize, Card.Block] {
+  if (card === Card.Roulette) {
+    return { valid: true };
+  }
+
   const CARD_TO_CELL: Partial<Record<Card, Cell>> = {
     [Card.X]: Cell.X,
     [Card.O]: Cell.O,
     [Card.Neutralize]: Cell.Neutral,
     [Card.Block]: Cell.Blocked,
+    [Card.ScientificReaction]: Cell.Chemical,
   };
 
   const cell = CARD_TO_CELL[card];
   if (cell === undefined) return { valid: false };
 
-  if (shouldOverwrite || (cell === Cell.Blocked && current !== Cell.Blocked)) {
-    board.cells[index] = cell;
-  } else {
-    const valid = cell !== current && current === Cell.Empty;
+  const overwite =
+    shouldOverwrite ||
+    current === Cell.Empty ||
+    current === Cell.Chemical ||
+    (cell === Cell.Blocked && current !== Cell.Blocked);
+  //if (shouldOverwrite || current === Cell.Empty || current === Cell.Chemical || ((cell === Cell.Blocked) && cell !== current)) {
 
-    if (valid) {
-      board.cells[index] = cell;
-    } else {
-      return { valid: false };
-    }
-  }
+  if (!overwite) return { valid: false };
 
   board.cells[index] = cell;
-
   return {
     valid: true,
-    board,
+    board: {
+      ...board,
+      cells: [...board.cells],
+    },
   };
 }

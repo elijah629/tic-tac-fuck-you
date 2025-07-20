@@ -3,8 +3,10 @@
 import { Card as C, EVENTS, Team } from "@/types/game";
 import { Card } from "@/components/card";
 import { useGame } from "@/lib/game";
-import { useGameSettings } from "@/lib/settings";
 import { SFX_SOUNDS } from "@/types/settings";
+import { play } from "@/lib/settings";
+import { useState } from "react";
+import { roulette } from "@/lib/game/roulette";
 
 export function CardFan(props: {
   for: Team;
@@ -15,7 +17,9 @@ export function CardFan(props: {
   const applyCard = useGame((s) => s.applyCard);
   const addXpEvent = useGame((s) => s.addXpEvent);
   const endTurn = useGame((s) => s.endTurn);
-  const play = useGameSettings((s) => s.play);
+    const ai = useGame((s) => s.ai);
+    const human = useGame((s) => s.human);
+  const [isPlaying, setPlaying] = useState(false); // i hate this
 
   return props.cards.map(({ card, id }, i) => {
     const mid = (props.cards.length - 1) / 2;
@@ -28,8 +32,12 @@ export function CardFan(props: {
         droppable={props.for === turn}
         key={id}
         id={id}
-        onDrop={(card, x, y) => {
-          if (applyCard(y, x, card, false)) {
+        onDrop={async (card, x, y) => {
+          if (isPlaying) return false;
+
+          setPlaying(true);
+
+          if (await applyCard(y, x, card, false)) {
             switch (card) {
               case C.Lowercase:
                 addXpEvent(EVENTS.ULTRA_GOOBER_BONUS);
@@ -40,6 +48,7 @@ export function CardFan(props: {
                 addXpEvent(EVENTS.MAGICAL_BONUS);
               case C.Block:
               case C.Neutralize:
+              case C.ScientificReaction:
                 addXpEvent(EVENTS.SPECIAL_BONUS);
               case C.X:
               case C.O:
@@ -49,9 +58,19 @@ export function CardFan(props: {
             }
 
             removeCard(props.for, id);
-            endTurn();
+
+            if (card === C.Roulette) {
+              const forced_winner = await roulette(ai, human);
+
+              endTurn(forced_winner);
+            } else {
+              endTurn();
+            }
+
+            setPlaying(false);
             return true;
           } else {
+            setPlaying(false);
             return false;
           }
         }}

@@ -12,7 +12,7 @@ import { auth, signIn } from "@/lib/auth";
 import { ratelimit, redis } from "@/lib/redis";
 import { cn } from "@/lib/utils";
 
-const TOP = 20;
+const TOP = 100;
 const medalMap = ["🥇", "🥈", "🥉"];
 
 type Leaderboard = LeaderboardItem[];

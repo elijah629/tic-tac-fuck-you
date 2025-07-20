@@ -21,6 +21,7 @@ import { extendBoard } from "@/lib/game/board";
 import { addXpEvent, removeXpEvent } from "@/lib/game/xp";
 import { applyCard, endTurn } from "@/lib/game/move";
 import { changeWinLength } from "@/lib/game/win-length";
+import { roulette } from "./roulette";
 
 type GameStore = {
   status: "uninitialized" | "initialized";
@@ -120,17 +121,17 @@ export const useMaybeGame = create<GameStore>((set, get) => ({
       onWin,
     });
 
-    setLineMatrix(generateLineMatrix(cols, rows, winLength)); // CAN BE VERY BIG! Not storing in state due to updates
+    setLineMatrix(generateLineMatrix(cols, rows, winLength)); // CAN BE VERY BIG! Not storing in state due to huge updates
   },
 
   setAiExpression(emoji) {
     set({ ai_expression: emoji });
   },
 
-  endTurn() {
+  endTurn(forced_winner?) {
     set(
       withInit((game) => {
-        return endTurn(game);
+        return endTurn(game, forced_winner);
       }),
     );
   },
@@ -143,12 +144,17 @@ export const useMaybeGame = create<GameStore>((set, get) => ({
     );
   },
 
-  applyCard(row, col, card, shouldOverwite) {
-    let valid = true;
+  async roulette() {
+    const { ai, human } = asInit(get());
 
-    set(
-      withInit(({ board, winLength }) => {
-        const application = applyCard(
+    return await roulette(ai, human);
+
+  },
+
+  async applyCard(row, col, card, shouldOverwite) {
+    const { board, winLength } = asInit(get());
+
+        const application = await applyCard(
           row,
           col,
           card,
@@ -158,15 +164,10 @@ export const useMaybeGame = create<GameStore>((set, get) => ({
         );
 
         if (application.valid) {
-          return { ...application };
-        } else {
-          valid = false;
-          return {};
-        }
-      }),
-    );
+          set(application);
+    }
 
-    return valid;
+    return application.valid;
   },
 
   winState() {

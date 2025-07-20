@@ -79,6 +79,9 @@ export default function HowToPlay() {
           Lowercase cells count for your team, but cannot mix with capital
           cells.
         </li>
+        <li>
+          Chemical cells are identical to empty cells, but they spread.
+        </li>
       </ul>
       <h3>Examples</h3>
       <p className="text-muted-foreground">
@@ -125,6 +128,10 @@ export default function HowToPlay() {
           <TableRow>
             <TableCell>? X ? and O O O</TableCell>
             <TableCell>Tie</TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>Chem Chem Chem and O O O</TableCell>
+            <TableCell>O, chemical cells act as empty cells</TableCell>
           </TableRow>
           <TableRow>
             <TableCell>X X X, x x x, o o o, O O O, # # #, ? ? ?</TableCell>
@@ -234,7 +241,25 @@ export default function HowToPlay() {
           </TableRow>
           <TableRow>
             <TableCell>
-              <Card droppable={false} card={C.TBD} id={8} />
+              <Card droppable={false} card={C.Roulette} id={8} />
+            </TableCell>
+            <TableCell>Roulette</TableCell>
+            <TableCell className="max-w-md whitespace-normal">
+              1/6 chance to shoot the AI, if that fails, 1/6 chance to shoot yourself. (death = loss). If the AI plays this card, it still plays itself first.
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>
+              <Card droppable={false} card={C.ScientificReaction} id={9} />
+            </TableCell>
+            <TableCell>Scientific Reaction</TableCell>
+            <TableCell className="max-w-md whitespace-normal">
+              Spawns a catalyst for the chemical compound that consumes everything it touches!
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>
+              <Card droppable={false} card={C.TBD} id={10} />
             </TableCell>
             <TableCell>Deck back</TableCell>
             <TableCell className="max-w-md whitespace-normal">

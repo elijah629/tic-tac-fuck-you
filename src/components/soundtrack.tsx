@@ -1,11 +1,11 @@
 "use client";
 
-import { useGameSettings } from "@/lib/settings";
+import { pause, play, close, useGameSettings } from "@/lib/settings";
 import { SOUNDTRACKS } from "@/types/settings";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 export default function Soundtrack() {
-  const { soundtrackId, play, pause, close, loadAllTracks } = useGameSettings();
+  const { soundtrackId, loadAllTracks } = useGameSettings();
 
   const [isInit, setInit] = useState(false);
   const playing = useRef<string | null>(null);
@@ -16,17 +16,15 @@ export default function Soundtrack() {
     playing.current = SOUNDTRACKS[soundtrackId].url;
 
     setInit(true);
-  }, [loadAllTracks, play, soundtrackId]);
+  }, [loadAllTracks, soundtrackId]);
 
   useEffect(() => {
     if (!isInit) {
-      window.addEventListener("click", handleClick);
-    } else {
-      window.removeEventListener("click", handleClick);
+      window.addEventListener("click", handleClick, { once: true });
     }
-  }, [handleClick, isInit, close]);
+  }, [handleClick, isInit]);
 
-  useEffect(() => () => close(), [close]);
+  useEffect(() => () => close(), []);
 
   useEffect(() => {
     if (!isInit) return;
@@ -37,7 +35,7 @@ export default function Soundtrack() {
 
       playing.current = SOUNDTRACKS[soundtrackId].url;
     }
-  }, [soundtrackId, pause, play, isInit]);
+  }, [soundtrackId, isInit]);
 
   return null;
 }

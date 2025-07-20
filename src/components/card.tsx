@@ -9,7 +9,7 @@ import { cardSrc } from "@/lib/cards";
 
 const MAX_WIND_ANGLE = 30;
 const WIND_RESPONSIVENESS = 0.5;
-const VELOCITY_SAMPLES = 10;
+const VELOCITY_SAMPLES = 5;
 const MIN_VELOCITY_THRESHOLD = 0.05;
 
 enum ReturnPhase {
@@ -31,7 +31,7 @@ export function Card({
   card: C;
   id: number;
   droppable: boolean;
-  onDrop?: (card: C, x: number, y: number) => boolean;
+  onDrop?: (card: C, x: number, y: number) => Promise<boolean>;
   angle?: number;
   translateY?: number;
 }) {
@@ -212,7 +212,6 @@ export function Card({
     requestAnimationFrame(animate);
   }, [updateTransform]);
 
-  // Optimized pointer handlers
   const handlePointerDown = useCallback(() => {
     const card = cardRef.current;
     if (!card) return;
@@ -248,7 +247,7 @@ export function Card({
   );
 
   const handlePointerUp = useCallback(
-    (e: PointerEvent) => {
+    async (e: PointerEvent) => {
       const state = stateRef.current;
       if (!state.dragging) return;
 
@@ -281,41 +280,11 @@ export function Card({
       const x = Number(zone.getAttribute("data-board-cell-x"));
       const y = Number(zone.getAttribute("data-board-cell-y"));
 
-      if (!onDrop?.(card, x, y)) {
+      if (!(await onDrop?.(card, x, y))) {
         // The move was NOT a valid move, return the card.
         returnToOrigin();
         return;
       }
-
-      /*
-    // Optimized drop zone detection
-    const cardRect = elCard.getBoundingClientRect();
-    const centerX = cardRect.left + cardRect.width / 2;
-    const centerY = cardRect.top + cardRect.height / 2;
-
-    const dropZones = document.querySelectorAll("[data-board-cell]");
-
-    for (const zone of dropZones) {
-      const zoneRect = zone.getBoundingClientRect();
-      if (
-        centerX >= zoneRect.left - 25 &&
-        centerX <= zoneRect.right + 25 &&
-        centerY >= zoneRect.top - 25 &&
-        centerY <= zoneRect.bottom + 25
-      ) {
-        const x = Number(zone.getAttribute("data-board-cell-x"));
-        const y = Number(zone.getAttribute("data-board-cell-y"));
-
-        if (!onDrop?.(card, x, y)) {
-          // The move was NOT a valid move, return the card.
-          returnToOrigin();
-        }
-
-        return; // Stop checking all other zones and return early
-      }
-    }*/
-
-      //returnToOrigin(); // If card is not in a drop zone, return it.
     },
     [stopWindEffect, onDrop, droppable, card, returnToOrigin],
   );

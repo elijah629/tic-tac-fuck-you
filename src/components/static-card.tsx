@@ -23,6 +23,7 @@ export function StaticCard({
       width={WIDTH}
       height={HEIGHT}
       draggable={false}
+      unoptimized={card === C.Extend}
       alt="Card"
       src={cardSrc(card)}
       className={`transition-transform duration-300 ease-out hover:-translate-y-4 ${styles.wave}`}

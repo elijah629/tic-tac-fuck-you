@@ -22,6 +22,9 @@ export default async function Home() {
     <main className="flex flex-col items-center">
       <section
         className={`flex flex-col w-min items-center gap-3 ${taunt.taunt}`}
+        style={{
+          filter: "url(#crt)",
+        }}
       >
         <h1 className="text-4xl md:text-6xl font-bold">
           Tic Tac F

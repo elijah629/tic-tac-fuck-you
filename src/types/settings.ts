@@ -18,6 +18,10 @@ export enum SFX_SOUNDS {
   WIN = "/win.opus",
   LOSS = "/loss.opus",
   TIE = "/tie.opus",
+
+  CLICK = "/click.opus",
+  GUNSHOT = "/gunshot.opus",
+  SPIN = "/spin.opus",
 }
 
 export const SOUNDTRACKS: Soundtrack[] = [
@@ -32,13 +36,8 @@ export const SOUNDTRACKS: Soundtrack[] = [
 export interface GameSettings {
   volume: Volumes;
   soundtrackId: number;
-  audioContext?: AudioContext;
 
   loadAllTracks(): Promise<void>;
-  play(sound: string, loop: boolean): void;
-  pause(sound: string): void;
-
-  close(): void;
 
   setVolume(volume: Volumes): void;
   setTrack(id: number): void;

@@ -1,11 +1,10 @@
 "use client";
 
-import { useGameSettings } from "@/lib/settings";
+import { play } from "@/lib/settings";
 import { SFX_SOUNDS } from "@/types/settings";
 import { useEffect, useState } from "react";
 
 export function Cursor({ cursor }: { cursor: string }) {
-  const play = useGameSettings((s) => s.play);
   const [position, setPosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
@@ -36,7 +35,7 @@ export function Cursor({ cursor }: { cursor: string }) {
       window.addEventListener("pointerdown", click);
       window.removeEventListener("pointermove", update);
     };
-  }, [play]);
+  }, []);
 
   return (
     <div

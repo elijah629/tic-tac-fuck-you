@@ -3,49 +3,21 @@
 import { AIPlayer } from "@/components/ai-player";
 import { Board } from "@/components/board";
 import { HumanPlayer } from "@/components/human-player";
-import { Button } from "@/components/ui/button";
 import { Sidebar } from "@/components/sidebar";
-import { Difficulty, Team } from "@/types/game";
-import { Slider } from "@/components/ui/slider";
-import { useState } from "react";
+
 import { useMaybeGame } from "@/lib/game";
-import { useGameSettings } from "@/lib/settings";
-import { SFX_SOUNDS } from "@/types/settings";
+import { NewGame } from "@/components/new-game";
+import GameOver from "@/components/game-over";
 
 export function Game({
   free,
-  onWin: ow,
+  onWin,
 }: {
   free: boolean;
   onWin: () => Promise<void>;
 }) {
-  const init = useMaybeGame((s) => s.init);
   const status = useMaybeGame((s) => s.status);
   const winner = useMaybeGame((s) => s.winner);
-  const ai = useMaybeGame((s) => s.ai);
-  const human = useMaybeGame((s) => s.human);
-  const reset = useMaybeGame((s) => s.reset);
-  const play = useGameSettings((s) => s.play);
-
-  const [difficulty, setDifficulty] = useState([50]);
-  const d = diff(difficulty[0]);
-
-  const [unset, setUnset] = useState(true);
-
-  const onWin = async (winner: "human" | "tie" | "ai") => {
-    if (winner === "human") {
-      if (d !== Difficulty.HARD || free) {
-        alert("You won! To log on leaderboard, sign in and play on hard mode!");
-      } else {
-        await ow(); // Also prevents server side, but no need for an API call!
-      }
-      play(SFX_SOUNDS.WIN, false);
-    } else if (winner === "tie") {
-      play(SFX_SOUNDS.TIE, false);
-    } else {
-      play(SFX_SOUNDS.LOSS, false);
-    }
-  };
 
   return status === "initialized" ? (
     <main className="h-screen grid grid-rows-[min-content_auto_min-content] grid-cols-[1fr_2fr]">
@@ -54,134 +26,9 @@ export function Game({
       <Board />
       <HumanPlayer />
 
-      {winner !== false && (
-        <div className="flex flex-col h-full w-full absolute top-0 left-0 z-10 bg-background/80 items-center justify-center gap-4 p-4">
-          {winner === ai!.team ? (
-            <>
-              <h1 className="text-7xl text-center text-enemy">GAME OVER</h1>
-              <h2 className="text-5xl text-center">PATHETIC... YOU LOSE</h2>
-            </>
-          ) : winner === human!.team ? (
-            <>
-              <h1 className="text-7xl text-center text-ally">WIN!</h1>
-              <h2 className="text-5xl text-center">
-                IMPOSSIBLE. VERY LUCKY.{" "}
-                <span className="text-enemy font-bold">
-                  DON&apos;T DO IT AGAIN...
-                </span>
-              </h2>
-            </>
-          ) : (
-            <>
-              <h1 className="text-7xl text-center text-neutral">TIE</h1>
-              <h2 className="text-5xl text-center">
-                GOOD... BUT NOT GOOD ENOUGH
-              </h2>
-            </>
-          )}
-          <Button
-            onClick={() => {
-              reset();
-            }}
-            variant="neutral"
-            className="text-2xl"
-          >
-            Again?
-          </Button>
-        </div>
-      )}
+      {winner !== false && <GameOver winner={winner!} />}
     </main>
   ) : (
-    <main className="flex flex-col h-screen items-center justify-center gap-4 p-5">
-      <h2 className="text-5xl text-center">
-        {unset ? (
-          <>
-            PICK YOUR TEAM &amp; DIFFICULTY.{" "}
-            <span className="text-enemy">CHOOSE WISELY.</span>
-          </>
-        ) : d === Difficulty.HARD ? (
-          <>I DON&apos;T HAVE A NOSE AND I CAN SMELL YOUR DEFEAT.</>
-        ) : d === Difficulty.NORMAL ? (
-          <>YOU SELECTED THE DEFAULT. GOOD JOB IDIOT 👍</>
-        ) : d === Difficulty.TODDLER ? (
-          <>
-            YOU&apos;RE <span className="italic">REALLY</span> THAT SCARED OF
-            ME?
-          </>
-        ) : (
-          <>🫵 ar fuckng stoped. (level impossible, pass ✅)</>
-        )}
-      </h2>
-      <span>
-        {difficulty[0].toFixed(1)}%
-        {(difficulty[0] === 69 || difficulty[0] === 42) && ", nice"}
-      </span>
-
-      <div className="flex max-w-[80vw] w-full gap-4">
-        <span className="text-neutral">👨‍🦲 INFANT</span>{" "}
-        {/* Emoji font makes 👨‍🦲 appear like a baby ish */}
-        <Slider
-          max={100}
-          min={0}
-          step={1}
-          className="flex-1"
-          value={difficulty}
-          onValueChange={(v) => {
-            setUnset(false);
-            setDifficulty(v);
-          }}
-        />
-        <span className="text-enemy text-3xl">HARD ☠️</span>
-      </div>
-      <div className="flex gap-4 items-center">
-        <Button
-          onClick={() => init(Team.O, Team.X, Team.O, onWin, d)}
-          variant="enemy"
-          className="text-2xl"
-        >
-          X
-        </Button>
-        <Button
-          onClick={() => {
-            if (Math.random() > 0.51) {
-              // Not random
-              init(Team.X, Team.O, Team.X, onWin, d);
-            } else {
-              init(Team.O, Team.X, Team.O, onWin, d);
-            }
-          }}
-          size="lg"
-          variant="neutral"
-          className="text-2xl"
-        >
-          Random?
-        </Button>
-        <Button
-          onClick={() => {
-            init(Team.X, Team.O, Team.X, onWin, d);
-          }}
-          variant="ally"
-          className="text-2xl"
-        >
-          O
-        </Button>
-      </div>
-    </main>
+    <NewGame onWin={onWin} free={free} />
   );
-}
-
-function diff(d: number): Difficulty {
-  if (d >= 100) {
-    return Difficulty.HARD;
-  }
-
-  if (d >= 50) {
-    return Difficulty.NORMAL;
-  }
-
-  if (d >= 1) {
-    return Difficulty.TODDLER;
-  }
-
-  return Difficulty.INFANT;
 }

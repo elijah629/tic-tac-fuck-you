@@ -26,36 +26,31 @@ export function sampleCard(
   //
   // max(b, b + r(x - n))
   const rates =
-    difficulty !== Difficulty.HARD
+    difficulty === Difficulty.HARD
       ? new Map<Card, [number, number, number]>([
+          [teamCard, [2, 0, 3]],
+
+          [Card.Block, [0.5, 10, 0]],
+          [Card.Lowercase, [0.9, 0.2, 6]],
+          [Card.Neutralize, [0.9, 0.2, 6]],
+
+          [Card.Extend, [2, 0.2, 1]],
+          [Card.DecrementWinLength, [0.6, 0.2, 11]],
+          [Card.IncrementWinLength, [0.6, 0.2, 11]],
+          [Card.Roulette, [1, 0.1, 14]],
+          [Card.ScientificReaction, [1, 0.1, 14]],
+        ]) :new Map<Card, [number, number, number]>([
           [teamCard, [1.2, 10, difficulty]],
 
-          // cells
           [Card.Block, [0.9, 2, 5 + difficulty]],
           [Card.Lowercase, [0.9, 2, 5 + difficulty]],
           [Card.Neutralize, [0.9, 2, 5 + difficulty]],
 
-          // "game changers"
           [Card.Extend, [0.6, 1, 6 + difficulty]],
           [Card.DecrementWinLength, [0.6, 1, 6 + difficulty]],
           [Card.IncrementWinLength, [0.6, 1, 6 + difficulty]],
           [Card.Roulette, [0.5, 1, 8 + difficulty]],
           [Card.ScientificReaction, [0.5, 1, 8 + difficulty]],
-        ])
-      : new Map<Card, [number, number, number]>([
-          [teamCard, [2, 0, 3]],
-
-          // cells
-          [Card.Block, [0.5, 15, 0]],
-          [Card.Lowercase, [0.9, 1, 6]],
-          [Card.Neutralize, [0.9, 1, 6]],
-
-          // "game changers"
-          [Card.Extend, [2, 1, 1]],
-          [Card.DecrementWinLength, [0.6, 2, 11]],
-          [Card.IncrementWinLength, [0.6, 2, 11]],
-          [Card.Roulette, [1, 1, 14]],
-          [Card.ScientificReaction, [1, 1, 14]],
         ]);
 
   const weights = new Map<Card, number>([]);

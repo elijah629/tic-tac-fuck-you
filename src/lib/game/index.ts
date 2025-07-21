@@ -151,10 +151,10 @@ export const useMaybeGame = create<GameStore>((set, get) => ({
 
   },
 
-  async applyCard(row, col, card, shouldOverwite) {
+  applyCard(row, col, card, shouldOverwite) {
     const { board, winLength } = asInit(get());
 
-        const application = await applyCard(
+        const application = applyCard(
           row,
           col,
           card,

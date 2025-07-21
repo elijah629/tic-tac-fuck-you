@@ -98,7 +98,7 @@ export type GameActions = {
     col: number,
     card: Card,
     shouldOverwite: boolean,
-  ): Promise<boolean>;
+  ): boolean;
   addXpEvent(event: Omit<XpEvent, "id">): void;
   removeXpEvent(id: number): void;
   winState(): Winner;

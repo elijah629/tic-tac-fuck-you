@@ -104,7 +104,7 @@ export function Sidebar({ className }: { className?: string }) {
           case Card.Lowercase:
           case Card.Neutralize:
           case Card.ScientificReaction:
-            await applyCard(Number(tool[1]), Number(tool[2]), card, true);
+            applyCard(Number(tool[1]), Number(tool[2]), card, true);
             break;
 
           case Card.Roulette:

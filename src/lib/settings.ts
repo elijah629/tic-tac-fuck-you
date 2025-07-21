@@ -25,16 +25,19 @@ export async function play(sound: string, loop: boolean = false, wait: boolean =
   }
 
   audio.currentTime = 0;
+
   await audio.play();
 
   return new Promise(r => {
     if (loop) {
-      audio.loop = loop;
+      audio.loop = true;
       r(); // Loop never ends, js finish immediately
     } else if (wait) {
       audio.addEventListener("ended", () => {
-        r(); // Wait
+        r();
       }, { once: true });
+    } else if (!loop && !wait) {
+      r();
     }
   });
 }

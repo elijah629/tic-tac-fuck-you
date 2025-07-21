@@ -38,26 +38,31 @@ export function CardFan(props: {
           setPlaying(true);
 
           if (await applyCard(y, x, card, false)) {
+            removeCard(props.for, id);
+
             switch (card) {
               case C.Lowercase:
                 addXpEvent(EVENTS.ULTRA_GOOBER_BONUS);
+                play(SFX_SOUNDS.POWERUP);
+                break;
               case C.Extend:
               case C.DecrementWinLength:
               case C.IncrementWinLength:
-                play(SFX_SOUNDS.POWERUP, false);
+                play(SFX_SOUNDS.POWERUP);
                 addXpEvent(EVENTS.MAGICAL_BONUS);
+                break;
               case C.Block:
               case C.Neutralize:
               case C.ScientificReaction:
                 addXpEvent(EVENTS.SPECIAL_BONUS);
+                play(SFX_SOUNDS.PLACE);
+                break;
               case C.X:
               case C.O:
                 addXpEvent(EVENTS.PLACE);
-                play(SFX_SOUNDS.PLACE, false);
+                play(SFX_SOUNDS.PLACE);
                 break;
             }
-
-            removeCard(props.for, id);
 
             if (card === C.Roulette) {
               const forced_winner = await roulette(ai, human);

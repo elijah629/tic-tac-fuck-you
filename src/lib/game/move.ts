@@ -133,14 +133,14 @@ function spreadChemical(board: Board): Board {
   return { size: { rows, cols }, cells: [...board.cells] };
 }
 
-export async function applyCard(
+export function applyCard(
   row: number,
   col: number,
   card: Card,
   board: Board,
   winLength: number,
   shouldOverwrite: boolean,
-): Promise<{ valid: false } | ({ valid: true } & Partial<GameState>)> {
+): { valid: false } | ({ valid: true } & Partial<GameState>) {
   const index = row * board.size.cols + col;
   const current = board.cells[index];
 
@@ -158,7 +158,7 @@ export async function applyCard(
 
     board.cells[index] = newCell;
 
-    return { valid: true, board };
+    return { valid: true, board: { size: board.size, cells: [...board.cells] } };
   }
 
   if (card === Card.Extend) {

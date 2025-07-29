@@ -9,6 +9,8 @@ import { useChat } from "@ai-sdk/react";
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { ShakingInput } from "@/components/shaking-input";
 
+const regex = new RegExp(`<tool_call>(.*?)(?:</tool_call>|$)`, "gs");
+
 export function Sidebar({ className }: { className?: string }) {
   const removeXpEvent = useGame((s) => s.removeXpEvent);
   const removeCard = useGame((s) => s.removeCard);
@@ -61,25 +63,16 @@ export function Sidebar({ className }: { className?: string }) {
   const hasSent = useRef(false);
 
   const [input, setInput] = useState<string>("");
-  const { messages, append, status } = useChat({
-    /*    onToolCall({ toolCall }) {
-      if (toolCall.toolName === "playMove") {
-        const move = toolCall.input as z.infer<typeof moveSchema>;
-
-        makeMove(move);
-
-        removeAnyCard(ai!.team);
-        endTurn();
-      }
-
-      return true;
-    },*/
-
+  const { messages, sendMessage, status, regenerate } = useChat({
+    onError(error) {
+      console.error(error);
+      regenerate();
+    },
     async onFinish({ message: { parts } }) {
-      const text = parts.filter((x) => x.type === "text")[0].text;
+      const text = parts.findLast((x) => x.type === "text")!.text;
+      console.log(text);
 
       const emojis = emoji();
-      const regex = new RegExp(`<tool_call>(.*?)(?:</tool_call>|$)`, "gs");
 
       const expr = text.match(emojis)?.[0];
 
@@ -90,10 +83,6 @@ export function Sidebar({ className }: { className?: string }) {
       const tools = regex.exec(text)![1].split(",");
 
       for (let i = 0; i < tools.length; i++) {
-/*        if (difficulty === Difficulty.HARD && i !== 0) { // idefk when or what this was for. i prob wrote this at the ass crack of dawn
-          break;
-        }*/
-
         const tool = tools[i].split("|");
         const card = tool[0] as Card;
 
@@ -156,7 +145,7 @@ export function Sidebar({ className }: { className?: string }) {
 
     // first AI turn ever
     if (first.current) {
-      append({
+      /*append({
         role: "user",
         parts: [
           {
@@ -164,27 +153,39 @@ export function Sidebar({ className }: { className?: string }) {
             text: initialPrompt(ai, human, winLength, difficulty),
           },
         ],
-      });
-      //sendMessage({ text: initialPrompt(ai, human, winLength, difficulty) });
+      });*/
+      sendMessage({ text: initialPrompt(ai, human, winLength, difficulty) });
       first.current = false;
     } else {
-      append({
+      /*append({
         role: "user",
         parts: [
           { type: "text", text: statePrompt(ai, human, winLength, board) },
         ],
-      });
-      //sendMessage({ text: statePrompt(ai, human, winLength, board) });
+      });*/
+      sendMessage({ text: statePrompt(ai, human, winLength, board) });
     }
-  }, [ai, difficulty, board, winLength, human, winner, append, turn]);
+  }, [ai, difficulty, board, winLength, human, winner, sendMessage, turn]);
 
-  const raw_msg = messages[messages.length - 1];
-  const content: string[] | undefined =
-    raw_msg?.role === "assistant"
-      ? raw_msg.parts
-          .filter((x) => x.type === "text")
-          .map((x) => x.text.replace(/<tool_call>.*/g, ""))
-      : undefined;
+  //const raw_msg = messages.at(-1);
+
+  const content = (messages.findLast(x => x.role === "assistant")?.parts.filter(x => x.type === "text")
+  .map(x => x.text.replace(regex, "")))?.at(-1) || "Thinking";
+
+/*const content: string[] | undefined =
+  raw_msg?.role === "assistant"
+    ? raw_msg.parts
+        .map((x) => {
+          if (x.type === "text") {
+            return x.text.replace(/<tool_call>.* /g, "");
+          } else if (x.type === "reasoning") {
+            return "Thinking...";
+          } else {
+            return undefined; // or return an empty string or null if you prefer
+          }
+        })
+        .filter((x) => x !== undefined) // filters out undefined values
+    : undefined;*/
 
   return (
     <aside className={cn("p-3 flex flex-col gap-3", className)}>
@@ -198,26 +199,16 @@ export function Sidebar({ className }: { className?: string }) {
           ))}
         </ul>
       </div>
-      {content && (
         <div className="p-4 bg-secondary rounded-md">
-          {content?.map((text, i) => (
-            <HighlightedText text={text} key={i} />
-          ))}
+            <HighlightedText text={content} />
         </div>
-      )}
       <form
         onSubmit={(e) => {
           e.preventDefault();
 
           if (input.trim() && turn === human.team) {
-            append({
-              role: "user",
-              parts: [
-                {
-                  type: "text",
-                  text: `The human decided not to play a move, but instead talk back to you, the game state is the same, respond to this appropriately: Human: ${input}`,
-                },
-              ],
+            sendMessage({
+                  text: `The human decided not to play a move, but instead talk back to you, the game state is the same, respond to this appropriately: ${input}`,
             });
             hasSent.current = true;
             setInput("");
@@ -251,16 +242,17 @@ function colorXp(xp: number): string {
   return "text-legendary";
 }
 
-const regex = /(^|\W)([OX])(?=\W|$)/g;
 
+const hl_regex = /(^|\W)([OX])(?=\W|$)/g;
 function HighlightedText({ text }: { text: string }) {
+
   const parts = useMemo<ReactNode[]>(() => {
     const items: ReactNode[] = [];
     let lastIndex = 0;
     let match: RegExpExecArray | null;
 
     // Use global regex with exec
-    while ((match = regex.exec(text)) !== null) {
+    while ((match = hl_regex.exec(text)) !== null) {
       const prefix = match[1];
       const char = match[2];
       const start = match.index + prefix.length;

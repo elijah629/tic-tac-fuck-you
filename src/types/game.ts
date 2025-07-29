@@ -25,7 +25,7 @@ export enum Card {
   X = "X",
   O = "O",
 
-  Extend = "wxtend board",
+  Extend = "extend board",
 
   Lowercase = "lowercase",
 

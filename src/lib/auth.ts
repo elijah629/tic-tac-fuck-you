@@ -15,7 +15,7 @@ export const { handlers, signIn, signOut, auth, unstable_update } = NextAuth({
       }
 
       if (trigger === "update" && session?.user?.hardcore !== undefined) {
-        // Sync token and auth;
+        // Sync token and auth
         token.hardcore = session.user.hardcore;
       }
 
@@ -30,17 +30,6 @@ export const { handlers, signIn, signOut, auth, unstable_update } = NextAuth({
       return session;
     },
   },
-  /* callbacks: {
-    authorized({ request, auth }) {
-      const pathname = new URL(request.url).pathname;
-
-      const isProtected =
-        pathname.startsWith("/api/chat") || pathname.startsWith("/play");
-
-      // No auth in dev bc slack sucks
-      return process.env.NODE_ENV !== "production" ? !isProtected || !!auth : true;
-    },
-  },*/
 });
 
 export async function isHardcore(session?: Session | null): Promise<boolean> {

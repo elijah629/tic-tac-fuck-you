@@ -1,4 +1,5 @@
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
+import { extractReasoningMiddleware, wrapLanguageModel } from "ai";
 
 const BASEURL = "https://ai.hackclub.com"; // Read this website before usage
 
@@ -17,27 +18,27 @@ async function ndjsonToSSE(response: Response): Promise<Response> {
 
   const decoder = new TextDecoder("utf-8");
   const encoder = new TextEncoder();
+  const reader = response.body.getReader();
+
   let buffer = "";
 
   const sseStream = new ReadableStream({
     async start(controller) {
-      const reader = response.body!.getReader();
-
       while (true) {
         const { done, value } = await reader.read();
         if (done) break;
 
-        // Decode incoming NDJSON chunk and accumulate
         buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split("\n");
-        buffer = lines.pop()!; // keep incomplete line
+
+        const lines = buffer.split("\n"); // [at least one full line, incomplete lines?]
+        buffer = lines.pop()!;
 
         for (const line of lines) {
           const trimmed = line.trim();
+          // console.log(JSON.parse(trimmed).choices[0].delta);
           if (!trimmed) continue;
-          // Wrap each JSON object as an SSE "data:" block
-          const sseChunk = `data: ${trimmed}\n\n`;
-          controller.enqueue(encoder.encode(sseChunk));
+
+          controller.enqueue(encoder.encode(`data: ${trimmed}\n\n`));
         }
       }
 
@@ -54,12 +55,12 @@ async function ndjsonToSSE(response: Response): Promise<Response> {
     },
   });
 }
-
 /* Since the API does not officially support tools, we have to do this voodo shit */
 // NOTE: The AI cannot read responses with this wrapper, you can only read the calls.
 // You are the executor and do not return an output
+export const hackclub = wrapLanguageModel({ model: base_hackclub(""), middleware: extractReasoningMiddleware({ tagName: 'think' }) });
 
-export const hackclub = base_hackclub(""); /*wrapLanguageModel({
+/*wrapLanguageModel({
   model: base_hackclub(""), // The API automatically ignores this and picks whatever the hackclub devs set it to
   middleware: createToolMiddleware({
   toolCallTag: "<tool_call>",

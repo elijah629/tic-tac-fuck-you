@@ -18,7 +18,7 @@ export default function HowToPlay() {
       <h2 className="text-3xl">Premise</h2>
       <p className="text-muted-foreground">
         You are playing a custom version of tic-tac-toe against a LLM, more
-        specifically `meta-llama/llama-4-maverick-17b-128e-instruct` from groq.
+        specifically `qwen/qwen3-32b` from groq.
         However, everything isn&apos;t as it seems, the AI has more power than
         you do, and will do anything to bring you to the ground... I mean
         anything.

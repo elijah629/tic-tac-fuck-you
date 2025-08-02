@@ -83,7 +83,7 @@ export function initialPrompt(
   winLength: number,
   diff: Difficulty,
 ) {
-  return `You are on team ${ai.team} with ${ai.cards.length} card(s).
+  return `/no_think You are on team ${ai.team} with ${ai.cards.length} card(s).
 The human is on team ${human.team} with cards: ${cards(human.cards.map((c) => c.card))} and has chosen ${di(diff)} as the difficulty.${diff === Difficulty.HARD ? " You CANNOT extend the board." : ""}
 Target to win: ${winLength} in a row.
 The board is empty.`;
@@ -95,7 +95,7 @@ export function statePrompt(
   winLength: number,
   brd: Board,
 ) {
-  return `You have ${ai.cards.length} card(s).
+  return `/no_think You have ${ai.cards.length} card(s).
 The human has cards: ${cards(human.cards.map((c) => c.card))}.
 Target to win: ${winLength} in a row.
 Board (${brd.size.rows}×${brd.size.cols}):

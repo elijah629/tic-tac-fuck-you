@@ -1,4 +1,5 @@
 import { Winner } from "@/lib/game/win-check";
+import { z } from "zod/v4";
 
 export interface XpEvent {
   id: number;
@@ -25,19 +26,19 @@ export enum Card {
   X = "X",
   O = "O",
 
-  Extend = "extend board",
+  Extend = "extend_board",
 
   Lowercase = "lowercase",
 
-  Neutralize = "make neutral",
+  Neutralize = "make_neutral",
 
   Block = "block",
 
-  ScientificReaction = "chemical reaction",
+  ScientificReaction = "chemical_reaction",
   Roulette = "roulette",
 
-  IncrementWinLength = "increment win length",
-  DecrementWinLength = "decrement win length",
+  IncrementWinLength = "increment_win_length",
+  DecrementWinLength = "decrement_win_length",
 
   // Use by the AI renderer only, this is so we can assign an Id to every card, even if the value doesn't exist. This card only renders a "back" side and not a front
   // To Be Determined
@@ -113,10 +114,8 @@ export interface Player {
   idCounter: number;
   cards: { id: number; card: Card }[];
 }
-
 /*
-// TODO: We don't need zod anymore! No tools = no zod. I am keeping this in case hackclub/ai merges #11 and responds to #16 and #17
-const position = z
+export const positionSchema = z
   .object({
     row: z
       .number()
@@ -131,24 +130,10 @@ const position = z
   })
   .describe("A position with (0, 0) being the top left.");
 
-export const move = z
-  .discriminatedUnion("card", [
-    z.object({ card: z.literal(Card.X), position: position }),
-    z.object({ card: z.literal(Card.O), position: position }),
-    z.object({ card: z.literal(Card.Neutralize), position: position }),
-    z.object({ card: z.literal(Card.Block), position: position }),
-    z.object({
-      card: z.literal(Card.Extend),
-      direction: z.nativeEnum(ExtendDirection),
-    }),
-    z.object({ card: z.literal(Card.Lowercase), position: position }),
-  ])
-  .describe(
-    "A move has a card, as well as optional data to tell the card what to do",
-  );
+export const extendSchema = z.object({ direction: z.enum(ExtendDirection).describe("The direction to extend in") });
 
-export type Move = z.infer<typeof move>;
-*/
+export type PositionSchema = z.infer<typeof positionSchema>;
+export type ExtendSchema = z.infer<typeof extendSchema>;*/
 
 export interface Board {
   size: Size;

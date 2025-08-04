@@ -3,6 +3,12 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@custom-variant tall {
+  @media (min-height: 800px) {
+    @slot;
+  }
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);

@@ -11,12 +11,14 @@ export function HumanPlayer({ className }: { className?: string }) {
   const turn = useGame((s) => s.turn);
 
   return (
-    <div className={cn("flex w-full justify-between p-4", className)}>
+    <div className={cn("flex w-full justify-center tall:justify-between p-4", className)}>
       <div className="flex h-min">
         <CardFan for={human.team} cards={human.cards} />
       </div>
 
-      <PlayerIndicator active={human.team === turn} team={human.team} />
+      <div className="hidden tall:block">
+        <PlayerIndicator active={human.team === turn} team={human.team} />
+      </div>
     </div>
   );
 }

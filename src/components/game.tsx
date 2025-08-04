@@ -22,7 +22,7 @@ export function Game({
   return status === "initialized" ? (
     <main className="h-screen grid grid-rows-[min-content_auto_min-content] grid-cols-[1fr_2fr]">
       <Sidebar className="row-span-3" />
-      <AIPlayer className="hidden sm:flex" />
+      <AIPlayer />
       <Board />
       <HumanPlayer />
 

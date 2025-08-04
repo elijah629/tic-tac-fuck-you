@@ -69,8 +69,11 @@ export function Sidebar({ className }: { className?: string }) {
       regenerate();
     },
     async onFinish({ message: { parts } }) {
-      const text = parts.findLast((x) => x.type === "text")!.text;
-      console.log(text);
+      const text = parts.findLast((x) => x.type === "text")?.text;
+
+      if (!text) {
+        return;
+      }
 
       const emojis = emoji();
 
@@ -80,10 +83,7 @@ export function Sidebar({ className }: { className?: string }) {
         setExpression(expr);
       }
 
-      const tools = regex.exec(text)![1].split(",");
-
-      for (let i = 0; i < tools.length; i++) {
-        const tool = tools[i].split("|");
+      const tool = regex.exec(text)![1].split("|");
         const card = tool[0] as Card;
 
         switch (card) {
@@ -110,7 +110,7 @@ export function Sidebar({ className }: { className?: string }) {
           case Card.Extend:
             if (difficulty === Difficulty.HARD) {
               // Larger boards make it easier for the human to win
-              continue;
+              return;
             }
 
             extendBoard(tool[1] as ExtendDirection);
@@ -126,7 +126,6 @@ export function Sidebar({ className }: { className?: string }) {
         }
 
         removeCard(ai.team);
-      }
 
       endTurn();
     },
@@ -145,24 +144,9 @@ export function Sidebar({ className }: { className?: string }) {
 
     // first AI turn ever
     if (first.current) {
-      /*append({
-        role: "user",
-        parts: [
-          {
-            type: "text",
-            text: initialPrompt(ai, human, winLength, difficulty),
-          },
-        ],
-      });*/
       sendMessage({ text: initialPrompt(ai, human, winLength, difficulty) });
       first.current = false;
     } else {
-      /*append({
-        role: "user",
-        parts: [
-          { type: "text", text: statePrompt(ai, human, winLength, board) },
-        ],
-      });*/
       sendMessage({ text: statePrompt(ai, human, winLength, board) });
     }
   }, [ai, difficulty, board, winLength, human, winner, sendMessage, turn]);
@@ -171,21 +155,6 @@ export function Sidebar({ className }: { className?: string }) {
 
   const content = (messages.findLast(x => x.role === "assistant")?.parts.filter(x => x.type === "text")
   .map(x => x.text.replace(regex, "")))?.at(-1) || "Thinking";
-
-/*const content: string[] | undefined =
-  raw_msg?.role === "assistant"
-    ? raw_msg.parts
-        .map((x) => {
-          if (x.type === "text") {
-            return x.text.replace(/<tool_call>.* /g, "");
-          } else if (x.type === "reasoning") {
-            return "Thinking...";
-          } else {
-            return undefined; // or return an empty string or null if you prefer
-          }
-        })
-        .filter((x) => x !== undefined) // filters out undefined values
-    : undefined;*/
 
   return (
     <aside className={cn("p-3 flex flex-col gap-3", className)}>

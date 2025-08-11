@@ -1,7 +1,7 @@
 "use client";
 
 import emoji from "emoji-regex";
-import { Card, Difficulty, ExtendDirection } from "@/types/game";
+import { Card, Difficulty, ExtendDirection, PositionSchema } from "@/types/game";
 import { useGame } from "@/lib/game";
 import { initialPrompt, statePrompt } from "@/lib/prompts";
 import { cn } from "@/lib/utils";
@@ -66,9 +66,57 @@ export function Sidebar({ className }: { className?: string }) {
   const { messages, sendMessage, status, regenerate } = useChat({
     onError(error) {
       console.error(error);
-      regenerate();
+      // regenerate();
     },
-    async onFinish({ message: { parts } }) {
+    async onToolCall({ toolCall: { toolName, input } }) {
+switch (toolName) {
+          case Card.X:
+          case Card.O:
+          case Card.Block:
+          case Card.Lowercase:
+          case Card.Neutralize:
+          case Card.ScientificReaction:
+            const args = input as PositionSchema;
+            applyCard(args.row, args.col, toolName, true);
+            break;
+
+          case Card.Roulette:
+            const forced_winner = await roulette();
+
+            if (forced_winner === false) {
+              break;
+            } else {
+              removeCard(ai.team);
+              endTurn(forced_winner);
+              return;
+            }
+
+          case Card.Extend:
+            if (difficulty === Difficulty.HARD) {
+              // Larger boards make it easier for the human to win
+              return;
+            }
+
+            const direction = input as ExtendDirection;
+
+            extendBoard(direction);
+            break;
+
+          case Card.IncrementWinLength:
+            changeWinLength(1);
+            break;
+
+          case Card.DecrementWinLength:
+            changeWinLength(-1);
+            break;
+        }
+
+        removeCard(ai.team);
+
+      endTurn();
+
+    },
+    /*async onFinish({ message: { parts } }) {
       const text = parts.findLast((x) => x.type === "text")?.text;
 
       if (!text) {
@@ -128,7 +176,7 @@ export function Sidebar({ className }: { className?: string }) {
         removeCard(ai.team);
 
       endTurn();
-    },
+    },*/
   });
 
   useEffect(() => {
@@ -151,10 +199,8 @@ export function Sidebar({ className }: { className?: string }) {
     }
   }, [ai, difficulty, board, winLength, human, winner, sendMessage, turn]);
 
-  //const raw_msg = messages.at(-1);
-
   const content = (messages.findLast(x => x.role === "assistant")?.parts.filter(x => x.type === "text")
-  .map(x => x.text.replace(regex, "")))?.at(-1) || "Thinking";
+  .map(x => x.text))?.at(-1) || "Thinking";
 
   return (
     <aside className={cn("p-3 flex flex-col gap-3", className)}>

@@ -1,19 +1,22 @@
-import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
+import { createGroq } from "@ai-sdk/groq";
 
 const BASEURL = "https://ai.hackclub.com"; // Read this website before usage
 
-const base_hackclub = createOpenAICompatible({
+export const hackclub = createGroq({
   baseURL: BASEURL,
-  name: "hackclub",
-  async fetch(input, init) {
+  apiKey: "tic-tac-fuck-you",
+  // name: "hackclub",
+  fetch(input, init) {
+    console.log(input, init);
+    return fetch(input, init);
+  }
+  /*async fetch(input, init) {
     const ini = { ...init, body: JSON.stringify({ ...JSON.parse(init!.body!.toString()), reasoning_effort: "none" }) };
     return await fetch(input, ini).then(ndjsonToSSE);
-  },
+  },*/
 });
 
-export const hackclub = base_hackclub("");
-
-async function ndjsonToSSE(response: Response): Promise<Response> {
+/*async function ndjsonToSSE(response: Response): Promise<Response> {
   if (!response.body) {
     throw new Error("Response has no body");
   }
@@ -55,4 +58,4 @@ async function ndjsonToSSE(response: Response): Promise<Response> {
       Connection: "keep-alive",
     },
   });
-}
+}*/

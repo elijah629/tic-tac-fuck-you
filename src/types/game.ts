@@ -114,7 +114,7 @@ export interface Player {
   idCounter: number;
   cards: { id: number; card: Card }[];
 }
-/*
+
 export const positionSchema = z
   .object({
     row: z
@@ -133,7 +133,7 @@ export const positionSchema = z
 export const extendSchema = z.object({ direction: z.enum(ExtendDirection).describe("The direction to extend in") });
 
 export type PositionSchema = z.infer<typeof positionSchema>;
-export type ExtendSchema = z.infer<typeof extendSchema>;*/
+export type ExtendSchema = z.infer<typeof extendSchema>;
 
 export interface Board {
   size: Size;

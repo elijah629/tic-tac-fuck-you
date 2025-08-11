@@ -1,9 +1,9 @@
-import { convertToModelMessages, streamText, UIMessage } from "ai";
+import { convertToModelMessages, streamText, tool, UIMessage } from "ai";
 import { systemPrompt } from "@/lib/prompts";
 import { auth, isHardcore } from "@/lib/auth";
 import { ratelimit } from "@/lib/redis";
 import { hackclub } from "@/lib/hackclub";
-// import { Card, extendSchema, positionSchema } from "@/types/game";
+import { Card, extendSchema, positionSchema } from "@/types/game";
 
 export const maxDuration = 30;
 
@@ -26,12 +26,12 @@ export async function POST(req: Request) {
   const { messages }: { messages: UIMessage[] } = await req.json();
 
   const result = streamText({
-    model: hackclub, //groq(MODEL),
+    model: hackclub("qwen/qwen3-32b"), //groq(MODEL),
     system: systemPrompt(id, hardcore),
     messages: convertToModelMessages(messages),
 
     // toolChoice: "required",
-    /*tools: {
+    tools: {
   [Card.X]: tool({
     description: "Plays an X card",
     inputSchema: positionSchema,
@@ -79,10 +79,10 @@ export async function POST(req: Request) {
     inputSchema: extendSchema,
     execute: () => true,
   }),
-    },*/
+    },
     providerOptions: {
-      hackclub: {
-        reasoning_effort: "none" as const,
+      groq: {
+        reasoning_format: "parsed",
       },
     },
   });
